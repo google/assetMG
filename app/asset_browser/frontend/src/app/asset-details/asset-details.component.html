@@ -1,0 +1,6 @@
+<div>{{account.name}}</div>
+<div *ngIf="activeAsset">{{activeAsset.name}}
+  <app-account-campaigns [account]="account"></app-account-campaigns>
+  <button mat-raised-button>Update</button>
+</div>
+
