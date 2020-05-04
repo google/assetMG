@@ -1,6 +1,7 @@
 interface AdGroups {
   id: number;
   name: string;
+  assets?: any[];
 }
 
 interface Campaigns {

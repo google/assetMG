@@ -11,6 +11,7 @@ import { AssetService } from './../services/asset.service';
 })
 export class AssetDetailsComponent implements OnInit {
   private _account: Account;
+  //private _assetAdGroups: number[];
   activeAsset: Asset;
 
   constructor(private dataService: AssetService) {}
@@ -23,7 +24,19 @@ export class AssetDetailsComponent implements OnInit {
   get account(): Account {
     return this._account;
   }
+
+  // @Input()
+  // set assetAdGroups(adGroupIds: number[]) {
+  //   this._assetAdGroups = adGroupIds;
+  // }
+  // get assetAdGroups(): number[] {
+  //   return this.assetAdGroups;
+  // }
+
   ngOnInit(): void {
-    this.dataService.currentAsset.subscribe((asset) => (this.activeAsset = asset));
+    this.dataService.activeAsset.subscribe((asset) => {
+      this.activeAsset = asset;
+      //this.assetAdGroups = this.dataService.getAssetAdGroups(asset?.id);
+    });
   }
 }

@@ -7,12 +7,14 @@ import { Asset } from './../model/asset';
 })
 export class AssetService {
   private assetSource = new BehaviorSubject<Asset>(null);
-  currentAsset = this.assetSource.asObservable();
+  private assetAdGroups: number[];
+  activeAsset = this.assetSource.asObservable();
 
   constructor() {}
 
   changeAsset(asset: Asset) {
     this.assetSource.next(asset);
+    this.assetAdGroups = this.getAssetAdGroups(asset.id);
   }
 
   getAllAssets() {
@@ -92,16 +94,20 @@ export class AssetService {
   }
 
   getAssetAdGroups(assetId: number) {
-    let adGroups;
+    let adGroups: number[];
     switch (assetId) {
       case 8170555646:
         adGroups = [97909190375, 97982663179];
+        break;
       case 8170555649:
         adGroups = [97982663179];
+        break;
       case 8048065853:
         adGroups = [95186899405];
+        break;
       case 8315727242:
         adGroups = [95186899405];
+        break;
     }
     return adGroups;
   }

@@ -1,4 +1,3 @@
-import { Account } from './../model/account';
 import {
   ChangeDetectorRef,
   Component,
@@ -20,14 +19,23 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 import { merge } from 'rxjs/observable/merge';
 import { map } from 'rxjs/operators/map';
+import { Account } from './../model/account';
+import { AssetService } from './../services/asset.service';
 
 /* The node deifinition that will be used in the tree */
 export class EntityNode {
   children: BehaviorSubject<EntityNode[]>;
 
+  getId(): number {
+    return this._id;
+  }
+
+  getName(): string {
+    return this._name;
+  }
   constructor(
-    private id: number,
-    private name: string,
+    private _id: number,
+    private _name: string,
     children?: EntityNode[]
   ) {
     this.children = new BehaviorSubject(children === undefined ? [] : children);
@@ -57,7 +65,6 @@ export class AccountCampaignsComponent {
     return this._account;
   }
 
-  @Input()
   set assetAdGroups(adGroupIds: number[]) {
     this._assetAdGroupIds = adGroupIds;
   }
@@ -65,7 +72,10 @@ export class AccountCampaignsComponent {
     return this._assetAdGroupIds;
   }
 
-  constructor(private changeDetectorRef: ChangeDetectorRef) {
+  constructor(
+    private changeDetectorRef: ChangeDetectorRef,
+    private dataService: AssetService
+  ) {
     this.treeFlattener = new MatTreeFlattener(
       this.transformer,
       this.getLevel,
@@ -80,13 +90,13 @@ export class AccountCampaignsComponent {
       this.treeControl,
       this.treeFlattener
     );
-    this.dataSource = new MatTreeFlatDataSource(
-      this.treeControl,
-      this.treeFlattener
-    );
   }
 
   ngOnInit(): void {
+    this.dataService.activeAsset.subscribe((asset) => {
+      this.assetAdGroups = this.dataService.getAssetAdGroups(asset?.id);
+      this.updateSelectedNodes();
+    });
     this.buildTreeNodes();
   }
 
@@ -114,25 +124,40 @@ export class AccountCampaignsComponent {
   /** Constructs a tree structure based on account hierarchy */
   private buildTreeNodes() {
     const tree = [];
-    let selAdGroups: Array<EntityNode> = [];
     for (let campaign of this.account.campaigns) {
       let expand = false;
       let adGroups = [];
       for (let ag of campaign.adGroups) {
         var adGroupNode = new EntityNode(ag.id, ag.name, []);
         adGroups.push(adGroupNode);
-        //if (this.assetAdGroups.find(ag.id) != -1) {
-        if (ag.id == 95186899405) {
-          expand = true;
-          selAdGroups.push(adGroupNode);
-        }
       }
       let campaignNode = new EntityNode(campaign.id, campaign.name, adGroups);
       tree.push(campaignNode);
-      if (expand) this.treeControl.expand(campaignNode);
     }
     this.dataSource.data = tree;
+    this.updateSelectedNodes();
+  }
+
+  updateSelectedNodes() {
+    let selAdGroups: Array<EntityNode> = [];
+    let unSelAdGroups: Array<EntityNode> = [];
+
+    for (let campNode of this.dataSource.data) {
+      let expand = false;
+      for (let agNode of campNode.children.value) {
+        if (this.assetAdGroups.indexOf(agNode.getId(), 0) != -1) {
+          expand = true;
+          selAdGroups.push(agNode);
+        } else {
+          unSelAdGroups.push(agNode);
+        }
+        expand
+          ? this.treeControl.expand(campNode)
+          : this.treeControl.collapse(campNode);
+      }
+    }
     this.checklistSelection.select(...selAdGroups);
+    this.checklistSelection.deselect(...unSelAdGroups);
   }
 
   /** Whether all the descendants of the node are selected */

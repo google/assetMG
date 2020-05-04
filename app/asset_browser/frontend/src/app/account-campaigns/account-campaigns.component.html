@@ -4,13 +4,13 @@
     <mat-checkbox [checked]="descendantsAllSelected(node)"
                   [indeterminate]="descendantsPartiallySelected(node)"
                   (change)="nodeSelectionToggle(node)"
-                  [attr.data-entity-id]="node.id">
-      {{node.name}}
+                  [attr.data-entity-id]="node.getId()">
+      {{node.getName()}}
     </mat-checkbox>
   </mat-tree-node>
   <mat-tree-node *matTreeNodeDef="let node; when: hasChildren" matTreeNodePadding>
     <button mat-icon-button matTreeNodeToggle
-            [attr.aria-label]="'toggle ' + node.name">
+            [attr.aria-label]="'toggle ' + node.getName()">
       <mat-icon>
         {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
       </mat-icon>
@@ -18,8 +18,8 @@
     <mat-checkbox [checked]="descendantsAllSelected(node)"
                   [indeterminate]="descendantsPartiallySelected(node)"
                   (change)="nodeSelectionToggle(node)"
-                  [attr.data-entity-id]="node.id">
-    {{node.name}}
+                  [attr.data-entity-id]="node.getId()">
+    {{node.getName()}}
     </mat-checkbox>
   </mat-tree-node>
 </mat-tree>
