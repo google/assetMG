@@ -21,12 +21,18 @@ export class AssetService {
     return [
       {
         id: 8170555646,
-        name: '',
+        name: 'video_file.jpg',
         type: 'YoutubeVideoAsset',
         video_id: 'ukjDKYS8gPM',
         link: 'https://www.youtube.com/watch?v=ukjDKYS8gPM',
         url: 'https://img.youtube.com/vi/ukjDKYS8gPM/1.jpg',
         adgroups: [97909190375, 97982663179],
+      },
+      {
+        id: 8037638620,
+        name: '',
+        type: 'TEXT',
+        asset_text: 'Become a virtual Gardner',
       },
       {
         id: 8170555649,
@@ -52,6 +58,12 @@ export class AssetService {
         link: 'https://www.youtube.com/watch?v=ZRCdORJiUgU',
         url: 'https://img.youtube.com/vi/ZRCdORJiUgU/1.jpg',
         adgroups: [95186899405],
+      },
+      {
+        id: 8037638617,
+        name: '',
+        type: 'TEXT',
+        asset_text: 'Loads of fun!',
       },
     ];
   }

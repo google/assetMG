@@ -28,5 +28,12 @@ mat-card img {
 }
 
 .asset-card {
+  display: contents;
   cursor: pointer;
+}
+
+mat-card-content p {
+  text-align: center;
+  position: relative;
+  top: 30%;
 }

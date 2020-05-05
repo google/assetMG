@@ -145,7 +145,8 @@ export class AccountCampaignsComponent {
     for (let campNode of this.dataSource.data) {
       let expand = false;
       for (let agNode of campNode.children.value) {
-        if (this.assetAdGroups.indexOf(agNode.getId(), 0) != -1) {
+        if (this.assetAdGroups){
+          if (this.assetAdGroups.indexOf(agNode.getId(), 0) != -1) {
           expand = true;
           selAdGroups.push(agNode);
         } else {
@@ -154,6 +155,7 @@ export class AccountCampaignsComponent {
         expand
           ? this.treeControl.expand(campNode)
           : this.treeControl.collapse(campNode);
+        }
       }
     }
     this.checklistSelection.select(...selAdGroups);
