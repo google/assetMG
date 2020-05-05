@@ -2,31 +2,12 @@
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 @import "~@fortawesome/fontawesome-free/css/all.css";
 
+.content-margin {
+  margin: 50px;
+} */
 
 body {
 	font-family: 'Roboto'
-}
-
-.top-bar div {
-  display: table;
-  margin-left: 25px;
-  position: relative;
-
-}
-
-.top-bar img {
-	margin-right: 15px;
-}
-
-.top-bar span {
-	color: grey;
-	font-size: 18px;
-	display:table-cell;
-    vertical-align:middle;
-}
-
-.content-margin {
-  margin: 50px;
 }
 
 html, body { height: 100%; }

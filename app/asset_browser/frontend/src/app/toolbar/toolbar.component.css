@@ -1,0 +1,38 @@
+
+/* .top-bar div {
+  display: table;
+  margin-left: 25px;
+  position: relative;
+} */
+/* 
+.top-bar img {
+	margin-right: 15px;
+}
+
+.top-bar span {
+	color: grey;
+	font-size: 18px;
+	display:table-cell;
+    vertical-align:middle;
+}
+*/
+
+.toolbar_class{
+    display: table;
+    color: grey;
+    font-size: 14px;
+}
+ 
+.toolbar_class img{
+    margin-right: 15px;
+    vertical-align: middle;
+}
+
+.toolbar_class span{
+    color: grey;
+	font-size: 18px;
+} 
+
+.toolbar_select{
+    margin-left: 2%;
+}

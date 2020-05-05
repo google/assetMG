@@ -30,7 +30,7 @@ import { MatIconModule } from '@angular/material/icon';
 // import {MatProgressBarModule} from '@angular/material/progress-bar';
 // import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 // import {MatRadioModule} from '@angular/material/radio';
-// import {MatSelectModule} from '@angular/material/select';
+import {MatSelectModule} from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 // import {MatSliderModule} from '@angular/material/slider';
 // import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -38,7 +38,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 // import {MatSortModule} from '@angular/material/sort';
 // import {MatTableModule} from '@angular/material/table';
 // import {MatTabsModule} from '@angular/material/tabs';
-// import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatToolbarModule} from '@angular/material/toolbar';
 // import {MatTooltipModule} from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 
@@ -74,7 +74,7 @@ import { MatTreeModule } from '@angular/material/tree';
     // MatProgressSpinnerModule,
     // MatRadioModule,
     // MatRippleModule,
-    // MatSelectModule,
+    MatSelectModule,
     MatSidenavModule,
     // MatSliderModule,
     // MatSlideToggleModule,
@@ -82,7 +82,7 @@ import { MatTreeModule } from '@angular/material/tree';
     // MatSortModule,
     // MatTableModule,
     // MatTabsModule,
-    // MatToolbarModule,
+    MatToolbarModule,
     // MatTooltipModule,
     MatTreeModule,
     // PortalModule,
