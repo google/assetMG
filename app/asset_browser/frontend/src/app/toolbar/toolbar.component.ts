@@ -23,9 +23,9 @@ interface Account {
 export class ToolbarComponent{
   // we need to import the accounts here. hardcoded for demo
   accounts: Account[] = [
-    {value: 1234567897, viewValue: 'ourAppAccount US iOS'},
-    {value: 9998887897, viewValue: 'ourAppAccount US Android'},
-    {value: 1112223344, viewValue: 'ourAppAccount Canada'}
+    {value: 1234567897, viewValue: 'AppAccount US iOS'},
+    {value: 9998887897, viewValue: 'AppAccount US Android'},
+    {value: 1112223344, viewValue: 'AppAccount Canada'}
   ];
 
 }
