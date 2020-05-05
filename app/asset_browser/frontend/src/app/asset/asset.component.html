@@ -1,12 +1,26 @@
-<mat-card class="asset-card" (click)="openDetails()">
-  <!-- <mat-card-header> -->
-    <!-- <div mat-card-avatar class="asset-header-image"></div> -->
-    <!-- <mat-card-title>
-      ph.jpg</mat-card-title> -->
-    <mat-card-subtitle><i class="far fa-image"></i> {{asset.type}}</mat-card-subtitle>
-  <!-- </mat-card-header> -->
-  <mat-card-content>
-    <img mat-card-image [src]= 'asset.url' alt="">
-  </mat-card-content>
-
-</mat-card>
+<div class="asset-card" [ngSwitch]="asset.type">
+  <mat-card *ngSwitchCase="'ImageAsset'" (click)="openDetails()">
+    <mat-card-subtitle><i class="far fa-image"></i> Image </mat-card-subtitle>
+    <mat-card-content>
+      <img mat-card-image [src]= 'asset.url' alt="">
+    </mat-card-content>
+  </mat-card>
+  <mat-card *ngSwitchCase="'YoutubeVideoAsset'" (click)="openDetails()">
+    <mat-card-subtitle><i class="fab fa-youtube"></i> Youtube Video </mat-card-subtitle>
+    <mat-card-content>
+      <img mat-card-image [src]= 'asset.url' alt="">
+    </mat-card-content>
+  </mat-card>
+  <mat-card *ngSwitchCase="'TEXT'" (click)="openDetails()">
+    <mat-card-subtitle><i class="fas fa-font"></i> Text </mat-card-subtitle>
+    <mat-card-content>
+      <p>{{asset.asset_text}}</p>
+    </mat-card-content>
+  </mat-card>
+  <mat-card *ngSwitchCase="'html5'" (click)="openDetails()">
+    <mat-card-subtitle><i class="fab fa-html5"></i> HTML5 </mat-card-subtitle>
+    <mat-card-content>
+      <p>{{asset.asset_text}}</p>
+    </mat-card-content>
+  </mat-card>
+</div>
