@@ -1,0 +1,35 @@
+<!-- <div class="mat-typography mat-app-background app-panel"
+     fxLayout="column">
+  <mat-toolbar>
+    <img src="assets/gtech_logo.png" style="width: 40px;">
+    <span>Asset Manager - Prototype</span>
+    <mat-form-field>
+      <mat-label>Account</mat-label>
+      <mat-select>
+      <mat-option *ngFor="let food of foods" [value]="food.value">
+        {{food.viewValue}}
+    </mat-option>
+    </mat-select>
+    </mat-form-field>
+  </mat-toolbar>
+</div> -->
+
+
+<mat-toolbar class="toolbar_class">
+    <mat-toolbar-row>
+    	<div class="toolbar_logo">
+    	<img src="assets/gtech_logo.png" style="width: 40px;">
+    	<span>Asset Manager - Prototype</span>
+      </div> 
+      <div class="toolbar_select">  
+        <mat-form-field class="account_select">
+        <mat-label>Acoount</mat-label>
+        <mat-select>
+        <mat-option *ngFor="let account of accounts" [value]="account.value">
+            {{account.viewValue}}
+        </mat-option>
+        </mat-select>
+        </mat-form-field>
+    </div>
+    </mat-toolbar-row>
+  </mat-toolbar>

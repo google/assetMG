@@ -10,6 +10,7 @@ import { AssetComponent } from './asset/asset.component';
 import { MaterialModule } from './shared/material.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AccountCampaignsComponent } from './account-campaigns/account-campaigns.component';
+import { ToolbarComponent } from './toolbar/toolbar.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { AccountCampaignsComponent } from './account-campaigns/account-campaigns
     AssetDetailsComponent,
     AssetComponent,
     AccountCampaignsComponent,
+    ToolbarComponent
   ],
   imports: [
     BrowserModule,
