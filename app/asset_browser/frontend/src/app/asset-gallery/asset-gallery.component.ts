@@ -15,7 +15,8 @@ export class AssetGalleryComponent implements OnInit {
   constructor(private dataService: AssetService) {}
 
   ngOnInit(): void {
-    this.assets = this.dataService.getAllAssets();
+    /** Todo: This should listen to changes in the account id */
     this.account = this.dataService.getAccountHierarchy();
+    this.assets = <Asset[]>this.dataService.getAllAssets(this.account.id);
   }
 }
