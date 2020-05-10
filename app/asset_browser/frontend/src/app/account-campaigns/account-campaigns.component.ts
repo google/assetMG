@@ -1,3 +1,4 @@
+import { AssetAdGroups, AssetConn } from './../model/asset';
 import {
   ChangeDetectorRef,
   Component,
@@ -22,9 +23,14 @@ import { map } from 'rxjs/operators/map';
 import { Account } from './../model/account';
 import { AssetService } from './../services/asset.service';
 
+enum nodeType {
+  entityNode,
+  textPropertyNode,
+}
 /* The node deifinition that will be used in the tree */
-export class EntityNode {
-  children: BehaviorSubject<EntityNode[]>;
+export class TreeNode {
+  children: BehaviorSubject<TreeNode[]>;
+  type: nodeType;
 
   getId(): number {
     return this._id;
@@ -34,11 +40,13 @@ export class EntityNode {
     return this._name;
   }
   constructor(
-    private _id: number,
     private _name: string,
-    children?: EntityNode[]
+    private _id?: number,
+    children?: TreeNode[],
+    type?: nodeType
   ) {
     this.children = new BehaviorSubject(children === undefined ? [] : children);
+    this.type = type === undefined ? nodeType.entityNode : type;
   }
 }
 
@@ -49,13 +57,16 @@ export class EntityNode {
 })
 export class AccountCampaignsComponent {
   private _account: Account;
-  private _assetAdGroupIds: number[];
+  private _selAdGroups: AssetAdGroups;
+  private _isTextAsset: boolean; /** When this is set, additional nodes appear under adgroups */
+  private _nonTextAssetTree: TreeNode;
+  private _textAssetTree: TreeNode;
 
-  levels = new Map<EntityNode, number>();
-  treeControl: FlatTreeControl<EntityNode>;
-  treeFlattener: MatTreeFlattener<EntityNode, EntityNode>;
-  dataSource: MatTreeFlatDataSource<EntityNode, EntityNode>;
-  checklistSelection = new SelectionModel<EntityNode>(true, [], true);
+  levels = new Map<TreeNode, number>();
+  treeControl: FlatTreeControl<TreeNode>;
+  treeFlattener: MatTreeFlattener<TreeNode, TreeNode>;
+  dataSource: MatTreeFlatDataSource<TreeNode, TreeNode>;
+  checklistSelection = new SelectionModel<TreeNode>(true, [], true);
 
   @Input()
   set account(account: Account) {
@@ -63,13 +74,6 @@ export class AccountCampaignsComponent {
   }
   get account(): Account {
     return this._account;
-  }
-
-  set assetAdGroups(adGroupIds: number[]) {
-    this._assetAdGroupIds = adGroupIds;
-  }
-  get assetAdGroups(): number[] {
-    return this._assetAdGroupIds;
   }
 
   constructor(
@@ -82,7 +86,7 @@ export class AccountCampaignsComponent {
       this.isExpandable,
       this.getChildren
     );
-    this.treeControl = new FlatTreeControl<EntityNode>(
+    this.treeControl = new FlatTreeControl<TreeNode>(
       this.getLevel,
       this.isExpandable
     );
@@ -90,34 +94,42 @@ export class AccountCampaignsComponent {
       this.treeControl,
       this.treeFlattener
     );
+    this._isTextAsset = false;
   }
 
   ngOnInit(): void {
     this.dataService.activeAsset.subscribe((asset) => {
-      this.assetAdGroups = this.dataService.getAssetAdGroups(asset?.id);
+      asset.type == 'TEXT'
+        ? (this._isTextAsset = true)
+        : (this._isTextAsset = false);
+    });
+    this.dataService.activeAssetAdGroups.subscribe((adGroups) => {
+      this._selAdGroups = adGroups;
       this.updateSelectedNodes();
     });
-    this.buildTreeNodes();
   }
 
-  getLevel = (node: EntityNode): number => {
+  getLevel = (node: TreeNode): number => {
     return this.levels.get(node) || 0;
   };
 
-  isExpandable = (node: EntityNode): boolean => {
-    return node.children.value.length > 0;
+  isExpandable = (node: TreeNode): boolean => {
+    return (
+      node.children.value.length > 0 &&
+      (this._isTextAsset || node.children.value[0].type === nodeType.entityNode)
+    );
   };
 
-  getChildren = (node: EntityNode) => {
+  getChildren = (node: TreeNode) => {
     return node.children;
   };
 
-  transformer = (node: EntityNode, level: number) => {
+  transformer = (node: TreeNode, level: number) => {
     this.levels.set(node, level);
     return node;
   };
 
-  hasChildren = (index: number, node: EntityNode) => {
+  hasChildren = (index: number, node: TreeNode) => {
     return this.isExpandable(node);
   };
 
@@ -126,44 +138,95 @@ export class AccountCampaignsComponent {
     const tree = [];
     for (let campaign of this.account.campaigns) {
       let expand = false;
-      let adGroups = [];
-      for (let ag of campaign.adGroups) {
-        var adGroupNode = new EntityNode(ag.id, ag.name, []);
-        adGroups.push(adGroupNode);
+      let adgroups = [];
+      for (let ag of campaign.adgroups) {
+        let textNodes = [
+          new TreeNode(AssetConn.HEADLINES, 0, [], nodeType.textPropertyNode),
+          new TreeNode(AssetConn.DESC, 0, [], nodeType.textPropertyNode),
+        ];
+        var adGroupNode = new TreeNode(ag.name, ag.id, textNodes);
+        adgroups.push(adGroupNode);
       }
-      let campaignNode = new EntityNode(campaign.id, campaign.name, adGroups);
+      let campaignNode = new TreeNode(campaign.name, campaign.id, adgroups);
       tree.push(campaignNode);
     }
     this.dataSource.data = tree;
-    this.updateSelectedNodes();
   }
 
   updateSelectedNodes() {
-    let selAdGroups: Array<EntityNode> = [];
-    let unSelAdGroups: Array<EntityNode> = [];
+    this.buildTreeNodes();
+    this.treeControl.collapseAll();
+
+    let selAdGroups: Array<TreeNode> = [];
+    let unSelAdGroups: Array<TreeNode> = [];
 
     for (let campNode of this.dataSource.data) {
-      let expand = false;
+      let expandCampaign = false;
       for (let agNode of campNode.children.value) {
-        if (this.assetAdGroups){
-          if (this.assetAdGroups.indexOf(agNode.getId(), 0) != -1) {
-          expand = true;
-          selAdGroups.push(agNode);
-        } else {
-          unSelAdGroups.push(agNode);
-        }
-        expand
-          ? this.treeControl.expand(campNode)
-          : this.treeControl.collapse(campNode);
+        if (this._selAdGroups) {
+          // Need to check if the adGroup node will be select (Non-Text Assets)
+          // Or one of its children: Headlines or text
+          if (
+            !this._isTextAsset &&
+            this.hasAdGroupConnection(AssetConn.ADGROUP, agNode.getId())
+          ) {
+            expandCampaign = true;
+            selAdGroups.push(agNode);
+            for (let node of agNode.children.value) {
+              selAdGroups.push(node);
+            }
+          } else if (
+            this._isTextAsset &&
+            this.hasAdGroupConnection(AssetConn.HEADLINES, agNode.getId())
+          ) {
+            expandCampaign = true;
+            this.treeControl.expand(agNode);
+            selAdGroups.push(
+              agNode.children.value.find(
+                (node) => node.getName() == AssetConn.HEADLINES
+              )
+            );
+          } else if (
+            this._isTextAsset &&
+            this.hasAdGroupConnection(AssetConn.DESC, agNode.getId())
+          ) {
+            expandCampaign = true;
+            this.treeControl.expand(agNode);
+            selAdGroups.push(
+              agNode.children.value.find(
+                (node) => node.getName() == AssetConn.DESC
+              )
+            );
+          } else {
+            // Unselect the adGroup and it's children (Text properties)
+            unSelAdGroups.push(agNode);
+            for (let node of agNode.children.value) {
+              unSelAdGroups.push(node);
+            }
+          }
+          expandCampaign
+            ? this.treeControl.expand(campNode)
+            : this.treeControl.collapse(campNode);
         }
       }
     }
+    this.checklistSelection.clear();
     this.checklistSelection.select(...selAdGroups);
     this.checklistSelection.deselect(...unSelAdGroups);
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /** Helper function to look for adGroup in adGroupMapping */
+  hasAdGroupConnection(connection: AssetConn, adGroupId: number) {
+    let adGroups = this._selAdGroups.get(connection);
+    if (adGroups !== undefined && adGroups.find((id) => id == adGroupId)) {
+      return true;
+    }
+    return false;
   }
 
   /** Whether all the descendants of the node are selected */
-  descendantsAllSelected(node: EntityNode): boolean {
+  descendantsAllSelected(node: TreeNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
     if (!descendants.length) {
       return this.checklistSelection.isSelected(node);
@@ -180,7 +243,7 @@ export class AccountCampaignsComponent {
   }
 
   /** Whether part of the descendants are selected */
-  descendantsPartiallySelected(node: EntityNode): boolean {
+  descendantsPartiallySelected(node: TreeNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
     if (!descendants.length) {
       return false;
@@ -192,7 +255,7 @@ export class AccountCampaignsComponent {
   }
 
   /** Toggle the entity selection. Select/deselect all the descendants node */
-  nodeSelectionToggle(node: EntityNode): void {
+  nodeSelectionToggle(node: TreeNode): void {
     this.checklistSelection.toggle(node);
     const descendants = this.treeControl.getDescendants(node);
     this.checklistSelection.isSelected(node)

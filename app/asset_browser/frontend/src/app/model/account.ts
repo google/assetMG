@@ -7,7 +7,7 @@ interface AdGroups {
 interface Campaigns {
   id: number;
   name: string;
-  adGroups?: AdGroups[];
+  adgroups?: AdGroups[];
 }
 
 export interface Account {

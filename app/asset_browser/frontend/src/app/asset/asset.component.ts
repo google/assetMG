@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Asset } from './../model/asset';
+import { Asset, AssetType } from './../model/asset';
 import { AssetService } from './../services/asset.service';
 
 @Component({
@@ -10,8 +10,8 @@ import { AssetService } from './../services/asset.service';
   styleUrls: ['./asset.component.css'],
 })
 export class AssetComponent implements OnInit {
+  assetType = AssetType;
   private _asset: Asset;
-
   @Input()
   set asset(asset: any) {
     this._asset = asset;
