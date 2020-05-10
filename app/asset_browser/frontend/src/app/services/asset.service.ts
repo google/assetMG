@@ -19,54 +19,6 @@ export class AssetService {
 
   getAllAssets() {
     return [
-      // {
-      //   id: 8170555646,
-      //   name: 'video_file.jpg',
-      //   type: 'YoutubeVideoAsset',
-      //   video_id: 'ukjDKYS8gPM',
-      //   link: 'https://www.youtube.com/watch?v=ukjDKYS8gPM',
-      //   url: 'https://img.youtube.com/vi/ukjDKYS8gPM/1.jpg',
-      //   adgroups: [97909190375, 97982663179],
-      // },
-      // {
-      //   id: 8037638620,
-      //   name: '',
-      //   type: 'TEXT',
-      //   asset_text: 'Become a virtual Gardner',
-      // },
-      // {
-      //   id: 8170555649,
-      //   name: 'None',
-      //   type: 'YoutubeVideoAsset',
-      //   video_id: 'MkOlifBjmBI',
-      //   link: 'https://www.youtube.com/watch?v=MkOlifBjmBI',
-      //   url: 'https://img.youtube.com/vi/MkOlifBjmBI/1.jpg',
-      //   adgroups: [97982663179],
-      // },
-      // {
-      //   id: 8048065853,
-      //   name: 'ph.jpg',
-      //   type: 'ImageAsset',
-      //   url: 'https://tpc.googlesyndication.com/simgad/14098414386513970705',
-      //   adgroups: [95186899405],
-      // },
-      // {
-      //   id: 8315727242,
-      //   name: 'video1',
-      //   type: 'YoutubeVideoAsset',
-      //   video_id: 'ZRCdORJiUgU',
-      //   link: 'https://www.youtube.com/watch?v=ZRCdORJiUgU',
-      //   url: 'https://img.youtube.com/vi/ZRCdORJiUgU/1.jpg',
-      //   adgroups: [95186899405],
-      // },
-      // {
-      //   id: 8037638617,
-      //   name: '',
-      //   type: 'TEXT',
-      //   asset_text: 'Loads of fun!',
-      // },
-      
-      // Tekansyon's Asset
         {
           id: 8771117953,
           name: '',
