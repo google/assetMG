@@ -21,8 +21,10 @@ mat-card-content {
 }
 
 mat-card img {
+  object-fit:scale-down ; /*this makes the image in src fit to the size specified below*/
   height: 100%;
-  width: auto;
+  width: 100%;
+  /* width: auto; */
   border-radius: 8px;
   margin: auto;
 }

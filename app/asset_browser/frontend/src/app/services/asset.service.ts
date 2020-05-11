@@ -104,13 +104,20 @@ export class AssetService {
         },
         {
           id: 8251506199,
-          name: 'square.png',
+          name: 'banner.png',
           type: 'IMAGE',
           image_url:
             'https://tpc.googlesyndication.com/simgad/15907806694484045218',
           file_size: 44087,
-          image_height: 512,
-          image_width: 512,
+          image_height: 300,
+          image_width: 50,
+        },
+        {
+          id: 8251506199,
+          name: 'square.png',
+          type: 'IMAGE',
+          image_url:
+            'https://tpc.googlesyndication.com/simgad/8738953891003445722',
         },
         {
           id: 8278629807,
