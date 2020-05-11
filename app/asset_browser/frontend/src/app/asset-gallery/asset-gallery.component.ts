@@ -1,7 +1,7 @@
 import { AssetService } from './../services/asset.service';
 import { Account } from './../model/account';
 import { Asset } from './../model/asset';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-asset-gallery',
@@ -15,8 +15,9 @@ export class AssetGalleryComponent implements OnInit {
   constructor(private dataService: AssetService) {}
 
   ngOnInit(): void {
-    /** Todo: This should listen to changes in the account id */
-    this.account = this.dataService.getAccountHierarchy();
-    this.assets = <Asset[]>this.dataService.getAllAssets(this.account.id);
+    this.dataService.activeAccount.subscribe((accountId) => {
+      this.account = this.dataService.getAccountHierarchy(accountId);
+      this.assets = <Asset[]>this.dataService.getAllAssets(accountId);
+    });
   }
 }
