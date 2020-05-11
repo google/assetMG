@@ -19,15 +19,15 @@
     <mat-toolbar-row>
     	<div class="toolbar_logo">
     	<img src="assets/gtech_logo.png" style="width: 40px;">
-    	<span>Asset Manager - Prototype</span>
-      </div> 
-      <div class="toolbar_select">  
+    	<span>AssetMG - Prototype</span>
+      </div>
+      <div class="toolbar_select">
         <mat-form-field class="account_select">
-        <mat-label>Acoount</mat-label>
+        <mat-label>Account</mat-label>
         <mat-select>
-        <mat-option *ngFor="let account of accounts" [value]="account.value">
-            {{account.viewValue}}
-        </mat-option>
+          <mat-option (onSelectionChange)="accountChanged($event)" *ngFor="let account of accounts" [value]="account.id">
+              {{account.name}}
+          </mat-option>
         </mat-select>
         </mat-form-field>
     </div>

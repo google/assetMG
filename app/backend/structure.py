@@ -23,7 +23,7 @@ ASSET_TYPE_MAP = {
 
 PAGE_SIZE = 500
 # change path to local when exporting from g3/change citc name
-PATH = '/google/src/cloud/eylong/assetmg/google3/experimental/cse_team/tools/assetMG/'
+PATH = './'
 
 
 def create_mcc_struct(client):

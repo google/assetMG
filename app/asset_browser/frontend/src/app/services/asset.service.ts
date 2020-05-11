@@ -7,28 +7,25 @@ import {
   AssetConn,
   AssetType,
 } from './../model/asset';
+import { Account } from './../model/account';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AssetService {
   /** Gets updated when the account changes */
-  /** Todo: */ private _accountStructure;
-  private _allAssetsSource = new BehaviorSubject<Asset[]>(null);
+  private _activeAccountIdSource = new BehaviorSubject<number>(null);
   private _allAssetsAdGroups: Asset[] = [];
 
   /** Gets updated when an asset is selected */
   private _activeAssetSource = new BehaviorSubject<Asset>(null);
   private _activeAssetAdGroupsSource = new BehaviorSubject<AssetAdGroups>(null);
 
+  activeAccount = this._activeAccountIdSource.asObservable();
   activeAsset = this._activeAssetSource.asObservable();
   activeAssetAdGroups = this._activeAssetAdGroupsSource.asObservable();
-  allAssets = this._allAssetsSource.asObservable();
 
-  constructor() {
-    /** Todo: Needs to be removed from here */
-    this.changeAccount(7935681790);
-  }
+  constructor() {}
 
   changeAsset(asset: Asset) {
     this._activeAssetSource.next(asset);
@@ -36,14 +33,14 @@ export class AssetService {
   }
 
   changeAccount(accountId: number) {
-    this._allAssetsSource.next(this.getAllAssets(accountId));
+    this._activeAccountIdSource.next(accountId);
     this._allAssetsAdGroups = this.getAssetsToAdGroups();
   }
 
   /** Todo: This should return the json in all-assets-per-account */
   getAllAssets(accountId: number) {
     let jsonReply = {
-      name: 'Account1',
+      name: 'AppAccount US iOS',
       id: 7935681790,
       assets: [
         {
@@ -57,34 +54,6 @@ export class AssetService {
           name: '',
           type: 'TEXT',
           asset_text: 'Become a virtual Gardner',
-        },
-        {
-          id: 8037638623,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'the best gardening game out there',
-        },
-        {
-          id: 8048065853,
-          name: 'ph.jpg',
-          type: 'IMAGE',
-          image_url:
-            'https://tpc.googlesyndication.com/simgad/14098414386513970705',
-          file_size: 7721,
-          image_height: 250,
-          image_width: 250,
-        },
-        {
-          id: 8048702501,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'second adgroup headline',
-        },
-        {
-          id: 8048702504,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'second adgroup headline 2',
         },
         {
           id: 8048702507,
@@ -126,6 +95,31 @@ export class AssetService {
           asset_text: 'Nine Nine!',
         },
         {
+          id: 8714917792,
+          name: '',
+          type: 'TEXT',
+          asset_text: 'oh geez',
+        },
+        {
+          id: 8722608519,
+          name: '',
+          type: 'TEXT',
+          asset_text: 'wobalabadabdab',
+        },
+        {
+          id: 8726312186,
+          name: '',
+          type: 'TEXT',
+          asset_text: 'pickleRick',
+        },
+      ],
+    };
+
+    let jsonReply2 = {
+      name: 'AppAccount US Android',
+      id: 9998887897,
+      assets: [
+        {
           id: 8315727242,
           name: 'video1',
           type: 'YOUTUBE_VIDEO',
@@ -156,32 +150,68 @@ export class AssetService {
           type: 'TEXT',
           asset_text: 'This is the brain test game',
         },
-        {
-          id: 8714917792,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'oh geez',
-        },
-        {
-          id: 8722608519,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'wobalabadabdab',
-        },
-        {
-          id: 8726312186,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'pickleRick',
-        },
       ],
     };
 
-    return jsonReply.assets;
+    let jsonReply3 = {
+      name: 'AppAccount Canada',
+      id: 1112223344,
+      assets: [
+        {
+          id: 8037638623,
+          name: '',
+          type: 'TEXT',
+          asset_text: 'the best gardening game out there',
+        },
+        {
+          id: 8048065853,
+          name: 'ph.jpg',
+          type: 'IMAGE',
+          image_url:
+            'https://tpc.googlesyndication.com/simgad/14098414386513970705',
+          file_size: 7721,
+          image_height: 250,
+          image_width: 250,
+        },
+        {
+          id: 8048702501,
+          name: '',
+          type: 'TEXT',
+          asset_text: 'second adgroup headline',
+        },
+        {
+          id: 8048702504,
+          name: '',
+          type: 'TEXT',
+          asset_text: 'second adgroup headline 2',
+        },
+      ],
+    };
+    switch (accountId) {
+      case 7935681790:
+        return jsonReply.assets;
+        break;
+      case 9998887897:
+        return jsonReply2.assets;
+        break;
+      case 1112223344:
+        return jsonReply3.assets;
+        break;
+    }
+    return null;
+  }
+
+  getAccountIds(): Account[] {
+    let jsonReply = [
+      { id: 7935681790, name: 'AppAccount US iOS' },
+      { id: 9998887897, name: 'AppAccount US Android' },
+      { id: 1112223344, name: 'AppAccount Canada' },
+    ];
+    return jsonReply;
   }
 
   /** Todo: Remove comment - This should return the info from structure.json */
-  getAccountHierarchy(/** accountId */) {
+  getAccountHierarchy(accountId: number) {
     let jsonReply = {
       name: 'Account1',
       id: 7935681790,

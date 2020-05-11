@@ -21,10 +21,6 @@ client = adwords.AdWordsClient.LoadFromStorage('../config/googleads.yaml')
 googleads_client = GoogleAdsClient.load_from_storage('../config/google-ads.yaml')
 
 
-# change path to local when exporting from g3
-PATH = '/google/src/cloud/eylong/assetmg/google3/experimental/cse_team/tools/assetMG/'
-
-
 @server.route('/')
 def upload_frontend():
   return 'Hello, World!'
@@ -66,7 +62,7 @@ def get_structure():
 @server.route('/assets-to-ag/', methods=['GET'])
 def get_asset_to_ag():
   try:
-    with open(PATH + 'asset_struct.json', 'r') as f:
+    with open('asset_struct.json', 'r') as f:
       asset_struct = json.load(f)
 
     if asset_struct:
