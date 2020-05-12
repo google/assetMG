@@ -8,7 +8,7 @@ from googleads import adwords
 from google.ads.google_ads.client import GoogleAdsClient
 import setup
 from mutate import mutate_ad
-from structure import create_mcc_struct
+from structure import create_mcc_struct, get_accounts, get_struct
 from get_all_assets import get_assets, get_accounts_assets
 from upload_asset import upload
 
@@ -17,8 +17,9 @@ CORS(server)
 
 setup.set_api_configs()
 
-client = adwords.AdWordsClient.LoadFromStorage('../config/googleads.yaml')
-googleads_client = GoogleAdsClient.load_from_storage('../config/google-ads.yaml')
+CONFIG_PATH = '../config/'
+client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH + 'googleads.yaml')
+googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH + 'google-ads.yaml')
 
 
 @server.route('/')
@@ -27,8 +28,19 @@ def upload_frontend():
   # use this route to upload front-end
 
 
+@server.route('/accounts/', methods=['GET'])
+def get_all_accounts():
+  """gets all accounts under the configured MCC. name and id"""
+  try:
+    accounts = get_accounts(client)
+    return _build_response(msg=json.dumps(accounts), status=20)
+  except:
+    return _build_response(msg="Couldn't get accoutns", status=500)
+
+
 @server.route('/accounts-assets/', methods=['GET'])
 def get_all_accounts_assets():
+  """if cid is specified, gets all its assets. if not - gets all accounts and their assets"""
   cid = request.args.get('cid')
   if cid:
     return get_specific_accounts_assets(cid)
@@ -39,7 +51,7 @@ def get_all_accounts_assets():
 def get_specific_accounts_assets(cid):
   """Returns all assets under the given cid."""
   # check input is valid
-  if len(cid) != 10:
+  if len(cid) < 10:
     return _build_response(
         'Invalid Customer Id', status=400, mimetype='text/plain')
 
@@ -56,7 +68,8 @@ def get_specific_accounts_assets(cid):
 
 @server.route('/structure/', methods=['GET'])
 def get_structure():
-  return _build_response(json.dumps(create_mcc_struct(client)))
+  cid = request.args.get('cid')
+  return _build_response(msg=json.dumps(get_struct(client,cid)))
 
 
 @server.route('/assets-to-ag/', methods=['GET'])

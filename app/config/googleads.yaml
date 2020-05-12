@@ -1,6 +1,6 @@
 adwords:
-  client_customer_id: null
-  client_id: null
-  client_secret: null
-  developer_token: null
-  refresh_token: null
+  client_customer_id: 
+  client_id: 
+  client_secret: 
+  developer_token: 
+  refresh_token: 

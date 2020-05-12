@@ -37,6 +37,11 @@ def create_mcc_struct(client):
   return accounts
 
 
+def create_account_struct(client,account):
+  _revert_json()
+  return get_campaigns(client,account)
+
+
 def get_accounts(client):
   """get all non-mcc accounts."""
   managed_customer_service = Service_Class.get_managed_customer_service(client)
@@ -105,7 +110,7 @@ def get_campaigns(client, account):
       for campaign in page['entries']:
         if campaign['settings'][1][
             'Setting.Type'] == 'UniversalAppCampaignSetting':
-          camp['name'] = campaign['name']
+          camp['campaign_name'] = campaign['name']
           camp['id'] = campaign['id']
           camp['adgroups'] = _get_adgroups(client, campaign['id'])
           campaigns.append(camp)
@@ -265,11 +270,18 @@ def create_asset_struct(ag):
 
 
 # Central func to create both structure json. both account and asset.
-def get_struct(client):
-  """ This function creates a json with 2 structures - account strcut and asset-to-ag struct. """
+def get_struct(client, account=0):
+  """ This function creates a json with 2 structures - account strcut and asset-to-ag struct. 
+  if an accounts id is given, the account-struct is for that account only.
+  if not, its for the whole configured MCC.
+  """
   _revert_json()
   total_structure = []
-  struct = create_mcc_struct(client)
+  if account:
+    struct = create_account_struct(client,account)
+  else:
+    struct = create_mcc_struct(client)
+  
   with open(PATH + 'asset_struct.json', 'r') as f:
     asset_struct = json.load(f)
 
