@@ -1,7 +1,7 @@
 # Lint as: python3
 """setup module for the assetMG tool.
 
-setting up both api config yaml files(googleads.yaml and google-ads.yaml)
+setting up both api config yaml files(googleads.yaml & google-ads.yaml)
 with the paramaters given by the user in the config.yaml file
 """
 

@@ -40,7 +40,7 @@ def get_all_accounts():
 
 @server.route('/accounts-assets/', methods=['GET'])
 def get_all_accounts_assets():
-  """if cid is specified, gets all its assets. if not - gets all accounts and their assets"""
+  """if cid is specified, gets all its assets. if not - gets all accounts and their assets."""
   cid = request.args.get('cid')
   if cid:
     return get_specific_accounts_assets(cid)
