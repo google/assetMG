@@ -21,6 +21,8 @@ CONFIG_PATH = '../config/'
 client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH + 'googleads.yaml')
 googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH + 'google-ads.yaml')
 
+asset_to_ag_json_path = '../cache/asset_to_ag.json'
+
 
 @server.route('/')
 def upload_frontend():
@@ -33,7 +35,7 @@ def get_all_accounts():
   """gets all accounts under the configured MCC. name and id"""
   try:
     accounts = get_accounts(client)
-    return _build_response(msg=json.dumps(accounts), status=20)
+    return _build_response(msg=json.dumps(accounts), status=200)
   except:
     return _build_response(msg="Couldn't get accoutns", status=500)
 
@@ -75,7 +77,7 @@ def get_structure():
 @server.route('/assets-to-ag/', methods=['GET'])
 def get_asset_to_ag():
   try:
-    with open('asset_struct.json', 'r') as f:
+    with open(asset_to_ag_json_path, 'r') as f:
       asset_struct = json.load(f)
 
     if asset_struct:
@@ -86,7 +88,7 @@ def get_asset_to_ag():
 
   except Exception as e:
     return _build_response(
-        msg='error while reading asset_struct.json: ' + str(e), status=400)
+        msg='error while reading asset_to_ag.json: ' + str(e), status=400)
 
 
 # parse a list of actions

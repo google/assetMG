@@ -24,6 +24,7 @@ ASSET_TYPE_MAP = {
 PAGE_SIZE = 500
 # change path to local when exporting from g3/change citc name
 PATH = './'
+asset_to_ag_json_path = '../cache/asset_to_ag.json'
 
 
 def create_mcc_struct(client):
@@ -247,7 +248,7 @@ def create_asset_struct(ag):
   ag_id = ag['id']
   assets = ag['assets']
 
-  with open(PATH + 'asset_struct.json', 'r') as f:
+  with open(asset_to_ag_json_path, 'r') as f:
     data = json.load(f)
 
   for asset in assets:
@@ -265,7 +266,7 @@ def create_asset_struct(ag):
       data.append(new_entry)
       new_entry = {}
 
-  with open(PATH + 'asset_struct.json', 'w') as f:
+  with open(asset_to_ag_json_path, 'w') as f:
     json.dump(data, f, indent=2)
 
 
@@ -282,7 +283,7 @@ def get_struct(client, account=0):
   else:
     struct = create_mcc_struct(client)
   
-  with open(PATH + 'asset_struct.json', 'r') as f:
+  with open(asset_to_ag_json_path, 'r') as f:
     asset_struct = json.load(f)
 
   account_structure = {'name': 'account_structure', 'struct': struct}
@@ -297,7 +298,7 @@ def get_struct(client, account=0):
 def _revert_json():
   """utility function to revert the json file in each run."""
   clean = []
-  with open(PATH + 'asset_struct.json', 'w') as f:
+  with open(asset_to_ag_json_path, 'w') as f:
     json.dump(clean, f, indent=2)
 
 
