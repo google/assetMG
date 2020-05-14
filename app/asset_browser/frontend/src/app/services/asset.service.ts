@@ -56,7 +56,7 @@ export class AssetService {
   }
 
   getAccountIds(): Observable<Account[]> {
-    const endpoint = this.API_SERVER + '/accounts-assets';
+    const endpoint = this.API_SERVER + '/accounts';
     return this.http.get<Account[]>(endpoint);
   }
 

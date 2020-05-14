@@ -5,6 +5,7 @@ import {
   Input,
   OnInit,
   Injectable,
+  OnChanges,
 } from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import {
@@ -55,7 +56,7 @@ export class TreeNode {
   templateUrl: './account-campaigns.component.html',
   styleUrls: ['./account-campaigns.component.css'],
 })
-export class AccountCampaignsComponent {
+export class AccountCampaignsComponent implements OnChanges {
   private _account: Account;
   private _selAdGroups: AssetAdGroups;
   private _isTextAsset: boolean; /** When this is set, additional nodes appear under adgroups */
@@ -97,6 +98,7 @@ export class AccountCampaignsComponent {
       this.treeFlattener
     );
     this._isTextAsset = true;
+    this.dataSource.data = [];
   }
 
   ngOnInit(): void {
@@ -113,6 +115,12 @@ export class AccountCampaignsComponent {
     });
   }
 
+  /** Is called when the accountId changes in the parent component */
+  ngOnChanges() {
+    if (this.account) {
+      this.buildTreeNodes();
+    }
+  }
   getLevel = (node: TreeNode): number => {
     return this.levels.get(node) || 0;
   };
@@ -140,34 +148,36 @@ export class AccountCampaignsComponent {
   /** Constructs a tree structure based on account hierarchy */
   private buildTreeNodes() {
     const tree = [];
-    for (let campaign of this.account.campaigns) {
-      let expand = false;
-      let adgroups = [];
-      for (let ag of campaign.adgroups) {
-        let textNodes = [
-          new TreeNode(AssetConn.HEADLINES, 0, [], nodeType.textPropertyNode),
-          new TreeNode(AssetConn.DESC, 0, [], nodeType.textPropertyNode),
-        ];
-        var adGroupNode = new TreeNode(ag.name, ag.id, textNodes);
-        adgroups.push(adGroupNode);
+    if (this.account) {
+      for (let campaign of this.account.campaigns) {
+        let expand = false;
+        let adgroups = [];
+        for (let ag of campaign.adgroups) {
+          let textNodes = [
+            new TreeNode(AssetConn.HEADLINES, 0, [], nodeType.textPropertyNode),
+            new TreeNode(AssetConn.DESC, 0, [], nodeType.textPropertyNode),
+          ];
+          var adGroupNode = new TreeNode(ag.name, ag.id, textNodes);
+          adgroups.push(adGroupNode);
+        }
+        let campaignNode = new TreeNode(campaign.name, campaign.id, adgroups);
+        tree.push(campaignNode);
       }
-      let campaignNode = new TreeNode(campaign.name, campaign.id, adgroups);
-      tree.push(campaignNode);
     }
     this.dataSource.data = tree;
+    this.checklistSelection.clear();
+    //this.changeDetectorRef.markForCheck();
   }
 
   updateSelectedNodes() {
-    this.buildTreeNodes();
     this.treeControl.collapseAll();
 
     let selAdGroups: Array<TreeNode> = [];
     let unSelAdGroups: Array<TreeNode> = [];
-
-    for (let campNode of this.dataSource.data) {
-      let expandCampaign = false;
-      for (let agNode of campNode.children.value) {
-        if (this._selAdGroups) {
+    if (this._selAdGroups) {
+      for (let campNode of this.dataSource.data) {
+        let expandCampaign = false;
+        for (let agNode of campNode.children.value) {
           // Need to check if the adGroup node will be select (Non-Text Assets)
           // Or one of its children: Headlines or text
           if (
