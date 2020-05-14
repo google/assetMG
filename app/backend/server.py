@@ -22,7 +22,9 @@ client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH + 'googleads.yaml')
 googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH + 'google-ads.yaml')
 
 asset_to_ag_json_path = '../cache/asset_to_ag.json'
+account_struct_json_path = '../cache/account_struct.json'
 
+create_mcc_struct(client)
 
 @server.route('/')
 def upload_frontend():
@@ -70,8 +72,23 @@ def get_specific_accounts_assets(cid):
 
 @server.route('/structure/', methods=['GET'])
 def get_structure():
-  cid = request.args.get('cid')
-  return _build_response(msg=json.dumps(get_struct(client,cid)))
+  cid = int(request.args.get('cid'))
+  try:
+    with open(account_struct_json_path, 'r') as f:
+      accounts_struct = json.load(f)
+
+    if cid:
+      for account in accounts_struct:
+        if account['id'] == cid:
+          return _build_response(msg=json.dumps(account, indent=2))
+
+      return _build_response(msg="cid not found", status=500)
+
+    else:
+      return _build_response(msg=json.dumps(accounts_struct, indent=2))
+
+  except:
+    return _build_response(msg="could not get data", status=500)
 
 
 @server.route('/assets-to-ag/', methods=['GET'])

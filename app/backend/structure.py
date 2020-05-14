@@ -25,7 +25,7 @@ PAGE_SIZE = 500
 # change path to local when exporting from g3/change citc name
 PATH = './'
 asset_to_ag_json_path = '../cache/asset_to_ag.json'
-
+account_struct_json_path = '../cache/account_struct.json'
 
 def create_mcc_struct(client):
   """create the full structure of an mcc account down to asset level."""
@@ -34,6 +34,9 @@ def create_mcc_struct(client):
 
   for account in accounts:
     account['campaigns'] = get_campaigns(client, account['id'])
+
+  with open(account_struct_json_path, 'w') as f:
+    json.dump(accounts, f,indent=2)
 
   return accounts
 
@@ -301,6 +304,8 @@ def _revert_json():
   with open(asset_to_ag_json_path, 'w') as f:
     json.dump(clean, f, indent=2)
 
+  with open(account_struct_json_path, 'w') as f:
+    json.dump(clean, f, indent=2)
 
 # # Uncomment this section for module testing
 # def main(client):
