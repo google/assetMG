@@ -3,7 +3,6 @@ import { Account } from './../model/account';
 import { Asset } from './../model/asset';
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-asset-gallery',

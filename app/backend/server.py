@@ -33,7 +33,7 @@ def get_all_accounts():
   """gets all accounts under the configured MCC. name and id"""
   try:
     accounts = get_accounts(client)
-    return _build_response(msg=json.dumps(accounts), status=20)
+    return _build_response(msg=json.dumps(accounts), status=200)
   except:
     return _build_response(msg="Couldn't get accoutns", status=500)
 
