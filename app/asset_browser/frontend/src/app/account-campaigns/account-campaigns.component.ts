@@ -59,8 +59,7 @@ export class AccountCampaignsComponent {
   private _account: Account;
   private _selAdGroups: AssetAdGroups;
   private _isTextAsset: boolean; /** When this is set, additional nodes appear under adgroups */
-  private _nonTextAssetTree: TreeNode;
-  private _textAssetTree: TreeNode;
+  private _showUpdateBtn: boolean; /** This is only true when an asset is selected */
 
   levels = new Map<TreeNode, number>();
   treeControl: FlatTreeControl<TreeNode>;
@@ -74,6 +73,9 @@ export class AccountCampaignsComponent {
   }
   get account(): Account {
     return this._account;
+  }
+  get showUpdateBtn(): boolean {
+    return this._showUpdateBtn;
   }
 
   constructor(
@@ -94,14 +96,16 @@ export class AccountCampaignsComponent {
       this.treeControl,
       this.treeFlattener
     );
-    this._isTextAsset = false;
+    this._isTextAsset = true;
   }
 
   ngOnInit(): void {
     this.dataService.activeAsset.subscribe((asset) => {
-      asset.type == 'TEXT'
-        ? (this._isTextAsset = true)
-        : (this._isTextAsset = false);
+      if (asset) {
+        asset.type == 'TEXT'
+          ? (this._isTextAsset = true)
+          : (this._isTextAsset = false);
+      }
     });
     this.dataService.activeAssetAdGroups.subscribe((adGroups) => {
       this._selAdGroups = adGroups;

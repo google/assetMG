@@ -6,12 +6,14 @@
       <app-asset-details [account]="account"></app-asset-details>
     </mat-sidenav>
     <mat-sidenav-content class="asset-gallery">
-
+      <app-loader></app-loader>
       <div class = "grid-layout content-margin">
         <app-asset class = "grid-item"
-          *ngFor="let asset of assets" [asset] = "asset">
+        *ngFor="let asset of (assets$ | async)" [asset] = "asset">
+        <!-- *ngFor="let asset of assets" [asset] = "asset"> -->
+
+
         </app-asset>
       </div>
-
     </mat-sidenav-content>
   </mat-sidenav-container>

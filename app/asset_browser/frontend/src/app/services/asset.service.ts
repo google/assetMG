@@ -1,5 +1,14 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpErrorResponse,
+  HttpParams,
+} from '@angular/common/http';
+//import {ErrorObservable} from 'rxjs/Observable/ErrorObservable';
+import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/catch';
+import { BehaviorSubject, Observable } from 'rxjs';
 import {
   Asset,
   TextAsset,
@@ -13,6 +22,8 @@ import { Account } from './../model/account';
   providedIn: 'root',
 })
 export class AssetService {
+  private API_SERVER = 'http://127.0.0.1:5000/';
+
   /** Gets updated when the account changes */
   private _activeAccountIdSource = new BehaviorSubject<number>(null);
   private _allAssetsAdGroups: Asset[] = [];
@@ -25,7 +36,7 @@ export class AssetService {
   activeAsset = this._activeAssetSource.asObservable();
   activeAssetAdGroups = this._activeAssetAdGroupsSource.asObservable();
 
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
   changeAsset(asset: Asset) {
     this._activeAssetSource.next(asset);
@@ -38,176 +49,15 @@ export class AssetService {
   }
 
   /** Todo: This should return the json in all-assets-per-account */
-  getAllAssets(accountId: number) {
-    let jsonReply = {
-      name: 'AppAccount US iOS',
-      id: 7935681790,
-      assets: [
-        {
-          id: 8037638617,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'Loads of fun!',
-        },
-        {
-          id: 8037638620,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'Become a virtual Gardner',
-        },
-        {
-          id: 8048702507,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'second adgroup description',
-        },
-        {
-          id: 8165465601,
-          name: '',
-          type: 'IMAGE',
-          image_url:
-            'https://tpc.googlesyndication.com/simgad/5808115934604257918',
-          file_size: 26750,
-          image_height: 512,
-          image_width: 384,
-        },
-        {
-          id: 8251506199,
-          name: 'banner.png',
-          type: 'IMAGE',
-          image_url:
-            'https://tpc.googlesyndication.com/simgad/15907806694484045218',
-          file_size: 44087,
-          image_height: 300,
-          image_width: 50,
-        },
-        {
-          id: 8251506199,
-          name: 'square.png',
-          type: 'IMAGE',
-          image_url:
-            'https://tpc.googlesyndication.com/simgad/8738953891003445722',
-        },
-        {
-          id: 8278629807,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'Nine Nine!',
-        },
-        {
-          id: 8714917792,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'oh geez',
-        },
-        {
-          id: 8722608519,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'wobalabadabdab',
-        },
-        {
-          id: 8726312186,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'pickleRick',
-        },
-      ],
-    };
-
-    let jsonReply2 = {
-      name: 'AppAccount US Android',
-      id: 9998887897,
-      assets: [
-        {
-          id: 8315727242,
-          name: 'video1',
-          type: 'YOUTUBE_VIDEO',
-          video_id: 'ZRCdORJiUgU',
-          link: 'https://www.youtube.com/watch?v=ZRCdORJiUgU',
-          image_url: 'https://img.youtube.com/vi/ZRCdORJiUgU/1.jpg',
-        },
-        {
-          id: 8319374654,
-          name: 'html5 1',
-          type: 'MEDIA_BUNDLE',
-        },
-        {
-          id: 8528677661,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'Use your brain',
-        },
-        {
-          id: 8528677664,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'Brain it',
-        },
-        {
-          id: 8528677667,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'This is the brain test game',
-        },
-      ],
-    };
-
-    let jsonReply3 = {
-      name: 'AppAccount Canada',
-      id: 1112223344,
-      assets: [
-        {
-          id: 8037638623,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'the best gardening game out there',
-        },
-        {
-          id: 8048065853,
-          name: 'ph.jpg',
-          type: 'IMAGE',
-          image_url:
-            'https://tpc.googlesyndication.com/simgad/14098414386513970705',
-          file_size: 7721,
-          image_height: 250,
-          image_width: 250,
-        },
-        {
-          id: 8048702501,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'second adgroup headline',
-        },
-        {
-          id: 8048702504,
-          name: '',
-          type: 'TEXT',
-          asset_text: 'second adgroup headline 2',
-        },
-      ],
-    };
-    switch (accountId) {
-      case 7935681790:
-        return jsonReply.assets;
-        break;
-      case 9998887897:
-        return jsonReply2.assets;
-        break;
-      case 1112223344:
-        return jsonReply3.assets;
-        break;
-    }
-    return null;
+  getAllAssets(accountId: number): Observable<Asset[]> {
+    const endpoint = this.API_SERVER + '/accounts-assets';
+    let params = new HttpParams().set('cid', accountId?.toString());
+    return this.http.get<Asset[]>(endpoint, { params: params });
   }
 
-  getAccountIds(): Account[] {
-    let jsonReply = [
-      { id: 7935681790, name: 'AppAccount US iOS' },
-      { id: 9998887897, name: 'AppAccount US Android' },
-      { id: 1112223344, name: 'AppAccount Canada' },
-    ];
-    return jsonReply;
+  getAccountIds(): Observable<Account[]> {
+    const endpoint = this.API_SERVER + '/accounts-assets';
+    return this.http.get<Account[]>(endpoint);
   }
 
   /** Todo: Remove comment - This should return the info from structure.json */

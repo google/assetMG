@@ -2,6 +2,8 @@ import { AssetService } from './../services/asset.service';
 import { Account } from './../model/account';
 import { Asset } from './../model/asset';
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-asset-gallery',
@@ -10,14 +12,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AssetGalleryComponent implements OnInit {
   account: Account;
-  assets: Asset[];
+  assets$: Observable<Asset[]>;
 
   constructor(private dataService: AssetService) {}
 
   ngOnInit(): void {
     this.dataService.activeAccount.subscribe((accountId) => {
-      this.account = this.dataService.getAccountHierarchy(accountId);
-      this.assets = <Asset[]>this.dataService.getAllAssets(accountId);
+      if (accountId) {
+        this.account = this.dataService.getAccountHierarchy(accountId);
+        this.assets$ = this.dataService.getAllAssets(accountId);
+      }
     });
   }
 }

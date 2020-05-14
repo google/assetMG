@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 // import { MatSelectChange } from '@angular/material/select';
 // import { MatOption } from '@angular/material/core';
 
@@ -12,12 +12,12 @@ import { AssetService } from './../services/asset.service';
   styleUrls: ['./toolbar.component.css'],
 })
 export class ToolbarComponent implements OnInit {
-  accounts: Account[];
+  accounts$: Observable<Account[]>;
 
   constructor(private dataService: AssetService) {}
 
   ngOnInit(): void {
-    this.accounts = this.dataService.getAccountIds();
+    this.accounts$ = this.dataService.getAccountIds();
   }
 
   accountChanged(event) {

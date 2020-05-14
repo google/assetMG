@@ -1,20 +1,3 @@
-<!-- <div class="mat-typography mat-app-background app-panel"
-     fxLayout="column">
-  <mat-toolbar>
-    <img src="assets/gtech_logo.png" style="width: 40px;">
-    <span>Asset Manager - Prototype</span>
-    <mat-form-field>
-      <mat-label>Account</mat-label>
-      <mat-select>
-      <mat-option *ngFor="let food of foods" [value]="food.value">
-        {{food.viewValue}}
-    </mat-option>
-    </mat-select>
-    </mat-form-field>
-  </mat-toolbar>
-</div> -->
-
-
 <mat-toolbar class="toolbar_class">
     <mat-toolbar-row>
     	<div class="toolbar_logo">
@@ -25,8 +8,8 @@
         <mat-form-field class="account_select">
         <mat-label>Account</mat-label>
         <mat-select>
-          <mat-option (onSelectionChange)="accountChanged($event)" *ngFor="let account of accounts" [value]="account.id">
-              {{account.name}}
+          <mat-option *ngFor="let account of (accounts$ | async)" [value]="account.id"
+            (onSelectionChange)="accountChanged($event)"> {{account.name}}
           </mat-option>
         </mat-select>
         </mat-form-field>
