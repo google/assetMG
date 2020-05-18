@@ -102,14 +102,14 @@ export class AccountCampaignsComponent implements OnChanges {
   }
 
   ngOnInit(): void {
-    this.dataService.activeAsset.subscribe((asset) => {
+    this.dataService.activeAsset$.subscribe((asset) => {
       if (asset) {
         asset.type == 'TEXT'
           ? (this._isTextAsset = true)
           : (this._isTextAsset = false);
       }
     });
-    this.dataService.activeAssetAdGroups.subscribe((adGroups) => {
+    this.dataService.activeAssetAdGroups$.subscribe((adGroups) => {
       this._selAdGroups = adGroups;
       this.updateSelectedNodes();
     });

@@ -25,28 +25,28 @@ export class AssetService {
   private API_SERVER = 'http://127.0.0.1:5000/';
 
   /** Gets updated when the account changes */
-  private _activeAccountIdSource = new BehaviorSubject<number>(null);
-  private _allAssetsAdGroups: Asset[] = [];
+  private _activeAccountId$ = new BehaviorSubject<number>(null);
+  private _assetsToAdGroups: Asset[] = [];
 
   /** Gets updated when an asset is selected */
-  private _activeAssetSource = new BehaviorSubject<Asset>(null);
-  private _activeAssetAdGroupsSource = new BehaviorSubject<AssetAdGroups>(null);
+  private _activeAsset$ = new BehaviorSubject<Asset>(null);
+  private _activeAssetAdGroups$ = new BehaviorSubject<AssetAdGroups>(null);
 
-  activeAccountId = this._activeAccountIdSource.asObservable();
-  activeAsset = this._activeAssetSource.asObservable();
-  activeAssetAdGroups = this._activeAssetAdGroupsSource.asObservable();
+  activeAccountId$ = this._activeAccountId$.asObservable();
+  activeAsset$ = this._activeAsset$.asObservable();
+  activeAssetAdGroups$ = this._activeAssetAdGroups$.asObservable();
 
   constructor(private http: HttpClient) {}
 
   changeAsset(asset: Asset) {
-    this._activeAssetSource.next(asset);
-    this._activeAssetAdGroupsSource.next(this.getActiveAssetAdGroups(asset.id));
+    this._activeAsset$.next(asset);
+    this._activeAssetAdGroups$.next(this.getActiveAssetAdGroups(asset.id));
   }
 
   changeAccount(accountId: number) {
-    this._activeAccountIdSource.next(accountId);
+    this._activeAccountId$.next(accountId);
     //this._activeAccount = this.getAccountHierarchy(accountId);
-    this._allAssetsAdGroups = this.getAssetsToAdGroups();
+    this._assetsToAdGroups = this.getAssetsToAdGroups();
   }
 
   /** Todo: This should return the json in all-assets-per-account */
@@ -306,7 +306,7 @@ export class AssetService {
 
   getActiveAssetAdGroups(assetId: number) {
     let assetAdGroups: AssetAdGroups = new Map();
-    this._allAssetsAdGroups.filter(function (asset) {
+    this._assetsToAdGroups.filter(function (asset) {
       if (asset.id == assetId) {
         let assetConnection = AssetConn.ADGROUP;
         if (asset.type == AssetType.TEXT) {

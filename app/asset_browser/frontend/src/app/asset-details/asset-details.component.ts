@@ -25,7 +25,7 @@ export class AssetDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.dataService.activeAsset.subscribe((asset) => {
+    this.dataService.activeAsset$.subscribe((asset) => {
       this.activeAsset = asset;
     });
   }
