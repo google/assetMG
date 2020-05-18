@@ -32,7 +32,7 @@ export class AssetService {
   private _activeAssetSource = new BehaviorSubject<Asset>(null);
   private _activeAssetAdGroupsSource = new BehaviorSubject<AssetAdGroups>(null);
 
-  activeAccount = this._activeAccountIdSource.asObservable();
+  activeAccountId = this._activeAccountIdSource.asObservable();
   activeAsset = this._activeAssetSource.asObservable();
   activeAssetAdGroups = this._activeAssetAdGroupsSource.asObservable();
 
@@ -45,6 +45,7 @@ export class AssetService {
 
   changeAccount(accountId: number) {
     this._activeAccountIdSource.next(accountId);
+    //this._activeAccount = this.getAccountHierarchy(accountId);
     this._allAssetsAdGroups = this.getAssetsToAdGroups();
   }
 
@@ -60,8 +61,12 @@ export class AssetService {
     return this.http.get<Account[]>(endpoint);
   }
 
-  /** Todo: Remove comment - This should return the info from structure.json */
-  getAccountHierarchy(accountId: number) {
+  // getAccountHierarchy(accountId: number): Observable<Account> {
+  //   const endpoint = this.API_SERVER + '/structure';
+  //   let params = new HttpParams().set('cid', accountId?.toString());
+  //   return this.http.get<Account>(endpoint, { params: params });
+  // }
+  getAccountHierarchy(accountId: number): Account {
     let jsonReply = {
       name: 'Account1',
       id: 7935681790,
