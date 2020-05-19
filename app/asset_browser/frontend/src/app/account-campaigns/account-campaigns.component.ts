@@ -122,6 +122,8 @@ export class AccountCampaignsComponent implements OnChanges {
   /** Is called when the accountId changes in the parent component */
   ngOnChanges() {
     if (this.account) {
+      this._showUpdateBtn = false;
+      this._isTextAsset = true;
       this.buildTreeNodes();
     }
   }
