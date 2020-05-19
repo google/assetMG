@@ -1,3 +1,5 @@
+import yaml
+
 VERSION = 'v201809'
 
 class Service_Class:
@@ -25,3 +27,11 @@ class Service_Class:
   @staticmethod
   def get_asset_service(client):
     return client.GetService('AssetService', version=VERSION)
+
+  @staticmethod
+  def reset_cid(client):
+    with open('../config/googleads.yaml', 'r') as f:
+      config = yaml.load(f, Loader=yaml.FullLoader)
+    
+    cid = config['adwords']['client_customer_id']
+    client.SetClientCustomerId(cid)
