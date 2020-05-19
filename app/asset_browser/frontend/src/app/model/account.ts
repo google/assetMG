@@ -6,7 +6,7 @@ interface AdGroups {
 
 interface Campaigns {
   id: number;
-  name: string;
+  campaign_name: string;
   adgroups?: AdGroups[];
 }
 

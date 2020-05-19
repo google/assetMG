@@ -43,7 +43,7 @@ def create_mcc_struct(client):
 
 def create_account_struct(client,account):
   _revert_json()
-   return get_campaigns(client,account)
+  return get_campaigns(client,account)
 
 
 def get_accounts(client):

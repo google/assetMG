@@ -26,12 +26,16 @@ export class AssetService {
 
   /** Gets updated when the account changes */
   private _activeAccountId$ = new BehaviorSubject<number>(null);
+  private _activeAccount$ = new BehaviorSubject<Account>(null);
+  private _allAssets$ = new BehaviorSubject<Asset[]>(null);
   private _assetsToAdGroups: Asset[] = [];
 
   /** Gets updated when an asset is selected */
   private _activeAsset$ = new BehaviorSubject<Asset>(null);
   private _activeAssetAdGroups$ = new BehaviorSubject<AssetAdGroups>(null);
 
+  allAssets$ = this._allAssets$.asObservable();
+  activeAccount$ = this._activeAccount$.asObservable();
   activeAccountId$ = this._activeAccountId$.asObservable();
   activeAsset$ = this._activeAsset$.asObservable();
   activeAssetAdGroups$ = this._activeAssetAdGroups$.asObservable();
@@ -45,63 +49,36 @@ export class AssetService {
 
   changeAccount(accountId: number) {
     this._activeAccountId$.next(accountId);
-    //this._activeAccount = this.getAccountHierarchy(accountId);
+    this.getAllAssets(accountId);
+    this.getAccountHierarchy(accountId);
     this._assetsToAdGroups = this.getAssetsToAdGroups();
   }
 
-  /** Todo: This should return the json in all-assets-per-account */
-  getAllAssets(accountId: number): Observable<Asset[]> {
+  private getAllAssets(accountId: number) {
+    // Reset the asset observable till the http request is made
+    this._allAssets$.next(null);
+    // Call the API and update the asset observable
     const endpoint = this.API_SERVER + '/accounts-assets';
     let params = new HttpParams().set('cid', accountId?.toString());
-    return this.http.get<Asset[]>(endpoint, { params: params });
+    let subscription = this.http
+      .get<Asset[]>(endpoint, { params: params })
+      .subscribe((assets) => {
+        this._allAssets$.next(assets);
+        subscription.unsubscribe();
+      });
   }
 
-  getAccountIds(): Observable<Account[]> {
-    const endpoint = this.API_SERVER + '/accounts';
-    return this.http.get<Account[]>(endpoint);
-  }
-
-  // getAccountHierarchy(accountId: number): Observable<Account> {
-  //   const endpoint = this.API_SERVER + '/structure';
-  //   let params = new HttpParams().set('cid', accountId?.toString());
-  //   return this.http.get<Account>(endpoint, { params: params });
-  // }
-  getAccountHierarchy(accountId: number): Account {
-    let jsonReply = {
-      name: 'Account1',
-      id: 7935681790,
-      campaigns: [
-        {
-          name: 'UAC Test - Gardenscapes',
-          id: 9505034345,
-          adgroups: [
-            {
-              name: 'Ad group 1',
-              id: 95186899405,
-            },
-            {
-              name: 'Ad group 2',
-              id: 96689486386,
-            },
-          ],
-        },
-        {
-          name: 'Another UAC Campaign - Test',
-          id: 9505034344,
-          adgroups: [
-            {
-              name: 'This is an AdGroup',
-              id: 97909190375,
-            },
-            {
-              name: 'This is another adgroup',
-              id: 97982663179,
-            },
-          ],
-        },
-      ],
-    };
-    return jsonReply;
+  getAccountHierarchy(accountId: number) {
+    const endpoint = this.API_SERVER + '/structure';
+    let params = new HttpParams().set('cid', accountId?.toString());
+    console.log(endpoint + '?cid=' + accountId);
+    let subscription = this.http
+      .get<Account>(endpoint, { params: params })
+      .subscribe((account) => {
+        this._activeAccount$.next(account);
+        console.log(JSON.stringify(account));
+        subscription.unsubscribe();
+      });
   }
 
   /** Loads all the asset to adgroups mapping */
@@ -302,6 +279,11 @@ export class AssetService {
       },
     ];
     return jsonReply;
+  }
+  getAccountIds(): Observable<Account[]> {
+    const endpoint = this.API_SERVER + '/accounts';
+    console.log(endpoint);
+    return this.http.get<Account[]>(endpoint);
   }
 
   getActiveAssetAdGroups(assetId: number) {

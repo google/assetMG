@@ -10,17 +10,13 @@ import { Observable } from 'rxjs';
   styleUrls: ['./asset-gallery.component.css'],
 })
 export class AssetGalleryComponent implements OnInit {
-  account: Account;
+  account$: Observable<Account>;
   assets$: Observable<Asset[]>;
 
   constructor(private dataService: AssetService) {}
 
   ngOnInit(): void {
-    this.dataService.activeAccountId$.subscribe((accountId) => {
-      if (accountId) {
-        this.account = this.dataService.getAccountHierarchy(accountId);
-        this.assets$ = this.dataService.getAllAssets(accountId);
-      }
-    });
+    this.assets$ = this.dataService.allAssets$;
+    this.account$ = this.dataService.activeAccount$;
   }
 }

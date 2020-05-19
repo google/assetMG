@@ -3,16 +3,13 @@
   <mat-sidenav-container class="asset-gallery-container">
     <mat-sidenav class="asset-details-container mat-elevation-z10"
       position="end" mode="side" opened>
-      <app-asset-details [account]="account"></app-asset-details>
+      <app-asset-details [account]="(account$ | async)"></app-asset-details>
     </mat-sidenav>
     <mat-sidenav-content class="asset-gallery">
       <app-loader></app-loader>
       <div class = "grid-layout content-margin">
         <app-asset class = "grid-item"
         *ngFor="let asset of (assets$ | async)" [asset] = "asset">
-        <!-- *ngFor="let asset of assets" [asset] = "asset"> -->
-
-
         </app-asset>
       </div>
     </mat-sidenav-content>

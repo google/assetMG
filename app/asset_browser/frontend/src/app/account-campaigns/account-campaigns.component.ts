@@ -150,7 +150,6 @@ export class AccountCampaignsComponent implements OnChanges {
     const tree = [];
     if (this.account) {
       for (let campaign of this.account.campaigns) {
-        let expand = false;
         let adgroups = [];
         for (let ag of campaign.adgroups) {
           let textNodes = [
@@ -160,7 +159,11 @@ export class AccountCampaignsComponent implements OnChanges {
           var adGroupNode = new TreeNode(ag.name, ag.id, textNodes);
           adgroups.push(adGroupNode);
         }
-        let campaignNode = new TreeNode(campaign.name, campaign.id, adgroups);
+        let campaignNode = new TreeNode(
+          campaign.campaign_name,
+          campaign.id,
+          adgroups
+        );
         tree.push(campaignNode);
       }
     }
