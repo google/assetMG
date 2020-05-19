@@ -38,6 +38,7 @@ def create_mcc_struct(client):
   with open(account_struct_json_path, 'w') as f:
     json.dump(accounts, f,indent=2)
 
+  Service_Class.reset_cid(client)
   return accounts
 
 
@@ -294,6 +295,8 @@ def get_struct(client, account=0):
 
   total_structure.append(account_structure)
   total_structure.append(asset_structure)
+
+  Service_Class.reset_cid(client)
 
   return total_structure
 
