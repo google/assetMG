@@ -102,11 +102,15 @@ export class AccountCampaignsComponent implements OnChanges {
   }
 
   ngOnInit(): void {
+    this._showUpdateBtn = false;
     this.dataService.activeAsset$.subscribe((asset) => {
       if (asset) {
         asset.type == 'TEXT'
           ? (this._isTextAsset = true)
           : (this._isTextAsset = false);
+        this._showUpdateBtn = true;
+      } else {
+        this._showUpdateBtn = false;
       }
     });
     this.dataService.activeAssetAdGroups$.subscribe((adGroups) => {
@@ -181,39 +185,50 @@ export class AccountCampaignsComponent implements OnChanges {
       for (let campNode of this.dataSource.data) {
         let expandCampaign = false;
         for (let agNode of campNode.children.value) {
+          let hasHeadlineConn,
+            hasDescConn,
+            hasAdGroupConn = false;
+          if (this._isTextAsset) {
+            hasHeadlineConn = this.hasAdGroupConnection(
+              AssetConn.HEADLINES,
+              agNode.getId()
+            );
+            hasDescConn = this.hasAdGroupConnection(
+              AssetConn.DESC,
+              agNode.getId()
+            );
+          } else {
+            hasAdGroupConn = this.hasAdGroupConnection(
+              AssetConn.ADGROUP,
+              agNode.getId()
+            );
+          }
           // Need to check if the adGroup node will be select (Non-Text Assets)
           // Or one of its children: Headlines or text
-          if (
-            !this._isTextAsset &&
-            this.hasAdGroupConnection(AssetConn.ADGROUP, agNode.getId())
-          ) {
+          if (!this._isTextAsset && hasAdGroupConn) {
             expandCampaign = true;
             selAdGroups.push(agNode);
             for (let node of agNode.children.value) {
               selAdGroups.push(node);
             }
-          } else if (
-            this._isTextAsset &&
-            this.hasAdGroupConnection(AssetConn.HEADLINES, agNode.getId())
-          ) {
+          } else if (this._isTextAsset && (hasHeadlineConn || hasDescConn)) {
             expandCampaign = true;
             this.treeControl.expand(agNode);
-            selAdGroups.push(
-              agNode.children.value.find(
-                (node) => node.getName() == AssetConn.HEADLINES
-              )
-            );
-          } else if (
-            this._isTextAsset &&
-            this.hasAdGroupConnection(AssetConn.DESC, agNode.getId())
-          ) {
-            expandCampaign = true;
-            this.treeControl.expand(agNode);
-            selAdGroups.push(
-              agNode.children.value.find(
-                (node) => node.getName() == AssetConn.DESC
-              )
-            );
+
+            if (hasHeadlineConn) {
+              selAdGroups.push(
+                agNode.children.value.find(
+                  (node) => node.getName() == AssetConn.HEADLINES
+                )
+              );
+            }
+            if (hasDescConn) {
+              selAdGroups.push(
+                agNode.children.value.find(
+                  (node) => node.getName() == AssetConn.DESC
+                )
+              );
+            }
           } else {
             // Unselect the adGroup and it's children (Text properties)
             unSelAdGroups.push(agNode);
