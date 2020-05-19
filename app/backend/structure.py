@@ -39,7 +39,7 @@ def create_mcc_struct(client):
 
 def create_account_struct(client,account):
   _revert_json()
-  return get_campaigns(client,account)
+   return get_campaigns(client,account)
 
 
 def get_accounts(client):
@@ -271,7 +271,7 @@ def create_asset_struct(ag):
 
 # Central func to create both structure json. both account and asset.
 def get_struct(client, account=0):
-  """ This function creates a json with 2 structures - account strcut and asset-to-ag struct. 
+  """ This function creates a json with 2 structures - account strcut and asset-to-ag struct.
   if an accounts id is given, the account-struct is for that account only.
   if not, its for the whole configured MCC.
   """
@@ -281,17 +281,12 @@ def get_struct(client, account=0):
     struct = create_account_struct(client,account)
   else:
     struct = create_mcc_struct(client)
-  
+
   with open(PATH + 'asset_struct.json', 'r') as f:
     asset_struct = json.load(f)
 
-  account_structure = {'name': 'account_structure', 'struct': struct}
-  asset_structure = {'name': 'asset_structure', 'struct': asset_struct}
-
-  total_structure.append(account_structure)
-  total_structure.append(asset_structure)
-
-  return total_structure
+  structure = {'account_structure': struct, 'asset_structure': asset_struct}
+  return structure
 
 
 def _revert_json():
