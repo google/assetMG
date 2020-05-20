@@ -291,6 +291,7 @@ def get_struct(client, account=0):
     asset_struct = json.load(f)
 
   structure = {'account_structure': struct, 'asset_structure': asset_struct}
+  Service_Class.reset_cid(client)
   return structure
 
 

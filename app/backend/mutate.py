@@ -26,8 +26,12 @@ def mutate_ad(client,
 
   client.SetClientCustomerId(account)
 
-  asset_type = asset['type']
-
+  asset_type_map = {
+      'TEXT': 'TextAsset',
+      'IMAGE': 'ImageAsset',
+      'YOUTUBE_VIDEO': 'YouTubeVideoAsset',
+      'MEDIA_BUNDLE': 'MediaBundleAsset'
+  }
   property_map = {
       'TEXT': text_type_to_assign,
       'IMAGE': 'images',
@@ -35,7 +39,8 @@ def mutate_ad(client,
       'MEDIA_BUNDLE': 'html5MediaBundles'
   }
 
-  ad_property = property_map[asset_type]
+  asset_type = asset_type_map[asset['type']]
+  ad_property = property_map[asset['type']]
 
   # ad id is required to add/remove assets from the adgroup
   ad_id = _get_ad_id(client, adgroup)

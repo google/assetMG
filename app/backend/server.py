@@ -120,13 +120,14 @@ def mutate():
   failed = []
 
   data = request.get_json(force=True)
-  for action in data:
-    account = data['account']
-    adgroup = data['adgroup']
-    action = data['action']
-    asset = data['asset']
+
+  for item in data:
+    account = item['account']
+    adgroup = item['adgroup']
+    action = item['action']
+    asset = item['asset']
     if 'text_type_to_assign' in data:
-      text_type_to_assign = data['text_type_to_assign']
+      text_type_to_assign = item['text_type_to_assign']
     else:
       text_type_to_assign = 'descriptions'
 
