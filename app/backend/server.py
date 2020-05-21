@@ -14,6 +14,7 @@ from upload_asset import upload
 
 server = Flask(__name__)
 CORS(server)
+server.config['CORS_HEADERS'] = 'Content-Type'
 
 setup.set_api_configs()
 

@@ -1,11 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  HttpClient,
-  HttpHeaders,
-  HttpErrorResponse,
-  HttpParams,
-} from '@angular/common/http';
-//import {ErrorObservable} from 'rxjs/Observable/ErrorObservable';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/catch';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -15,6 +9,8 @@ import {
   AssetAdGroups,
   AssetConn,
   AssetType,
+  MutateAction,
+  MutateRecord,
 } from './../model/asset';
 import { Account } from './../model/account';
 
@@ -22,7 +18,7 @@ import { Account } from './../model/account';
   providedIn: 'root',
 })
 export class AssetService {
-  private API_SERVER = 'http://127.0.0.1:5000/';
+  private API_SERVER = 'http://127.0.0.1:5000';
 
   /** Gets updated when the account changes */
   private _activeAccountId$ = new BehaviorSubject<number>(null);
@@ -46,10 +42,10 @@ export class AssetService {
     // Reset the asset observable till the http request is made
     this._allAssets$.next(null);
     // Call the API and update the asset observable
-    const endpoint = this.API_SERVER + '/accounts-assets';
-    let params = new HttpParams().set('cid', accountId?.toString());
+    const endpoint = this.API_SERVER + '/accounts-assets/';
+    //let params = new HttpParams().set('cid', accountId?.toString());
     let subscription = this.http
-      .get<Asset[]>(endpoint, { params: params })
+      .get<Asset[]>(endpoint, { params: { cid: accountId?.toString() } })
       .subscribe((assets) => {
         this._allAssets$.next(assets);
         subscription.unsubscribe();
@@ -57,10 +53,10 @@ export class AssetService {
   }
 
   private getAccountHierarchy(accountId: number) {
-    const endpoint = this.API_SERVER + '/structure';
-    let params = new HttpParams().set('cid', accountId?.toString());
+    const endpoint = this.API_SERVER + '/structure/';
+    //let params = new HttpParams().set('cid', accountId?.toString());
     let subscription = this.http
-      .get<Account>(endpoint, { params: params })
+      .get<Account>(endpoint, { params: { cid: accountId?.toString() } })
       .subscribe((account) => {
         this._activeAccount$.next(account);
         subscription.unsubscribe();
@@ -69,7 +65,7 @@ export class AssetService {
 
   /** Loads all the asset to adgroups mapping */
   private getAssetsToAdGroups() {
-    const endpoint = this.API_SERVER + '/assets-to-ag';
+    const endpoint = this.API_SERVER + '/assets-to-ag/';
     let subscritpion = this.http.get<Asset[]>(endpoint).subscribe((assets) => {
       this._assetsToAdGroups = assets;
       subscritpion.unsubscribe();
@@ -77,7 +73,7 @@ export class AssetService {
   }
 
   getAccountIds(): Observable<Account[]> {
-    const endpoint = this.API_SERVER + '/accounts';
+    const endpoint = this.API_SERVER + '/accounts/';
     return this.http.get<Account[]>(endpoint);
   }
 
@@ -102,8 +98,8 @@ export class AssetService {
       if (asset.id == assetId) {
         let assetConnection = AssetConn.ADGROUP;
         if (asset.type == AssetType.TEXT) {
-          (<TextAsset>asset).text_type.toUpperCase() ==
-          AssetConn.HEADLINES.toUpperCase()
+          (<TextAsset>asset).text_type.toLowerCase() ==
+          AssetConn.HEADLINES.toLowerCase()
             ? (assetConnection = AssetConn.HEADLINES)
             : (assetConnection = AssetConn.DESC);
         }
@@ -111,5 +107,10 @@ export class AssetService {
       }
     });
     return assetAdGroups;
+  }
+
+  updateAsset(updateArray: MutateRecord[]) {
+    const endpoint = this.API_SERVER + '/mutate-ad/';
+    return this.http.post(endpoint, updateArray);
   }
 }

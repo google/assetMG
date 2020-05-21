@@ -13,6 +13,11 @@ export enum AssetConn {
   DESC = 'Descriptions',
 }
 
+export enum MutateAction {
+  ADD = 'ADD',
+  REMOVE = 'REMOVE',
+}
+
 export type AssetAdGroups = Map<AssetConn, number[]>;
 
 interface AssetBase {
@@ -41,5 +46,18 @@ export interface VideoAsset extends AssetBase {
 }
 
 export interface HtmlAsset extends AssetBase {}
-
 export type Asset = ImgAsset | TextAsset | VideoAsset | HtmlAsset;
+export interface MutateAsset {
+  id: number;
+  type: AssetType;
+  asset_text?: string; // for TEXT
+  text_type_to_assign?: string; // for TEXT - headlines or description
+  video_id?: string; // for VIDEO
+}
+
+export interface MutateRecord {
+  account: number;
+  adgroup: number;
+  action: MutateAction;
+  asset: MutateAsset;
+}

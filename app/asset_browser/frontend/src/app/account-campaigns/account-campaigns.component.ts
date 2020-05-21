@@ -1,33 +1,32 @@
-import { AssetAdGroups, AssetConn } from './../model/asset';
-import {
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnInit,
-  Injectable,
-  OnChanges,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges } from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import {
   MatTreeFlattener,
   MatTreeFlatDataSource,
 } from '@angular/material/tree';
-import {
-  CollectionViewer,
-  SelectionChange,
-  SelectionModel,
-} from '@angular/cdk/collections';
+import { SelectionModel } from '@angular/cdk/collections';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Observable } from 'rxjs/Observable';
-import { merge } from 'rxjs/observable/merge';
-import { map } from 'rxjs/operators/map';
 import { Account } from './../model/account';
+import {
+  AssetAdGroups,
+  AssetConn,
+  Asset,
+  MutateAction,
+  MutateRecord,
+  AssetType,
+  MutateAsset,
+  TextAsset,
+  VideoAsset,
+} from './../model/asset';
 import { AssetService } from './../services/asset.service';
 
 enum nodeType {
   entityNode,
   textPropertyNode,
 }
+
+type MutateMap = Map<number, AssetConn>;
+
 /* The node deifinition that will be used in the tree */
 export class TreeNode {
   children: BehaviorSubject<TreeNode[]>;
@@ -58,7 +57,10 @@ export class TreeNode {
 })
 export class AccountCampaignsComponent implements OnChanges {
   private _account: Account;
+  private _asset: Asset;
   private _selAdGroups: AssetAdGroups;
+  private _mutateAdd: MutateMap = new Map();
+  private _mutateRemove: MutateMap = new Map();
   private _isTextAsset: boolean; /** When this is set, additional nodes appear under adgroups */
   private _showUpdateBtn: boolean; /** This is only true when an asset is selected */
 
@@ -102,8 +104,11 @@ export class AccountCampaignsComponent implements OnChanges {
   }
 
   ngOnInit(): void {
+    this._asset = null;
     this._showUpdateBtn = false;
+
     this.dataService.activeAsset$.subscribe((asset) => {
+      this._asset = asset;
       if (asset) {
         asset.type == 'TEXT'
           ? (this._isTextAsset = true)
@@ -296,5 +301,88 @@ export class AccountCampaignsComponent implements OnChanges {
       ? this.checklistSelection.select(...descendants, node)
       : this.checklistSelection.deselect(...descendants, node);
     this.changeDetectorRef.markForCheck();
+
+    this.trackChanges(node);
+  }
+
+  /** Update the mutate map to keep track of user's changes */
+  trackChanges(node: TreeNode): void {
+    let connection = AssetConn.ADGROUP;
+    if (node.type == nodeType.textPropertyNode) {
+      connection = <AssetConn>node.getName();
+    }
+    if (this.checklistSelection.isSelected(node)) {
+      this.updateMutateMap(MutateAction.ADD, node.getId(), connection);
+    } else {
+      this.updateMutateMap(MutateAction.REMOVE, node.getId(), connection);
+    }
+  }
+
+  private updateMutateMap(
+    action: MutateAction,
+    agId: number,
+    connection: AssetConn
+  ): void {
+    // Update the map as needed - if it was already added to a map it needs
+    // to be deleted (double toggle) or it should be added for changes to take effect
+    if (action == MutateAction.ADD) {
+      this._mutateRemove.has(agId)
+        ? this._mutateRemove.delete(agId)
+        : this._mutateAdd.set(agId, connection);
+    } else {
+      this._mutateAdd.has(agId)
+        ? this._mutateAdd.delete(agId)
+        : this._mutateRemove.set(agId, connection);
+    }
+  }
+  updateAsset() {
+    let mutateRecords: MutateRecord[] = [];
+    console.log('Add: ');
+    this._mutateAdd.forEach((connection: AssetConn, agId: number) => {
+      let assetObj = this.createMutateAssetObj(connection);
+      let mutateObj: MutateRecord = {
+        account: this._account.id,
+        adgroup: agId,
+        action: MutateAction.ADD,
+        asset: assetObj,
+      };
+      mutateRecords.push(mutateObj);
+      console.log(agId, connection);
+    });
+    console.log('Remove: ');
+    this._mutateRemove.forEach((connection: AssetConn, agId: number) => {
+      let assetObj = this.createMutateAssetObj(connection);
+      let mutateObj: MutateRecord = {
+        account: this._account.id,
+        adgroup: agId,
+        action: MutateAction.REMOVE,
+        asset: assetObj,
+      };
+      mutateRecords.push(mutateObj);
+      console.log(agId, connection);
+    });
+    console.log('******');
+
+    this.dataService.updateAsset(mutateRecords).subscribe((response) => {});
+    // When update succeeds, clear the maps
+    this._mutateAdd.clear();
+    this._mutateRemove.clear();
+  }
+
+  createMutateAssetObj(connection: AssetConn) {
+    let assetObj: MutateAsset = {
+      id: this._asset.id,
+      type: <AssetType>this._asset.type,
+    };
+    switch (this._asset.type) {
+      case AssetType.TEXT:
+        assetObj.asset_text = connection.toLowerCase();
+        assetObj.text_type_to_assign = (this._asset as TextAsset).text_type;
+        break;
+      case AssetType.VIDEO:
+        assetObj.video_id = (this._asset as VideoAsset).video_id;
+        break;
+    }
+    return assetObj;
   }
 }
