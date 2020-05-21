@@ -127,7 +127,7 @@ def mutate():
     adgroup = item['adgroup']
     action = item['action']
     asset = item['asset']
-    if 'text_type_to_assign' in data:
+    if 'text_type_to_assign' in item:
       text_type_to_assign = item['text_type_to_assign']
     else:
       text_type_to_assign = 'descriptions'

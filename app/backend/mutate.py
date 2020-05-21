@@ -96,6 +96,7 @@ def mutate_ad(client,
   }]
 
   ad_service.mutate(operations)
+  Service_Class.reset_cid(client)
 
 
 def _get_ad_id(client, adgroup):
