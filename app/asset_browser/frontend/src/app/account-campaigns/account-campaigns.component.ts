@@ -19,13 +19,18 @@ import {
   VideoAsset,
 } from './../model/asset';
 import { AssetService } from './../services/asset.service';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+
+const HEADLINE_PREFIX = 'H-';
+const DESC_PREFIX = 'D-';
 
 enum nodeType {
-  entityNode,
+  campNode,
+  agNode,
   textPropertyNode,
 }
 
-type MutateMap = Map<number, AssetConn>;
+type MutateMap = Map<string, AssetConn>;
 
 /* The node deifinition that will be used in the tree */
 export class TreeNode {
@@ -46,7 +51,7 @@ export class TreeNode {
     type?: nodeType
   ) {
     this.children = new BehaviorSubject(children === undefined ? [] : children);
-    this.type = type === undefined ? nodeType.entityNode : type;
+    this.type = type === undefined ? nodeType.campNode : type;
   }
 }
 
@@ -139,7 +144,8 @@ export class AccountCampaignsComponent implements OnChanges {
   isExpandable = (node: TreeNode): boolean => {
     return (
       node.children.value.length > 0 &&
-      (this._isTextAsset || node.children.value[0].type === nodeType.entityNode)
+      (this._isTextAsset ||
+        node.children.value[0].type !== nodeType.textPropertyNode)
     );
   };
 
@@ -172,13 +178,19 @@ export class AccountCampaignsComponent implements OnChanges {
             ),
             new TreeNode(AssetConn.DESC, ag.id, [], nodeType.textPropertyNode),
           ];
-          var adGroupNode = new TreeNode(ag.name, ag.id, textNodes);
+          var adGroupNode = new TreeNode(
+            ag.name,
+            ag.id,
+            textNodes,
+            nodeType.agNode
+          );
           adgroups.push(adGroupNode);
         }
         let campaignNode = new TreeNode(
           campaign.campaign_name,
           campaign.id,
-          adgroups
+          adgroups,
+          nodeType.campNode
         );
         tree.push(campaignNode);
       }
@@ -299,24 +311,40 @@ export class AccountCampaignsComponent implements OnChanges {
   }
 
   /** Toggle the entity selection. Select/deselect all the descendants node */
-  nodeSelectionToggle(node: TreeNode): void {
+  nodeSelectionToggle(node: TreeNode, checked: boolean): void {
+    this.trackChanges(node, checked);
     this.checklistSelection.toggle(node);
     const descendants = this.treeControl.getDescendants(node);
     this.checklistSelection.isSelected(node)
       ? this.checklistSelection.select(...descendants, node)
       : this.checklistSelection.deselect(...descendants, node);
     this.changeDetectorRef.markForCheck();
-
-    this.trackChanges(node);
   }
 
   /** Update the mutate map to keep track of user's changes */
-  trackChanges(node: TreeNode): void {
+  trackChanges(node: TreeNode, checked: boolean): void {
+    // If this is a campaign node (or adGroup for text asset) then we need to
+    // tranverse its child nodes
+    if (
+      node.type === nodeType.campNode ||
+      (node.type === nodeType.agNode && this._isTextAsset)
+    ) {
+      for (let childNode of node.children.value) {
+        this.trackChanges(childNode, checked);
+      }
+      return;
+    }
+
+    // When traversing the tree - compare the old state to the new state
+    // and skip if they are the same
+    if (checked === this.checklistSelection.isSelected(node)) return;
+
+    // This is a child node - so track changes on this level
     let connection = AssetConn.ADGROUP;
     if (node.type == nodeType.textPropertyNode) {
       connection = <AssetConn>node.getName();
     }
-    if (this.checklistSelection.isSelected(node)) {
+    if (!this.checklistSelection.isSelected(node)) {
       this.updateMutateMap(MutateAction.ADD, node.getId(), connection);
     } else {
       this.updateMutateMap(MutateAction.REMOVE, node.getId(), connection);
@@ -325,9 +353,14 @@ export class AccountCampaignsComponent implements OnChanges {
 
   private updateMutateMap(
     action: MutateAction,
-    agId: number,
+    adgroupId: number,
     connection: AssetConn
   ): void {
+    // Add a prefix to mark Headlines and Descriptions in Text assets adgroups
+    let agId = adgroupId.toString();
+    if (connection == AssetConn.HEADLINES) agId = HEADLINE_PREFIX + agId;
+    else if (connection == AssetConn.DESC) agId = DESC_PREFIX + agId;
+
     // Update the map as needed - if it was already added to a map it needs
     // to be deleted (double toggle) or it should be added for changes to take effect
     if (action == MutateAction.ADD) {
@@ -345,11 +378,14 @@ export class AccountCampaignsComponent implements OnChanges {
   updateAsset() {
     let mutateRecords: MutateRecord[] = [];
     console.log('Add: ');
-    this._mutateAdd.forEach((connection: AssetConn, agId: number) => {
+    this._mutateAdd.forEach((connection: AssetConn, agId: string) => {
+      // Remove any prefixs from the ag_id if they exist
+      let adgroupId = this.removePrefix(agId);
+
       let assetObj = this.createMutateAssetObj(connection);
       let mutateObj: MutateRecord = {
         account: this._account.id,
-        adgroup: agId,
+        adgroup: adgroupId,
         action: MutateAction.ADD,
         asset: assetObj,
       };
@@ -357,11 +393,12 @@ export class AccountCampaignsComponent implements OnChanges {
       console.log(agId, connection);
     });
     console.log('Remove: ');
-    this._mutateRemove.forEach((connection: AssetConn, agId: number) => {
+    this._mutateRemove.forEach((connection: AssetConn, agId: string) => {
+      let adgroupId = this.removePrefix(agId);
       let assetObj = this.createMutateAssetObj(connection);
       let mutateObj: MutateRecord = {
         account: this._account.id,
-        adgroup: agId,
+        adgroup: adgroupId,
         action: MutateAction.REMOVE,
         asset: assetObj,
       };
@@ -369,13 +406,19 @@ export class AccountCampaignsComponent implements OnChanges {
       console.log(agId, connection);
     });
     console.log('******');
-    console.log(JSON.stringify(mutateRecords));
+    //console.log(JSON.stringify(mutateRecords));
     this.dataService.updateAsset(mutateRecords).subscribe((response) => {});
     // When update succeeds, clear the maps
     this._mutateAdd.clear();
     this._mutateRemove.clear();
   }
 
+  /** Removes the prefix from the adgroup id and returns an int */
+  removePrefix(adGroupStr: string) {
+    adGroupStr = adGroupStr.replace(HEADLINE_PREFIX, '');
+    adGroupStr = adGroupStr.replace(DESC_PREFIX, '');
+    return Number(adGroupStr);
+  }
   /** Helper function that creates the appropriate asset object */
   createMutateAssetObj(connection: AssetConn) {
     let assetObj: MutateAsset = {
