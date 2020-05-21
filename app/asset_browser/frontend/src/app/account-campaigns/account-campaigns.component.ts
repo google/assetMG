@@ -164,8 +164,13 @@ export class AccountCampaignsComponent implements OnChanges {
         let adgroups = [];
         for (let ag of campaign.adgroups) {
           let textNodes = [
-            new TreeNode(AssetConn.HEADLINES, 0, [], nodeType.textPropertyNode),
-            new TreeNode(AssetConn.DESC, 0, [], nodeType.textPropertyNode),
+            new TreeNode(
+              AssetConn.HEADLINES,
+              ag.id,
+              [],
+              nodeType.textPropertyNode
+            ),
+            new TreeNode(AssetConn.DESC, ag.id, [], nodeType.textPropertyNode),
           ];
           var adGroupNode = new TreeNode(ag.name, ag.id, textNodes);
           adgroups.push(adGroupNode);
@@ -335,6 +340,8 @@ export class AccountCampaignsComponent implements OnChanges {
         : this._mutateRemove.set(agId, connection);
     }
   }
+
+  /** Triggered upon clicking the update button */
   updateAsset() {
     let mutateRecords: MutateRecord[] = [];
     console.log('Add: ');
@@ -362,13 +369,14 @@ export class AccountCampaignsComponent implements OnChanges {
       console.log(agId, connection);
     });
     console.log('******');
-
+    console.log(JSON.stringify(mutateRecords));
     this.dataService.updateAsset(mutateRecords).subscribe((response) => {});
     // When update succeeds, clear the maps
     this._mutateAdd.clear();
     this._mutateRemove.clear();
   }
 
+  /** Helper function that creates the appropriate asset object */
   createMutateAssetObj(connection: AssetConn) {
     let assetObj: MutateAsset = {
       id: this._asset.id,
@@ -376,8 +384,8 @@ export class AccountCampaignsComponent implements OnChanges {
     };
     switch (this._asset.type) {
       case AssetType.TEXT:
-        assetObj.asset_text = connection.toLowerCase();
-        assetObj.text_type_to_assign = (this._asset as TextAsset).text_type;
+        assetObj.asset_text = (this._asset as TextAsset).asset_text;
+        assetObj.text_type_to_assign = connection.toLowerCase();
         break;
       case AssetType.VIDEO:
         assetObj.video_id = (this._asset as VideoAsset).video_id;
