@@ -19,23 +19,18 @@ import {
   VideoAsset,
 } from './../model/asset';
 import { AssetService } from './../services/asset.service';
-
 enum nodeType {
   entityNode,
   textPropertyNode,
 }
-
 type MutateMap = Map<number, AssetConn>;
-
 /* The node deifinition that will be used in the tree */
 export class TreeNode {
   children: BehaviorSubject<TreeNode[]>;
   type: nodeType;
-
   getId(): number {
     return this._id;
   }
-
   getName(): string {
     return this._name;
   }
@@ -49,7 +44,6 @@ export class TreeNode {
     this.type = type === undefined ? nodeType.entityNode : type;
   }
 }
-
 @Component({
   selector: 'app-account-campaigns',
   templateUrl: './account-campaigns.component.html',
@@ -63,13 +57,11 @@ export class AccountCampaignsComponent implements OnChanges {
   private _mutateRemove: MutateMap = new Map();
   private _isTextAsset: boolean; /** When this is set, additional nodes appear under adgroups */
   private _showUpdateBtn: boolean; /** This is only true when an asset is selected */
-
   levels = new Map<TreeNode, number>();
   treeControl: FlatTreeControl<TreeNode>;
   treeFlattener: MatTreeFlattener<TreeNode, TreeNode>;
   dataSource: MatTreeFlatDataSource<TreeNode, TreeNode>;
   checklistSelection = new SelectionModel<TreeNode>(true, [], true);
-
   @Input()
   set account(account: Account) {
     this._account = account;
@@ -80,7 +72,6 @@ export class AccountCampaignsComponent implements OnChanges {
   get showUpdateBtn(): boolean {
     return this._showUpdateBtn;
   }
-
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
     private dataService: AssetService
@@ -102,11 +93,9 @@ export class AccountCampaignsComponent implements OnChanges {
     this._isTextAsset = true;
     this.dataSource.data = [];
   }
-
   ngOnInit(): void {
     this._asset = null;
     this._showUpdateBtn = false;
-
     this.dataService.activeAsset$.subscribe((asset) => {
       this._asset = asset;
       if (asset) {
@@ -123,7 +112,6 @@ export class AccountCampaignsComponent implements OnChanges {
       this.updateSelectedNodes();
     });
   }
-
   /** Is called when the accountId changes in the parent component */
   ngOnChanges() {
     if (this.account) {
@@ -135,27 +123,22 @@ export class AccountCampaignsComponent implements OnChanges {
   getLevel = (node: TreeNode): number => {
     return this.levels.get(node) || 0;
   };
-
   isExpandable = (node: TreeNode): boolean => {
     return (
       node.children.value.length > 0 &&
       (this._isTextAsset || node.children.value[0].type === nodeType.entityNode)
     );
   };
-
   getChildren = (node: TreeNode) => {
     return node.children;
   };
-
   transformer = (node: TreeNode, level: number) => {
     this.levels.set(node, level);
     return node;
   };
-
   hasChildren = (index: number, node: TreeNode) => {
     return this.isExpandable(node);
   };
-
   /** Constructs a tree structure based on account hierarchy */
   private buildTreeNodes() {
     const tree = [];
@@ -164,8 +147,13 @@ export class AccountCampaignsComponent implements OnChanges {
         let adgroups = [];
         for (let ag of campaign.adgroups) {
           let textNodes = [
-            new TreeNode(AssetConn.HEADLINES, 0, [], nodeType.textPropertyNode),
-            new TreeNode(AssetConn.DESC, 0, [], nodeType.textPropertyNode),
+            new TreeNode(
+              AssetConn.HEADLINES,
+              ag.id,
+              [],
+              nodeType.textPropertyNode
+            ),
+            new TreeNode(AssetConn.DESC, ag.id, [], nodeType.textPropertyNode),
           ];
           var adGroupNode = new TreeNode(ag.name, ag.id, textNodes);
           adgroups.push(adGroupNode);
@@ -182,10 +170,8 @@ export class AccountCampaignsComponent implements OnChanges {
     this.checklistSelection.clear();
     //this.changeDetectorRef.markForCheck();
   }
-
   updateSelectedNodes() {
     this.treeControl.collapseAll();
-
     let selAdGroups: Array<TreeNode> = [];
     let unSelAdGroups: Array<TreeNode> = [];
     if (this._selAdGroups) {
@@ -221,7 +207,6 @@ export class AccountCampaignsComponent implements OnChanges {
           } else if (this._isTextAsset && (hasHeadlineConn || hasDescConn)) {
             expandCampaign = true;
             this.treeControl.expand(agNode);
-
             if (hasHeadlineConn) {
               selAdGroups.push(
                 agNode.children.value.find(
@@ -254,7 +239,6 @@ export class AccountCampaignsComponent implements OnChanges {
     this.checklistSelection.deselect(...unSelAdGroups);
     this.changeDetectorRef.markForCheck();
   }
-
   /** Helper function to look for adGroup in adGroupMapping */
   hasAdGroupConnection(connection: AssetConn, adGroupId: number) {
     let adGroups = this._selAdGroups.get(connection);
@@ -263,7 +247,6 @@ export class AccountCampaignsComponent implements OnChanges {
     }
     return false;
   }
-
   /** Whether all the descendants of the node are selected */
   descendantsAllSelected(node: TreeNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
@@ -280,7 +263,6 @@ export class AccountCampaignsComponent implements OnChanges {
     }
     return allSelected;
   }
-
   /** Whether part of the descendants are selected */
   descendantsPartiallySelected(node: TreeNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
@@ -292,7 +274,6 @@ export class AccountCampaignsComponent implements OnChanges {
     );
     return result && !this.descendantsAllSelected(node);
   }
-
   /** Toggle the entity selection. Select/deselect all the descendants node */
   nodeSelectionToggle(node: TreeNode): void {
     this.checklistSelection.toggle(node);
@@ -301,10 +282,8 @@ export class AccountCampaignsComponent implements OnChanges {
       ? this.checklistSelection.select(...descendants, node)
       : this.checklistSelection.deselect(...descendants, node);
     this.changeDetectorRef.markForCheck();
-
     this.trackChanges(node);
   }
-
   /** Update the mutate map to keep track of user's changes */
   trackChanges(node: TreeNode): void {
     let connection = AssetConn.ADGROUP;
@@ -317,7 +296,6 @@ export class AccountCampaignsComponent implements OnChanges {
       this.updateMutateMap(MutateAction.REMOVE, node.getId(), connection);
     }
   }
-
   private updateMutateMap(
     action: MutateAction,
     agId: number,
@@ -335,6 +313,7 @@ export class AccountCampaignsComponent implements OnChanges {
         : this._mutateRemove.set(agId, connection);
     }
   }
+  /** Triggered upon clicking the update button */
   updateAsset() {
     let mutateRecords: MutateRecord[] = [];
     console.log('Add: ');
@@ -362,13 +341,13 @@ export class AccountCampaignsComponent implements OnChanges {
       console.log(agId, connection);
     });
     console.log('******');
-
+    console.log(JSON.stringify(mutateRecords));
     this.dataService.updateAsset(mutateRecords).subscribe((response) => {});
     // When update succeeds, clear the maps
     this._mutateAdd.clear();
     this._mutateRemove.clear();
   }
-
+  /** Helper function that creates the appropriate asset object */
   createMutateAssetObj(connection: AssetConn) {
     let assetObj: MutateAsset = {
       id: this._asset.id,
@@ -376,8 +355,8 @@ export class AccountCampaignsComponent implements OnChanges {
     };
     switch (this._asset.type) {
       case AssetType.TEXT:
-        assetObj.asset_text = connection.toLowerCase();
-        assetObj.text_type_to_assign = (this._asset as TextAsset).text_type;
+        assetObj.asset_text = (this._asset as TextAsset).asset_text;
+        assetObj.text_type_to_assign = connection.toLowerCase();
         break;
       case AssetType.VIDEO:
         assetObj.video_id = (this._asset as VideoAsset).video_id;

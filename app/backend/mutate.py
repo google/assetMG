@@ -24,6 +24,7 @@ def mutate_ad(client,
   if action not in actions:
     raise ValueError('action not supported')
 
+  print(text_type_to_assign)
   client.SetClientCustomerId(account)
 
   asset_type_map = {
@@ -110,7 +111,7 @@ def _get_ad_id(client, adgroup):
           'values': [adgroup]
       }],
   }
-
+  
   page = adgroupad_service.get(selector)
   return page['entries'][0]['ad']['id']
 

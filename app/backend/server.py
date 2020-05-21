@@ -121,17 +121,17 @@ def mutate():
   failed = []
 
   data = request.get_json(force=True)
-
+  text_type_to_assign = 'headlines'
+  print (data)
   for item in data:
     account = item['account']
     adgroup = item['adgroup']
     action = item['action']
     asset = item['asset']
-    if 'text_type_to_assign' in item:
-      text_type_to_assign = item['text_type_to_assign']
-    else:
-      text_type_to_assign = 'descriptions'
+    if item['asset'].get('text_type_to_assign'):
+      text_type_to_assign = item['asset']['text_type_to_assign']
 
+    print(text_type_to_assign)
     mutation = mutate_ad(client, account, adgroup, asset, action,
                        text_type_to_assign)
 
