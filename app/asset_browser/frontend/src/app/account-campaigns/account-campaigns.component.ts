@@ -35,6 +35,8 @@ type MutateMap = Map<string, AssetConn>;
 export class TreeNode {
   children: BehaviorSubject<TreeNode[]>;
   type: nodeType;
+  isEdited: boolean;
+
   getId(): number {
     return this._id;
   }
@@ -49,8 +51,10 @@ export class TreeNode {
   ) {
     this.children = new BehaviorSubject(children === undefined ? [] : children);
     this.type = type === undefined ? nodeType.campNode : type;
+    this.isEdited = false;
   }
 }
+
 @Component({
   selector: 'app-account-campaigns',
   templateUrl: './account-campaigns.component.html',
@@ -76,9 +80,11 @@ export class AccountCampaignsComponent implements OnChanges {
   get account(): Account {
     return this._account;
   }
+
   get showUpdateBtn(): boolean {
     return this._showUpdateBtn;
   }
+
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
     private dataService: AssetService
@@ -100,6 +106,7 @@ export class AccountCampaignsComponent implements OnChanges {
     this._isTextAsset = true;
     this.dataSource.data = [];
   }
+
   ngOnInit(): void {
     this._asset = null;
     this._showUpdateBtn = false;
@@ -119,6 +126,7 @@ export class AccountCampaignsComponent implements OnChanges {
       this.updateSelectedNodes();
     });
   }
+
   /** Is called when the accountId changes in the parent component */
   ngOnChanges() {
     if (this.account) {
@@ -127,9 +135,11 @@ export class AccountCampaignsComponent implements OnChanges {
       this.buildTreeNodes();
     }
   }
+
   getLevel = (node: TreeNode): number => {
     return this.levels.get(node) || 0;
   };
+
   isExpandable = (node: TreeNode): boolean => {
     return (
       node.children.value.length > 0 &&
@@ -137,16 +147,20 @@ export class AccountCampaignsComponent implements OnChanges {
         node.children.value[0].type !== nodeType.textPropertyNode)
     );
   };
+
   getChildren = (node: TreeNode) => {
     return node.children;
   };
+
   transformer = (node: TreeNode, level: number) => {
     this.levels.set(node, level);
     return node;
   };
+
   hasChildren = (index: number, node: TreeNode) => {
     return this.isExpandable(node);
   };
+
   /** Constructs a tree structure based on account hierarchy */
   private buildTreeNodes() {
     const tree = [];
@@ -184,6 +198,7 @@ export class AccountCampaignsComponent implements OnChanges {
     this.checklistSelection.clear();
     //this.changeDetectorRef.markForCheck();
   }
+
   updateSelectedNodes() {
     this.treeControl.collapseAll();
     let selAdGroups: Array<TreeNode> = [];
@@ -253,6 +268,7 @@ export class AccountCampaignsComponent implements OnChanges {
     this.checklistSelection.deselect(...unSelAdGroups);
     this.changeDetectorRef.markForCheck();
   }
+
   /** Helper function to look for adGroup in adGroupMapping */
   hasAdGroupConnection(connection: AssetConn, adGroupId: number) {
     let adGroups = this._selAdGroups.get(connection);
@@ -261,6 +277,7 @@ export class AccountCampaignsComponent implements OnChanges {
     }
     return false;
   }
+
   /** Whether all the descendants of the node are selected */
   descendantsAllSelected(node: TreeNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
@@ -277,6 +294,7 @@ export class AccountCampaignsComponent implements OnChanges {
     }
     return allSelected;
   }
+
   /** Whether part of the descendants are selected */
   descendantsPartiallySelected(node: TreeNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
@@ -288,6 +306,7 @@ export class AccountCampaignsComponent implements OnChanges {
     );
     return result && !this.descendantsAllSelected(node);
   }
+
   /** Toggle the entity selection. Select/deselect all the descendants node */
   nodeSelectionToggle(node: TreeNode, checked: boolean): void {
     this.trackChanges(node, checked);
@@ -298,6 +317,7 @@ export class AccountCampaignsComponent implements OnChanges {
       : this.checklistSelection.deselect(...descendants, node);
     this.changeDetectorRef.markForCheck();
   }
+
   /** Update the mutate map to keep track of user's changes */
   trackChanges(node: TreeNode, checked: boolean): void {
     // If this is a campaign node (or adGroup for text asset) then we need to
@@ -316,6 +336,8 @@ export class AccountCampaignsComponent implements OnChanges {
     // and skip if they are the same
     if (checked === this.checklistSelection.isSelected(node)) return;
 
+    // Update the edit icon as needed
+    node.isEdited = !node.isEdited;
     // This is a child node - so track changes on this level
     let connection = AssetConn.ADGROUP;
     if (node.type == nodeType.textPropertyNode) {
@@ -327,6 +349,7 @@ export class AccountCampaignsComponent implements OnChanges {
       this.updateMutateMap(MutateAction.REMOVE, node.getId(), connection);
     }
   }
+
   private updateMutateMap(
     action: MutateAction,
     adgroupId: number,
@@ -349,6 +372,7 @@ export class AccountCampaignsComponent implements OnChanges {
         : this._mutateRemove.set(agId, connection);
     }
   }
+
   /** Triggered upon clicking the update button */
   updateAsset() {
     let mutateRecords: MutateRecord[] = [];
@@ -387,12 +411,14 @@ export class AccountCampaignsComponent implements OnChanges {
     });
     return mutateRecords;
   }
+
   /** Removes the prefix from the adgroup id and returns an int */
   removePrefix(adGroupStr: string) {
     adGroupStr = adGroupStr.replace(HEADLINE_PREFIX, '');
     adGroupStr = adGroupStr.replace(DESC_PREFIX, '');
     return Number(adGroupStr);
   }
+
   /** Helper function that creates the appropriate asset object */
   createMutateAssetObj(connection: AssetConn) {
     let assetObj: MutateAsset = {
