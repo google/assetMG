@@ -19,7 +19,6 @@ import {
   VideoAsset,
 } from './../model/asset';
 import { AssetService } from './../services/asset.service';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 
 const HEADLINE_PREFIX = 'H-';
 const DESC_PREFIX = 'D-';
@@ -378,47 +377,47 @@ export class AccountCampaignsComponent implements OnChanges {
   updateAsset() {
     let mutateRecords: MutateRecord[] = [];
     console.log('Add: ');
-    this._mutateAdd.forEach((connection: AssetConn, agId: string) => {
-      // Remove any prefixs from the ag_id if they exist
-      let adgroupId = this.removePrefix(agId);
+    mutateRecords.push(
+      ...this.createMutateRecords(this._mutateAdd, MutateAction.ADD)
+    );
 
-      let assetObj = this.createMutateAssetObj(connection);
-      let mutateObj: MutateRecord = {
-        account: this._account.id,
-        adgroup: adgroupId,
-        action: MutateAction.ADD,
-        asset: assetObj,
-      };
-      mutateRecords.push(mutateObj);
-      console.log(agId, connection);
-    });
     console.log('Remove: ');
-    this._mutateRemove.forEach((connection: AssetConn, agId: string) => {
-      let adgroupId = this.removePrefix(agId);
-      let assetObj = this.createMutateAssetObj(connection);
-      let mutateObj: MutateRecord = {
-        account: this._account.id,
-        adgroup: adgroupId,
-        action: MutateAction.REMOVE,
-        asset: assetObj,
-      };
-      mutateRecords.push(mutateObj);
-      console.log(agId, connection);
-    });
+    mutateRecords.push(
+      ...this.createMutateRecords(this._mutateRemove, MutateAction.REMOVE)
+    );
+
     console.log('******');
     //console.log(JSON.stringify(mutateRecords));
-    this.dataService.updateAsset(mutateRecords).subscribe((response) => {});
+    this.dataService.updateAsset(this._asset, mutateRecords);
     // When update succeeds, clear the maps
     this._mutateAdd.clear();
     this._mutateRemove.clear();
   }
 
+  /** Creates mutate records for a mutate map */
+  createMutateRecords(map: MutateMap, action: MutateAction): MutateRecord[] {
+    let mutateRecords = [];
+    map.forEach((connection: AssetConn, agId: string) => {
+      let adgroupId = this.removePrefix(agId);
+      let assetObj = this.createMutateAssetObj(connection);
+      let mutateObj: MutateRecord = {
+        account: this._account.id,
+        adgroup: adgroupId,
+        action: action,
+        asset: assetObj,
+      };
+      mutateRecords.push(mutateObj);
+      console.log(agId, connection);
+    });
+    return mutateRecords;
+  }
   /** Removes the prefix from the adgroup id and returns an int */
   removePrefix(adGroupStr: string) {
     adGroupStr = adGroupStr.replace(HEADLINE_PREFIX, '');
     adGroupStr = adGroupStr.replace(DESC_PREFIX, '');
     return Number(adGroupStr);
   }
+
   /** Helper function that creates the appropriate asset object */
   createMutateAssetObj(connection: AssetConn) {
     let assetObj: MutateAsset = {

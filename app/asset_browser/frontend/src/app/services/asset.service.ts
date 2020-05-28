@@ -13,6 +13,7 @@ import {
   MutateRecord,
 } from './../model/asset';
 import { Account } from './../model/account';
+import { Action } from 'rxjs/internal/scheduler/Action';
 
 @Injectable({
   providedIn: 'root',
@@ -98,7 +99,7 @@ export class AssetService {
       if (asset.id == assetId) {
         let assetConnection = AssetConn.ADGROUP;
         if (asset.type == AssetType.TEXT) {
-          (<TextAsset>asset).text_type.toLowerCase() ==
+          (asset as TextAsset).text_type.toLowerCase() ==
           AssetConn.HEADLINES.toLowerCase()
             ? (assetConnection = AssetConn.HEADLINES)
             : (assetConnection = AssetConn.DESC);
@@ -109,8 +110,9 @@ export class AssetService {
     return assetAdGroups;
   }
 
-  updateAsset(updateArray: MutateRecord[]) {
+  updateAsset(changedAsset: Asset, updateArray: MutateRecord[]) {
     const endpoint = this.API_SERVER + '/mutate-ad/';
-    return this.http.post(endpoint, updateArray);
+    return this.http.post(endpoint, updateArray).subscribe((response) => {
+    });
   }
 }
