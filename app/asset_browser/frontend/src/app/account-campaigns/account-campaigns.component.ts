@@ -20,9 +20,6 @@ import {
 } from './../model/asset';
 import { AssetService } from './../services/asset.service';
 
-const HEADLINE_PREFIX = 'H-';
-const DESC_PREFIX = 'D-';
-
 enum nodeType {
   campNode,
   agNode,
@@ -64,8 +61,6 @@ export class AccountCampaignsComponent implements OnChanges {
   private _account: Account;
   private _asset: Asset;
   private _selAdGroups: AssetAdGroups;
-  private _mutateAdd: MutateMap = new Map();
-  private _mutateRemove: MutateMap = new Map();
   private _isTextAsset: boolean; /** When this is set, additional nodes appear under adgroups */
   private _showUpdateBtn: boolean; /** This is only true when an asset is selected */
   levels = new Map<TreeNode, number>();
@@ -338,85 +333,48 @@ export class AccountCampaignsComponent implements OnChanges {
 
     // Update the edit icon as needed
     node.isEdited = !node.isEdited;
-    // This is a child node - so track changes on this level
-    let connection = AssetConn.ADGROUP;
-    if (node.type == nodeType.textPropertyNode) {
-      connection = <AssetConn>node.getName();
-    }
-    if (!this.checklistSelection.isSelected(node)) {
-      this.updateMutateMap(MutateAction.ADD, node.getId(), connection);
-    } else {
-      this.updateMutateMap(MutateAction.REMOVE, node.getId(), connection);
-    }
   }
 
-  private updateMutateMap(
-    action: MutateAction,
-    adgroupId: number,
-    connection: AssetConn
-  ): void {
-    // Add a prefix to mark Headlines and Descriptions in Text assets adgroups
-    let agId = adgroupId.toString();
-    if (connection == AssetConn.HEADLINES) agId = HEADLINE_PREFIX + agId;
-    else if (connection == AssetConn.DESC) agId = DESC_PREFIX + agId;
-
-    // Update the map as needed - if it was already added to a map it needs
-    // to be deleted (double toggle) or it should be added for changes to take effect
-    if (action == MutateAction.ADD) {
-      this._mutateRemove.has(agId)
-        ? this._mutateRemove.delete(agId)
-        : this._mutateAdd.set(agId, connection);
-    } else {
-      this._mutateAdd.has(agId)
-        ? this._mutateAdd.delete(agId)
-        : this._mutateRemove.set(agId, connection);
-    }
-  }
-
-  /** Triggered upon clicking the update button */
   updateAsset() {
     let mutateRecords: MutateRecord[] = [];
-    console.log('Add: ');
-    mutateRecords.push(
-      ...this.createMutateRecords(this._mutateAdd, MutateAction.ADD)
-    );
 
-    console.log('Remove: ');
-    mutateRecords.push(
-      ...this.createMutateRecords(this._mutateRemove, MutateAction.REMOVE)
-    );
-
+    for (let campNode of this.dataSource.data) {
+      for (let agNode of campNode.children.value) {
+        if (this._isTextAsset) {
+          for (let node of agNode.children.value) {
+            if (node.isEdited) {
+              mutateRecords.push(this.createMutateRecord(node));
+            }
+          }
+        } else if (agNode.isEdited) {
+          mutateRecords.push(this.createMutateRecord(agNode));
+        }
+      }
+    }
     console.log('******');
-    //console.log(JSON.stringify(mutateRecords));
     this.dataService.updateAsset(this._asset, mutateRecords);
-    // When update succeeds, clear the maps
-    this._mutateAdd.clear();
-    this._mutateRemove.clear();
   }
 
   /** Creates mutate records for a mutate map */
-  createMutateRecords(map: MutateMap, action: MutateAction): MutateRecord[] {
-    let mutateRecords = [];
-    map.forEach((connection: AssetConn, agId: string) => {
-      let adgroupId = this.removePrefix(agId);
-      let assetObj = this.createMutateAssetObj(connection);
-      let mutateObj: MutateRecord = {
-        account: this._account.id,
-        adgroup: adgroupId,
-        action: action,
-        asset: assetObj,
-      };
-      mutateRecords.push(mutateObj);
-      console.log(agId, connection);
-    });
-    return mutateRecords;
-  }
+  createMutateRecord(node: TreeNode): MutateRecord {
+    if (!node.isEdited) return;
 
-  /** Removes the prefix from the adgroup id and returns an int */
-  removePrefix(adGroupStr: string) {
-    adGroupStr = adGroupStr.replace(HEADLINE_PREFIX, '');
-    adGroupStr = adGroupStr.replace(DESC_PREFIX, '');
-    return Number(adGroupStr);
+    let action = this.checklistSelection.isSelected(node)
+      ? MutateAction.ADD
+      : MutateAction.REMOVE;
+    let connection =
+      node.type === nodeType.textPropertyNode
+        ? <AssetConn>node.getName()
+        : AssetConn.ADGROUP;
+    let assetObj = this.createMutateAssetObj(connection);
+    let mutateObj: MutateRecord = {
+      account: this._account.id,
+      adgroup: node.getId(),
+      action: action,
+      asset: assetObj,
+    };
+    console.log(action, node.getId(), connection);
+    return mutateObj;
   }
 
   /** Helper function that creates the appropriate asset object */
