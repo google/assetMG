@@ -9,7 +9,10 @@
       <app-loader></app-loader>
       <div class = "grid-layout content-margin">
         <app-asset class = "grid-item"
-        *ngFor="let asset of (assets$ | async)" [asset] = "asset">
+        *ngFor="let asset of (assets$ | async)"
+        [asset] = "asset"
+        [selectedAssetId] = "selectedAsset"
+        (click)="selectAsset(asset.id)">
         </app-asset>
       </div>
     </mat-sidenav-content>

@@ -20,6 +20,9 @@ export class AssetComponent implements OnInit {
     return this._asset;
   }
 
+  @Input()
+  selectedAssetId: number;
+
   constructor(private router: Router, private dataService: AssetService) {}
 
   ngOnInit(): void {}

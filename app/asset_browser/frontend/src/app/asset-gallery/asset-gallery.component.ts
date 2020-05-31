@@ -12,11 +12,16 @@ import { Observable } from 'rxjs';
 export class AssetGalleryComponent implements OnInit {
   account$: Observable<Account>;
   assets$: Observable<Asset[]>;
+  selectedAsset: number;
 
   constructor(private dataService: AssetService) {}
 
   ngOnInit(): void {
     this.assets$ = this.dataService.allAssets$;
     this.account$ = this.dataService.activeAccount$;
+  }
+
+  selectAsset(id) {
+    this.selectedAsset = id;
   }
 }

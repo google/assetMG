@@ -30,3 +30,8 @@ $assetmg-app-theme: mat-light-theme($assetmg-app-primary, $assetmg-app-accent, $
 .accent-color {
   color: mat-color($assetmg-app-accent);
 }
+
+.accent-border {
+  border: solid;
+  border-color: mat-color($assetmg-app-accent);
+}
