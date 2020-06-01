@@ -153,14 +153,19 @@ def mutate():
     asset_handler['adgroups'] = []
     index = None
 
-
+  failed_assign = []
   for item in data:
     account = item['account']
     adgroup = item['adgroup']
     action = item['action']
     asset = item['asset']
 
-    mutation = mutate_ad(client, account, adgroup, asset, action)
+    try:
+      mutation = mutate_ad(client, account, adgroup, asset, action)
+    except:
+      failed_assign.append(adgroup)
+      mutation = 'failed'
+
 
     if mutation is None:
       asset_handler = _asset_ag_update(asset_handler,adgroup,action)  
@@ -200,7 +205,10 @@ def _text_asset_mutate(data, asset_id, asset_struct):
       'adgroups':[]
     }
     append = False
-    if len(asset_handlers[0]['asset']['asset_text']) <= 30 headline_len = True else headline_len = False
+    if len(data[0]['asset']['asset_text']) <= 30:
+       headline_len = True
+    else:
+       headline_len = False
 
     if len(asset_handlers) == 1:
       existing_type = asset_handlers[0]['asset']['text_type']
@@ -218,10 +226,11 @@ def _text_asset_mutate(data, asset_id, asset_struct):
       asset_handlers.append({'asset':new_asset, 'index':None})
       if headline_len:
         new_asset_second = copy.copy(new_asset)
+        new_asset_second['adgroups'] = []
         new_asset_second['text_type'] = 'headlines'
         asset_handlers.append({'asset':new_asset_second, 'index':None})
 
-
+  failed_assign = []
   for item in data:
     account = item['account']
     adgroup = item['adgroup']
@@ -229,9 +238,14 @@ def _text_asset_mutate(data, asset_id, asset_struct):
     asset = item['asset']
     text_type_to_assign = item['asset']['text_type_to_assign']
 
-    mutation = mutate_ad(client, account, adgroup, asset, action,
+    try:
+      mutation = mutate_ad(client, account, adgroup, asset, action,
                        text_type_to_assign)
-
+    
+    except:
+      failed_assign.append(adgroup)
+      mutation = 'failed'
+    
     if mutation is None:
       for obj in asset_handlers:
         if obj['asset']['text_type'] == text_type_to_assign:
