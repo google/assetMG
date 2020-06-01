@@ -2,8 +2,8 @@
 """ server configuration for the assetMG tool"""
 import json
 from flask import Flask
-from flask import request, jsonify
-from flask_cors import CORS
+from flask import request, jsonify, render_template
+# from flask_cors import CORS
 from googleads import adwords
 from google.ads.google_ads.client import GoogleAdsClient
 import setup
@@ -11,9 +11,15 @@ from mutate import mutate_ad
 from structure import create_mcc_struct, get_accounts, get_struct
 from get_all_assets import get_assets, get_accounts_assets
 from upload_asset import upload
+from service import Service_Class
+from pathlib import Path
+import copy
 
-server = Flask(__name__)
-CORS(server)
+server = Flask(__name__, static_url_path="",
+            static_folder="../asset_browser/frontend/dist/frontend",
+            template_folder="../asset_browser/frontend/dist/frontend")
+
+# CORS(server)
 server.config['CORS_HEADERS'] = 'Content-Type'
 
 setup.set_api_configs()
@@ -22,14 +28,15 @@ CONFIG_PATH = '../config/'
 client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH + 'googleads.yaml')
 googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH + 'google-ads.yaml')
 
-asset_to_ag_json_path = '../cache/asset_to_ag.json'
-account_struct_json_path = '../cache/account_struct.json'
+asset_to_ag_json_path = Path('../cache/asset_to_ag.json')
+account_struct_json_path = Path('../cache/account_struct.json')
 
 create_mcc_struct(client)
 
 @server.route('/')
 def upload_frontend():
-  return 'Hello, World!'
+  return render_template("index.html")
+  # return 'Hello, World!'
   # use this route to upload front-end
 
 
@@ -109,47 +116,151 @@ def get_asset_to_ag():
         msg='error while reading asset_to_ag.json: ' + str(e), status=400)
 
 
-# parse a list of actions
+
 @server.route('/mutate-ad/', methods=['POST'])
 def mutate():
-  """Assign or remove an asset from an ad.
+  """Assign or remove an asset from adgroups.
 
   gets a json file with a list of asset, account, adgourp and action.
-  preforms all of them one by one.
+  preforms all of the actions one by one.
+
+  returns a list withthe new asset objects with the changed adgroups list.
+  if its a text asset, returns a list with both 'headlines' and 'descriptions' entries.
+  also changes the asset_to_ag.json file.
   """
-  successeful = []
-  failed = []
 
   data = request.get_json(force=True)
-  text_type_to_assign = 'headlines'
-  print (data)
+  asset_id = data[0]['asset']['id']
+  asset_type = data[0]['asset']['type']
+
+  with open(asset_to_ag_json_path, 'r') as f:
+    asset_struct = json.load(f)
+
+  # special func for text assets, as they have 2 entries in asset_to_ag.json
+  if asset_type == 'TEXT':
+    return _text_asset_mutate(data, asset_id, asset_struct)
+
+  asset_handler = {}
+  index = 0 # to re-write back to location
+  for entry in asset_struct:
+    if entry['id'] == asset_id:
+      asset_handler = entry
+      break
+    index += 1
+
+  if not asset_handler:
+    asset_handler = data[0]['asset']
+    asset_handler['adgroups'] = []
+    index = None
+
+
   for item in data:
     account = item['account']
     adgroup = item['adgroup']
     action = item['action']
     asset = item['asset']
-    if item['asset'].get('text_type_to_assign'):
-      text_type_to_assign = item['asset']['text_type_to_assign']
 
-    print(text_type_to_assign)
+    mutation = mutate_ad(client, account, adgroup, asset, action)
+
+    if mutation is None:
+      asset_handler = _asset_ag_update(asset_handler,adgroup,action)  
+
+  Service_Class.reset_cid(client)
+
+  if index:
+    asset_struct[index] = asset_handler
+  else:
+    asset_struct.append(asset_handler)
+
+  with open(asset_to_ag_json_path, 'w') as f:
+    json.dump(asset_struct, f,indent=2)
+
+  return _build_response(msg=json.dumps([asset_handler]), status=200)
+
+
+def _text_asset_mutate(data, asset_id, asset_struct):
+  """Handles text asset mutations"""
+
+  asset_handlers = []
+  index = 0 # to re-write back to location
+  for entry in asset_struct:
+    if entry['id'] == asset_id:
+      asset_handlers.append({'asset':entry, 'index':index})
+    index += 1
+
+
+  # if only one of headlines/descriptions entries exists in asset_struct, create the second one
+  # if the asset isn't assigned to any adgroup, create both entries
+  # create headline entry only if text's len <= 30
+  if len(asset_handlers) < 2:
+    new_asset = {
+      'id': data[0]['asset']['id'],
+      'type':'TEXT',
+      'asset_text':data[0]['asset']['asset_text'],
+      'adgroups':[]
+    }
+    append = False
+    if len(asset_handlers[0]['asset']['asset_text']) <= 30 headline_len = True else headline_len = False
+
+    if len(asset_handlers) == 1:
+      existing_type = asset_handlers[0]['asset']['text_type']
+      if existing_type == 'headlines':
+        new_asset['text_type'] = 'descriptions'
+        append = True
+      elif headline_len:
+        new_asset['text_type'] = 'headlines'
+        append = True
+      if append:
+        asset_handlers.append({'asset':new_asset, 'index':None})
+
+    elif len(asset_handlers) == 0:
+      new_asset['text_type'] = 'descriptions'
+      asset_handlers.append({'asset':new_asset, 'index':None})
+      if headline_len:
+        new_asset_second = copy.copy(new_asset)
+        new_asset_second['text_type'] = 'headlines'
+        asset_handlers.append({'asset':new_asset_second, 'index':None})
+
+
+  for item in data:
+    account = item['account']
+    adgroup = item['adgroup']
+    action = item['action']
+    asset = item['asset']
+    text_type_to_assign = item['asset']['text_type_to_assign']
+
     mutation = mutate_ad(client, account, adgroup, asset, action,
                        text_type_to_assign)
 
-    if mutation:
-      failed.append({'asset': asset, 'adgroup':adgroup, 'action': action})
+    if mutation is None:
+      for obj in asset_handlers:
+        if obj['asset']['text_type'] == text_type_to_assign:
+          obj['asset'] = _asset_ag_update(obj['asset'],adgroup,action)  
 
+  Service_Class.reset_cid(client)
+
+  for obj in asset_handlers:
+    if obj['index']:
+      asset_struct[obj['index']] = obj['asset']
     else:
-      successeful.append({'asset': asset, 'adgroup':adgroup, 'action': action})
+      asset_struct.append(obj['asset'])
 
-  if successeful and failed:
-    result = {'successful': successeful, 'failed': failed}
-    return _build_response(msg=result, status=206)
+  with open(asset_to_ag_json_path, 'w') as f:
+    json.dump(asset_struct, f,indent=2)
 
-  if successeful:
-    return _build_response(status=200)
+  return _build_response(msg=json.dumps(asset_handlers), status=200)
 
-  else:
-    return _build_response(status=500)
+
+def _asset_ag_update(asset,adgroup,action):
+  """remove or add the adgroup to the asset entry"""
+
+  if action == "ADD":
+    asset['adgroups'].append(adgroup)
+
+  if action == "REMOVE":
+    asset['adgroups'].remove(adgroup)
+
+  return asset
 
 
 @server.route('/upload-asset/', methods=['POST'])

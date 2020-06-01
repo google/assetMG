@@ -1,4 +1,4 @@
 googleads==20.0.0
 google-ads
 flask
-flask_cores
+# flask_cores

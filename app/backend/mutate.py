@@ -24,7 +24,6 @@ def mutate_ad(client,
   if action not in actions:
     raise ValueError('action not supported')
 
-  print(text_type_to_assign)
   client.SetClientCustomerId(account)
 
   asset_type_map = {
