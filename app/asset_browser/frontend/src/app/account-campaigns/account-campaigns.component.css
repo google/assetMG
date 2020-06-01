@@ -1,3 +1,7 @@
 mat-tree-node {
   min-height:unset;
 }
+
+.fa-pen {
+  color: gold;
+}

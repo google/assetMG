@@ -22,3 +22,11 @@ $assetmg-app-theme: mat-light-theme($assetmg-app-primary, $assetmg-app-accent, $
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include angular-material-theme($assetmg-app-theme);
+
+.primary-color {
+  color: mat-color($assetmg-app-primary);
+}
+
+.accent-color {
+  color: mat-color($assetmg-app-accent);
+}
