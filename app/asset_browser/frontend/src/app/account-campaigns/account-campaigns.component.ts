@@ -206,13 +206,13 @@ export class AccountCampaignsComponent implements OnChanges {
         let expandCampaign = false;
         for (let agNode of campNode.children.value) {
           // Disable headlines node if the text is too long
-          if (
-            this._isTextAsset &&
-            (<TextAsset>this._asset).asset_text.length > MAX_HEADLINES_LEN
-          ) {
-            agNode.children.value.find(
+          if (this._isTextAsset) {
+            let hNode = agNode.children.value.find(
               (node) => node.getName() == AssetConn.HEADLINES
-            ).disabled = true;
+            );
+            (<TextAsset>this._asset).asset_text.length > MAX_HEADLINES_LEN
+              ? (hNode.disabled = true)
+              : (hNode.disabled = false);
           }
 
           // Update selection
