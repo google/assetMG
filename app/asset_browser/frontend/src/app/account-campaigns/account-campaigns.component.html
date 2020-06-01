@@ -1,7 +1,8 @@
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
   <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
     <button mat-icon-button disabled><i *ngIf="node.isEdited" class="fas fa-pen"></i></button>
-    <mat-checkbox [checked]="descendantsAllSelected(node)"
+    <mat-checkbox [disabled] = "node.disabled"
+                  [checked]="descendantsAllSelected(node)"
                   [indeterminate]="descendantsPartiallySelected(node)"
                   (change)="nodeSelectionToggle(node, $event.checked)"
                   [attr.data-entity-id]="node.getId()">

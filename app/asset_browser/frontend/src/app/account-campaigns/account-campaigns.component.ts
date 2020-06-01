@@ -20,6 +20,7 @@ import {
 } from './../model/asset';
 import { AssetService } from './../services/asset.service';
 
+const MAX_HEADLINES_LEN = 30;
 enum nodeType {
   campNode,
   agNode,
@@ -33,6 +34,7 @@ export class TreeNode {
   children: BehaviorSubject<TreeNode[]>;
   type: nodeType;
   isEdited: boolean;
+  disabled: boolean;
 
   getId(): number {
     return this._id;
@@ -49,6 +51,7 @@ export class TreeNode {
     this.children = new BehaviorSubject(children === undefined ? [] : children);
     this.type = type === undefined ? nodeType.campNode : type;
     this.isEdited = false;
+    this.disabled = false;
   }
 }
 
@@ -202,6 +205,17 @@ export class AccountCampaignsComponent implements OnChanges {
       for (let campNode of this.dataSource.data) {
         let expandCampaign = false;
         for (let agNode of campNode.children.value) {
+          // Disable headlines node if the text is too long
+          if (
+            this._isTextAsset &&
+            (<TextAsset>this._asset).asset_text.length > MAX_HEADLINES_LEN
+          ) {
+            agNode.children.value.find(
+              (node) => node.getName() == AssetConn.HEADLINES
+            ).disabled = true;
+          }
+
+          // Update selection
           let hasHeadlineConn,
             hasDescConn,
             hasAdGroupConn = false;
