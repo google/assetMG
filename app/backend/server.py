@@ -180,7 +180,7 @@ def mutate():
   with open(asset_to_ag_json_path, 'w') as f:
     json.dump(asset_struct, f,indent=2)
 
-  return _build_response(msg=json.dumps([asset_handler]), status=200)
+  return _build_response(msg=json.dumps([{'asset':asset_handler,'index':index}]), status=200)
 
 
 def _text_asset_mutate(data, asset_id, asset_struct):
