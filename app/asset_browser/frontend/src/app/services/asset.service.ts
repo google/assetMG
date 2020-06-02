@@ -9,7 +9,6 @@ import {
   AssetAdGroups,
   AssetConn,
   AssetType,
-  MutateAction,
   MutateRecord,
 } from './../model/asset';
 import { Account } from './../model/account';
@@ -31,11 +30,15 @@ export class AssetService {
   private _activeAsset$ = new BehaviorSubject<Asset>(null);
   private _activeAssetAdGroups$ = new BehaviorSubject<AssetAdGroups>(null);
 
+  /** Gets updated when the update Asset is called */
+  private _updateFinished$ = new BehaviorSubject<Asset>(null);
+
   allAssets$ = this._allAssets$.asObservable();
   activeAccount$ = this._activeAccount$.asObservable();
   activeAccountId$ = this._activeAccountId$.asObservable();
   activeAsset$ = this._activeAsset$.asObservable();
   activeAssetAdGroups$ = this._activeAssetAdGroups$.asObservable();
+  updateFinished$ = this._updateFinished$.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -112,7 +115,27 @@ export class AssetService {
 
   updateAsset(changedAsset: Asset, updateArray: MutateRecord[]) {
     const endpoint = this.API_SERVER + '/mutate-ad/';
-    return this.http.post(endpoint, updateArray).subscribe((response) => {
-    });
+    console.log('FE Updates: ', updateArray);
+    let subscritpion = this.http.post(endpoint, updateArray).subscribe(
+      (updatedAssets) => {
+        console.log('Returned Updates:', updatedAssets);
+        console.log('Before: ', this._assetsToAdGroups);
+        // updated the asset to adgroup cache
+        for (let update of <any[]>updatedAssets) {
+          if (!update.id) {
+            this._assetsToAdGroups.push(update.asset);
+          } else {
+            this._assetsToAdGroups[update.id] = update.asset;
+          }
+        }
+        this._updateFinished$.next(changedAsset);
+        subscritpion.unsubscribe();
+      },
+      (error) => {
+        console.log('Error: ', error);
+        this._updateFinished$.next(changedAsset);
+        subscritpion.unsubscribe();
+      }
+    );
   }
 }

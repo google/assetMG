@@ -1,0 +1,7 @@
+<button [disabled] = "disabled" mat-raised-button>
+  {{btnLabel}}
+  <mat-progress-bar *ngIf="inProgress"
+    mode="indeterminate"
+    color="accent">
+  </mat-progress-bar>
+</button>

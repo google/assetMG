@@ -1,0 +1,9 @@
+mat-progress-bar {
+  position: absolute;
+  top: 88%;
+  left: 0;
+}
+
+button {
+  min-width: 90px;
+}

@@ -24,4 +24,7 @@
     </mat-checkbox>
   </mat-tree-node>
 </mat-tree>
-<button *ngIf="showUpdateBtn" mat-raised-button (click)="updateAsset()">Update</button>
+<app-progress-btn *ngIf="showUpdateBtn"
+  btnLabel= 'Update'
+  [inProgress]="updateInProgress"
+  (btnClick)="updateAsset()"></app-progress-btn>

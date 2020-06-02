@@ -71,6 +71,8 @@ export class AccountCampaignsComponent implements OnChanges {
   treeFlattener: MatTreeFlattener<TreeNode, TreeNode>;
   dataSource: MatTreeFlatDataSource<TreeNode, TreeNode>;
   checklistSelection = new SelectionModel<TreeNode>(true, [], true);
+  updateInProgress: boolean = false;
+
   @Input()
   set account(account: Account) {
     this._account = account;
@@ -120,8 +122,19 @@ export class AccountCampaignsComponent implements OnChanges {
       }
     });
     this.dataService.activeAssetAdGroups$.subscribe((adGroups) => {
+      // Refresh the selected AdGroups
       this._selAdGroups = adGroups;
       this.updateSelectedNodes();
+    });
+    this.dataService.updateFinished$.subscribe(() => {
+      this.updateInProgress = false;
+      // Clear previous edits
+      let editedNodes = this.treeControl.dataNodes.filter(
+        (node) => node.isEdited === true
+      );
+      editedNodes.forEach((node) => {
+        node.isEdited = false;
+      });
     });
   }
 
@@ -351,7 +364,6 @@ export class AccountCampaignsComponent implements OnChanges {
 
   updateAsset() {
     let mutateRecords: MutateRecord[] = [];
-
     for (let campNode of this.dataSource.data) {
       for (let agNode of campNode.children.value) {
         if (this._isTextAsset) {
@@ -366,7 +378,10 @@ export class AccountCampaignsComponent implements OnChanges {
       }
     }
     console.log('******');
-    this.dataService.updateAsset(this._asset, mutateRecords);
+    if (mutateRecords.length) {
+      this.updateInProgress = true;
+      this.dataService.updateAsset(this._asset, mutateRecords);
+    }
   }
 
   /** Creates mutate records for a mutate map */
