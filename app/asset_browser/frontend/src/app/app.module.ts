@@ -16,6 +16,8 @@ import { LoaderComponent } from './shared/loader/loader.component';
 import { LoaderService } from './services/loader.service';
 import { LoaderInterceptor } from './interceptors/loader.interceptor';
 import { HttpErrorInterceptor } from './interceptors/http-error.interceptor';
+import { SearchBarComponent } from './search-bar/search-bar.component';
+import { ProgressBtnComponent } from './shared/progress-btn/progress-btn.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +28,8 @@ import { HttpErrorInterceptor } from './interceptors/http-error.interceptor';
     AccountCampaignsComponent,
     ToolbarComponent,
     LoaderComponent,
+    SearchBarComponent,
+    ProgressBtnComponent,
   ],
   imports: [
     BrowserModule,
