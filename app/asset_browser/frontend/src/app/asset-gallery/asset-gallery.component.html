@@ -1,12 +1,13 @@
 <!-- <div class ="main-container"> -->
   <app-toolbar class="toolbar"></app-toolbar>
+  <app-loader></app-loader>
   <mat-sidenav-container class="asset-gallery-container">
     <mat-sidenav class="asset-details-container mat-elevation-z10"
       position="end" mode="side" opened>
       <app-asset-details [account]="(account$ | async)"></app-asset-details>
     </mat-sidenav>
     <mat-sidenav-content class="asset-gallery">
-      <app-loader></app-loader>
+      <!-- <app-search-bar></app-search-bar> -->
       <div class = "grid-layout content-margin">
         <app-asset class = "grid-item"
         *ngFor="let asset of (assets$ | async)"

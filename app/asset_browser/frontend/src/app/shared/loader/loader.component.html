@@ -1,9 +1,7 @@
-<div *ngIf="isLoading | async" class="overlay">
-  <mat-progress-spinner style="margin:0 auto;"
-    class="spinner"
-    [diameter]="diameter"
-    [color]="color"
-    [mode]="mode"
-    [value]="value">
-  </mat-progress-spinner>
+<div class= "progress-bar">
+<!-- <div *ngIf="temp" class="prog-bar"> -->
+  <mat-progress-bar *ngIf="isLoading | async"
+  mode="indeterminate"
+  color="accent">
+  </mat-progress-bar>
 </div>

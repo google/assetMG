@@ -7,10 +7,7 @@ import { LoaderService } from '../../services/loader.service';
   styleUrls: ['./loader.component.css'],
 })
 export class LoaderComponent {
-  color = 'accent';
-  mode = 'indeterminate';
-  value = 50;
-  diameter = 70;
   isLoading: Subject<boolean> = this.loaderService.isLoading;
+  temp: boolean = true;
   constructor(private loaderService: LoaderService) {}
 }

@@ -47,3 +47,10 @@
   padding-bottom: 16px;
 }
 
+app-search-bar {
+  width: 100%;
+}
+
+app-loader {
+  background-color: whitesmoke;
+}
