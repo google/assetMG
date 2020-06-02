@@ -7,10 +7,11 @@
       <app-asset-details [account]="(account$ | async)"></app-asset-details>
     </mat-sidenav>
     <mat-sidenav-content class="asset-gallery">
-      <!-- <app-search-bar></app-search-bar> -->
+      <app-search-bar *ngIf="filteredAssets"
+      (searchCriteria)="searchAssets($event)"></app-search-bar>
       <div class = "grid-layout content-margin">
         <app-asset class = "grid-item"
-        *ngFor="let asset of (assets$ | async)"
+        *ngFor="let asset of filteredAssets"
         [asset] = "asset"
         [selectedAssetId] = "selectedAsset"
         (click)="selectAsset(asset.id)">

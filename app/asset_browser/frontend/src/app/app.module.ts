@@ -6,6 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MaterialModule } from './shared/material.module';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 import { AssetGalleryComponent } from './asset-gallery/asset-gallery.component';
 import { AssetDetailsComponent } from './asset-details/asset-details.component';
@@ -37,6 +38,7 @@ import { ProgressBtnComponent } from './shared/progress-btn/progress-btn.compone
     MaterialModule,
     BrowserAnimationsModule,
     HttpClientModule,
+    FormsModule,
   ],
   providers: [
     LoaderService,

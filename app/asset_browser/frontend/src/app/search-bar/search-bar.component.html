@@ -1,0 +1,10 @@
+<mat-form-field id= "searchField" floatLabel=never>
+  <input matInput
+    type="text"
+    [(ngModel)]="searchStr"
+    (input)="searchThis()"
+    (focus)="checkPlaceHolder()"
+    (blur)="checkPlaceHolder()">
+    <mat-placeholder class="placeholder">{{searchPlaceholder}}</mat-placeholder>
+  <span matPrefix><i class="fas fa-search"></i>&nbsp;</span>
+</mat-form-field>
