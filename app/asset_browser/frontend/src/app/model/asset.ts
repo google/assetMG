@@ -4,6 +4,7 @@ export enum AssetType {
   IMG = 'IMAGE',
   VIDEO = 'YOUTUBE_VIDEO',
   HTML = 'MEDIA_BUNDLE',
+  ALL = 'ALL', // Mainly used for filtering
 }
 
 /** Different kind of adgroups connections to assets */

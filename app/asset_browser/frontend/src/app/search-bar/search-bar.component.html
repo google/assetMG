@@ -1,10 +1,26 @@
-<mat-form-field id= "searchField" floatLabel=never>
+<mat-form-field id= "searchField" floatLabel=never appearance="legacy">
   <input matInput
     type="text"
+    autocomplete="off"
     [(ngModel)]="searchStr"
     (input)="searchThis()"
     (focus)="checkPlaceHolder()"
     (blur)="checkPlaceHolder()">
     <mat-placeholder class="placeholder">{{searchPlaceholder}}</mat-placeholder>
-  <span matPrefix><i class="fas fa-search"></i>&nbsp;</span>
+    <span matPrefix><i class="fas fa-search"></i>&nbsp;</span>
+</mat-form-field>
+<mat-form-field>
+  <!-- <button mat-icon-button id="filterBtn" aria-label="Filter Assets"> -->
+
+  <!-- </button> -->
+  <mat-select matNativeControl id="filterBtn"
+    [(ngModel)]="filterStr"
+    (selectionChange)="applyFilter()">
+    <mat-option value="ALL">All Assets</mat-option>
+    <mat-option value="TEXT">Text</mat-option>
+    <mat-option value="IMAGE">Image</mat-option>
+    <mat-option value="YOUTUBE_VIDEO">Video</mat-option>
+    <mat-option value="MEDIA_BUNDLE">HTML</mat-option>
+  </mat-select>
+  <!-- <span matPrefix><i class="fas fa-filter"></i>&nbsp;</span> -->
 </mat-form-field>

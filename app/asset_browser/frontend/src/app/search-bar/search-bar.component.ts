@@ -8,8 +8,10 @@ import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 export class SearchBarComponent implements OnInit {
   searchPlaceholder: string = 'Search your assets';
   searchStr: string = '';
+  filterStr: string = 'ALL';
 
   @Output() searchCriteria = new EventEmitter<String>();
+  @Output() filterCriteria = new EventEmitter<String>();
 
   constructor() {}
 
@@ -27,5 +29,9 @@ export class SearchBarComponent implements OnInit {
 
   searchThis() {
     this.searchCriteria.emit(this.searchStr);
+  }
+
+  applyFilter() {
+    this.filterCriteria.emit(this.filterStr);
   }
 }

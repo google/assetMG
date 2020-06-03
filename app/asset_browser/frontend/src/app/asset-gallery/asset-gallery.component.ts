@@ -15,9 +15,11 @@ export class AssetGalleryComponent implements OnInit {
 
   account$: Observable<Account>;
   assets: Asset[];
-
   filteredAssets: Asset[];
-  selectedAsset: number;
+  activeAssetId: number;
+
+  filterStr: string = '';
+  filterType: AssetType = AssetType.ALL;
 
   constructor(private dataService: AssetService) {}
 
@@ -36,26 +38,40 @@ export class AssetGalleryComponent implements OnInit {
   }
 
   selectAsset(id) {
-    this.selectedAsset = id;
+    this.activeAssetId = id;
   }
 
-  searchAssets(searchStr) {
-    this.filteredAssets = searchStr
-      ? this.performFilter(searchStr)
-      : this.assets;
+  filterByStr(searchStr) {
+    this.filterStr = searchStr;
+    this.filteredAssets = this.applyFilter();
+  }
+
+  filterByType(filterAssetType) {
+    this.filterType = <AssetType>filterAssetType;
+    this.filteredAssets = this.applyFilter();
   }
 
   /** Resturns assets with the search string their name or
    * in their text (for text assets) */
-  performFilter(filterBy: string): Asset[] {
-    filterBy = filterBy.toLocaleLowerCase();
+  private applyFilter(): Asset[] {
+    // Nothing to filter - return full set of assets
+    if (!this.filterStr.length && this.filterType == AssetType.ALL) {
+      return this.assets;
+    }
+
+    // Filter by name and/or type
+    let searchStr = this.filterStr.toLocaleLowerCase();
     return this.assets.filter(
       (asset: Asset) =>
-        asset.name.toLocaleLowerCase().indexOf(filterBy) != -1 ||
-        (asset.type === AssetType.TEXT &&
-          (asset as TextAsset).asset_text
-            .toLocaleLowerCase()
-            .indexOf(filterBy) != -1)
+        // Filter assets by string
+        (!searchStr.length ||
+          asset.name.toLocaleLowerCase().indexOf(searchStr) != -1 ||
+          (asset.type === AssetType.TEXT &&
+            (asset as TextAsset).asset_text
+              .toLocaleLowerCase()
+              .indexOf(searchStr) != -1)) &&
+        // filter assets by type
+        (this.filterType === AssetType.ALL || asset.type === this.filterType)
     );
   }
 }
