@@ -5,6 +5,29 @@ import { Component, OnInit } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
+const ASSET_TYPES = [
+  {
+    label: 'All Assets',
+    value: AssetType.ALL,
+  },
+  {
+    label: 'Image',
+    value: AssetType.IMG,
+  },
+  {
+    label: 'Text',
+    value: AssetType.TEXT,
+  },
+  {
+    label: 'Video',
+    value: AssetType.VIDEO,
+  },
+  {
+    label: 'HTML',
+    value: AssetType.HTML,
+  },
+];
+
 @Component({
   selector: 'app-asset-gallery',
   templateUrl: './asset-gallery.component.html',
@@ -18,6 +41,7 @@ export class AssetGalleryComponent implements OnInit {
   filteredAssets: Asset[];
   activeAssetId: number;
 
+  filterOptions = ASSET_TYPES;
   filterStr: string = '';
   filterType: AssetType = AssetType.ALL;
 

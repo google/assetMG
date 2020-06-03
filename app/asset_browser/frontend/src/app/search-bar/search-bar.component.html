@@ -16,11 +16,9 @@
   <mat-select matNativeControl id="filterBtn"
     [(ngModel)]="filterStr"
     (selectionChange)="applyFilter()">
-    <mat-option value="ALL">All Assets</mat-option>
-    <mat-option value="TEXT">Text</mat-option>
-    <mat-option value="IMAGE">Image</mat-option>
-    <mat-option value="YOUTUBE_VIDEO">Video</mat-option>
-    <mat-option value="MEDIA_BUNDLE">HTML</mat-option>
+    <mat-option *ngFor="let option of filterOptions" [value]="option.value">
+      {{option.label}}
+    </mat-option>
   </mat-select>
   <!-- <span matPrefix><i class="fas fa-filter"></i>&nbsp;</span> -->
 </mat-form-field>

@@ -8,6 +8,8 @@
     </mat-sidenav>
     <mat-sidenav-content class="asset-gallery">
       <app-search-bar *ngIf="filteredAssets"
+        searchPlaceholderTxt="Search your assets"
+        [filterOptions]="filterOptions"
         (searchCriteria)="filterByStr($event)"
         (filterCriteria)="filterByType($event)">
       </app-search-bar>

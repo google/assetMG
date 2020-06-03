@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-search-bar',
@@ -6,23 +6,28 @@ import { Component, OnInit, EventEmitter, Output } from '@angular/core';
   styleUrls: ['./search-bar.component.css'],
 })
 export class SearchBarComponent implements OnInit {
-  searchPlaceholder: string = 'Search your assets';
+  searchPlaceholder: string = '';
   searchStr: string = '';
   filterStr: string = 'ALL';
 
-  @Output() searchCriteria = new EventEmitter<String>();
+  @Input() searchPlaceholderTxt;
+  @Input() filterOptions;
+  @Output()
+  searchCriteria = new EventEmitter<String>();
   @Output() filterCriteria = new EventEmitter<String>();
 
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.searchPlaceholder = this.searchPlaceholderTxt;
+  }
 
   checkPlaceHolder() {
     if (this.searchPlaceholder) {
       this.searchPlaceholder = null;
       return;
     } else {
-      this.searchPlaceholder = 'Search your assets';
+      this.searchPlaceholder = this.searchPlaceholderTxt;
       return;
     }
   }
