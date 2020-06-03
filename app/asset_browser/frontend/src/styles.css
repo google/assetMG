@@ -2,11 +2,6 @@
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 @import "~@fortawesome/fontawesome-free/css/all.css";
 
-.content-margin {
-  margin: 50px;
-  margin-top: 10px;
-}
-
 body {
 	font-family: 'Roboto'
 }

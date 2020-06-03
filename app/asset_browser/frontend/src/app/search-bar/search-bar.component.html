@@ -9,11 +9,8 @@
     <mat-placeholder class="placeholder">{{searchPlaceholder}}</mat-placeholder>
     <span matPrefix><i class="fas fa-search"></i>&nbsp;</span>
 </mat-form-field>
-<mat-form-field>
-  <!-- <button mat-icon-button id="filterBtn" aria-label="Filter Assets"> -->
-
-  <!-- </button> -->
-  <mat-select matNativeControl id="filterBtn"
+<mat-form-field id="filterBtn">
+   <mat-select matNativeControl
     [(ngModel)]="filterStr"
     (selectionChange)="applyFilter()">
     <mat-option *ngFor="let option of filterOptions" [value]="option.value">

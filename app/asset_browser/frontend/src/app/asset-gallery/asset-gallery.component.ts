@@ -1,9 +1,9 @@
 import { AssetService } from './../services/asset.service';
 import { Account } from './../model/account';
 import { Asset, TextAsset, AssetType } from './../model/asset';
-import { Component, OnInit } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { MatSidenav } from '@angular/material/sidenav';
 
 const ASSET_TYPES = [
   {
@@ -34,35 +34,57 @@ const ASSET_TYPES = [
   styleUrls: ['./asset-gallery.component.css'],
 })
 export class AssetGalleryComponent implements OnInit {
-  private _assetsSubscription: Subscription;
+  private _subscriptions: Subscription[] = [];
 
-  account$: Observable<Account>;
+  account: Account;
   assets: Asset[];
   filteredAssets: Asset[];
   activeAssetId: number;
+  openSideNav: boolean = false;
 
   filterOptions = ASSET_TYPES;
   filterStr: string = '';
   filterType: AssetType = AssetType.ALL;
 
+  @ViewChild('sideNav') sideNav: MatSidenav;
+
   constructor(private dataService: AssetService) {}
 
   ngOnInit(): void {
-    this.account$ = this.dataService.activeAccount$;
-    this._assetsSubscription = this.dataService.allAssets$.subscribe(
-      (assets) => {
+    this._subscriptions.push(
+      this.dataService.activeAccount$.subscribe((account) => {
+        this.account = account;
+        this.sideNav?.close();
+      })
+    );
+
+    this._subscriptions.push(
+      this.dataService.allAssets$.subscribe((assets) => {
         this.assets = assets;
         this.filteredAssets = assets;
-      }
+      })
     );
   }
 
   ngOnDestroy() {
-    this._assetsSubscription.unsubscribe();
+    for (let sub of this._subscriptions) {
+      sub.unsubscribe();
+    }
   }
 
   selectAsset(id) {
     this.activeAssetId = id;
+    this.openSideNav = true;
+    if (!this.sideNav.opened) {
+      this.sideNav.open();
+    }
+  }
+
+  /** Close side nav when escape is pressed */
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(
+    event: KeyboardEvent
+  ) {
+    this.sideNav.close();
   }
 
   filterByStr(searchStr) {

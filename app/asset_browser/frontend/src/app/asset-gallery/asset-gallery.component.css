@@ -5,36 +5,37 @@
   position: fixed;
   width: 100%;
   min-width: 100%;
+
   height: 100%;
   min-height: 100%;
+/*
+  margin: 50px;
+  margin-top: 10px; */
 }
 
 .asset-gallery {
   display: flex;
-  height: 100%;
   flex-direction: column;
+  width: 70%;
+  height: 100%;
+  margin: auto;
 }
 
 .asset-details-container {
-  width: 30%;
+  min-width: 25%;
+  padding: 30px;
+  padding-right: 50px;
 }
 
 .grid-layout {
   display: grid;
   grid-gap: 15px;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   /* grid-template-columns: auto-fit; */
 }
 
 .grid-item {
-  /*padding-top: 56.25%;
-  background: #303035;
   border-radius: 8px;
-  position: relative;
-  color: white;*/
-  /* background-color: lightgray; */
-  border-radius: 8px;
-  /* color: white; */
   height: 8rem;
   width: auto;
 
@@ -45,4 +46,13 @@
   /* Add this padding to make uo for material card padding in the grid*/
   padding-top: 16px;
   padding-bottom: 16px;
+}
+
+.left-align-content {
+  margin: 40px;
+  margin-top: 10px;
+}
+
+app-search-bar, .grid-layout {
+  margin: 2px;
 }
