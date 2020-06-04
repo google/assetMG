@@ -4,6 +4,7 @@ import { Account } from './../model/account';
 import { AssetService } from './../services/asset.service';
 
 import { Asset } from './../model/asset';
+import { tap } from 'rxjs/operators';
 @Component({
   selector: 'app-toolbar',
   templateUrl: './toolbar.component.html',
@@ -11,11 +12,19 @@ import { Asset } from './../model/asset';
 })
 export class ToolbarComponent implements OnInit {
   accounts$: Observable<Account[]>;
+  defaultAccount: number;
 
   constructor(private dataService: AssetService) {}
 
   ngOnInit(): void {
-    this.accounts$ = this.dataService.getAccountIds();
+    this.accounts$ = this.dataService.getAccountIds().pipe(
+      tap((accounts) => {
+        if (accounts.length) {
+          this.defaultAccount = accounts[0].id;
+          this.dataService.changeAccount(accounts[0].id);
+        }
+      })
+    );
   }
 
   accountChanged(event) {

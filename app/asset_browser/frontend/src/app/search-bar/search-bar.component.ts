@@ -1,4 +1,5 @@
 import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
+import { AssetType } from '../model/asset';
 
 @Component({
   selector: 'app-search-bar',
@@ -8,7 +9,7 @@ import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
 export class SearchBarComponent implements OnInit {
   searchPlaceholder: string = '';
   searchStr: string = '';
-  filterStr: string = 'ALL';
+  filterStr: string = <string>AssetType.ALL;
 
   @Input() searchPlaceholderTxt;
   @Input() filterOptions;
