@@ -1,7 +1,7 @@
 <!-- <div class ="main-container"> -->
   <app-toolbar class="toolbar"></app-toolbar>
   <app-loader></app-loader>
-  <mat-sidenav-container class="asset-gallery-container" >
+  <mat-sidenav-container>
     <mat-sidenav #sideNav
       class="asset-details-container mat-elevation-z8"
       position="end"
@@ -9,7 +9,7 @@
       closed>
       <app-asset-details [account]="account"></app-asset-details>
     </mat-sidenav>
-    <mat-sidenav-content class="asset-gallery"
+    <mat-sidenav-content
       [ngClass]="{'left-align-content' : sideNav?.opened}">
       <app-search-bar *ngIf="filteredAssets"
         searchPlaceholderTxt="Search your assets"
