@@ -19,8 +19,6 @@ server = Flask(__name__, static_url_path="",
             static_folder="../asset_browser/frontend/dist/frontend",
             template_folder="../asset_browser/frontend/dist/frontend")
 
-# CORS(server)
-server.config['CORS_HEADERS'] = 'Content-Type'
 
 setup.set_api_configs()
 

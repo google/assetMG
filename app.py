@@ -1,13 +1,80 @@
 import subprocess
 import os
 from pathlib import Path
+import argparse
+import sys
+# from app.backend.server import server
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleads import adwords
+import yaml
+import pip
 
-backend_path = Path('app/backend/')
+config_file = 'config.yaml'
 
-venv_install = subprocess.run(['python3 -m venv .venv'], shell=True)
-venv_start = subprocess.run('. .venv/bin/activate', shell=True)
+def get_refresh_token():
+  with open(config_file, 'r') as f:
+    credentials = yaml.safe_load(f)
+  client_config = {
+      'installed': {
+          'client_id': credentials['client_id'],
+          'client_secret': credentials['client_secret'],
+          'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
+          'token_uri': 'https://accounts.google.com/o/oauth2/token',
+      }
+  }
+  flow = InstalledAppFlow.from_client_config(
+      client_config, scopes=['https://www.googleapis.com/auth/adwords'])
+  flow.redirect_uri = 'urn:ietf:wg:oauth:2.0:oob'
+  auth_url, _ = flow.authorization_url(prompt='consent')
 
-install_deps = subprocess.run('pip3 install -r requirements.txt', shell=True)
+  print('Log into the Google Account you use to access your AdWords account '
+        'and go to the following URL: \n%s\n' % auth_url)
+  print('After approving the token enter the verification code (if specified).')
+  code = input('Code: ').strip()
 
-os.chdir(backend_path)
-run_server = subprocess.run(['python3', 'server.py'])
+  try:
+    flow.fetch_token(code=code)
+  except InvalidGrantError as ex:
+    print('Authentication has failed: %s' % ex)
+    sys.exit(1)
+
+  credentials['refresh_token'] = flow.credentials.refresh_token
+  with open(config_file, 'w') as f:
+    yaml.dump(credentials, f, default_flow_style=False)
+
+def main():
+
+
+    backend_path = Path('app/backend/')
+    #install virtualenv
+    # pip.main(["install", "virtualenv==16.7.9"])
+    # import virtualenv
+
+
+    # # create and activate the virtual environment
+    # venv_dir = ".venv"
+    # virtualenv.create_environment(venv_dir)
+    # execfile(os.path.join(venv_dir, "bin", "activate_this.py"))
+
+    # pip install a package using the venv as a prefix
+
+    # pip.main(["install", "-r", "requirements.txt"])
+
+    os.chdir(backend_path)
+    run_server = subprocess.run(['python3', 'server.py'])
+
+
+if __name__ == '__main__':
+
+  parser = argparse.ArgumentParser(prog='assetMG')
+
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument('-a', '--auth', action='store_true', default=False,
+                     help=('authenticate in Google Ads and store refresh'
+                           ' token in the credentials file'))
+
+  args = parser.parse_args()
+  if args.auth:
+    get_refresh_token()
+  else:
+    main()
