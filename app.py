@@ -8,6 +8,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleads import adwords
 import yaml
 import pip
+import platform
 
 config_file = 'config.yaml'
 
@@ -44,24 +45,16 @@ def get_refresh_token():
 
 def main():
 
-
     backend_path = Path('app/backend/')
-    #install virtualenv
-    # pip.main(["install", "virtualenv==16.7.9"])
-    # import virtualenv
 
+    running_os = platform.system()
 
-    # # create and activate the virtual environment
-    # venv_dir = ".venv"
-    # virtualenv.create_environment(venv_dir)
-    # execfile(os.path.join(venv_dir, "bin", "activate_this.py"))
-
-    # pip install a package using the venv as a prefix
-
-    # pip.main(["install", "-r", "requirements.txt"])
-
+    shell_bol = False
+    if running_os == 'Windows':
+      shell_bol=True
+    
     os.chdir(backend_path)
-    run_server = subprocess.run(['python3', 'server.py'])
+    run_server = subprocess.run(['python','server.py'], shell=shell_bol)
 
 
 if __name__ == '__main__':

@@ -115,26 +115,3 @@ def _get_ad_id(client, adgroup):
   return page['entries'][0]['ad']['id']
 
 
-# """ Uncomment this section for module testing"""
-# def main(client):
-#
-#   Example params for module testing
-#   asset = {
-#       'id': 8048065853,
-#       'name': 'ph.jpg',
-#       'type': 'ImageAsset',
-#       'image_url':
-#           'https://tpc.googlesyndication.com/simgad/14098414386513970705'
-#   }
-#
-#
-#   account = 7935681790
-#   adgroup = 96689486386  # 95186899405
-#
-#   # You can only add assets to adgroups from the same account
-#   mutate_ad(client, account, adgroup, asset, action='ADD')
-#
-#
-# if __name__ == '__main__':
-#   adwords_client = adwords.AdWordsClient.LoadFromStorage()
-#   main(adwords_client)

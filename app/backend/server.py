@@ -3,7 +3,6 @@
 import json
 from flask import Flask
 from flask import request, jsonify, render_template
-# from flask_cors import CORS
 from googleads import adwords
 from google.ads.google_ads.client import GoogleAdsClient
 import setup
@@ -14,6 +13,7 @@ from upload_asset import upload
 from service import Service_Class
 from pathlib import Path
 import copy
+import logging
 
 server = Flask(__name__, static_url_path="",
             static_folder="../asset_browser/frontend/dist/frontend",
@@ -30,6 +30,8 @@ asset_to_ag_json_path = Path('../cache/asset_to_ag.json')
 account_struct_json_path = Path('../cache/account_struct.json')
 
 create_mcc_struct(client)
+
+logging.basicConfig(filename='server_logs.log',level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
 
 @server.route('/')
 def upload_frontend():
@@ -128,6 +130,7 @@ def mutate():
   """
 
   data = request.get_json(force=True)
+  logging.info("Recived mutate request: " + str(data))
   asset_id = data[0]['asset']['id']
   asset_type = data[0]['asset']['type']
 
@@ -152,6 +155,7 @@ def mutate():
     index = None
 
   failed_assign = []
+  successeful_assign = []
   for item in data:
     account = item['account']
     adgroup = item['adgroup']
@@ -163,9 +167,11 @@ def mutate():
     except:
       failed_assign.append(adgroup)
       mutation = 'failed'
+      logging.error("could not execute mutation on adgroup: " + adgroup)
 
 
     if mutation is None:
+      successeful_assign.append(adgroup)
       asset_handler = _asset_ag_update(asset_handler,adgroup,action)  
 
   Service_Class.reset_cid(client)
@@ -178,7 +184,15 @@ def mutate():
   with open(asset_to_ag_json_path, 'w') as f:
     json.dump(asset_struct, f,indent=2)
 
-  return _build_response(msg=json.dumps([{'asset':asset_handler,'index':index}]), status=200)
+  if failed_assign and successeful_assign:
+    status = 206
+  elif successeful_assign:
+    status = 200
+  else:
+    status = 500
+
+  logging.info("mutate response: msg={} , status={}".format(asset_handler,index))
+  return _build_response(msg=json.dumps([{'asset':asset_handler,'index':index}]), status=status)
 
 
 def _text_asset_mutate(data, asset_id, asset_struct):
@@ -228,6 +242,7 @@ def _text_asset_mutate(data, asset_id, asset_struct):
         new_asset_second['text_type'] = 'headlines'
         asset_handlers.append({'asset':new_asset_second, 'index':None})
 
+  successeful_assign = []
   failed_assign = []
   for item in data:
     account = item['account']
@@ -248,6 +263,7 @@ def _text_asset_mutate(data, asset_id, asset_struct):
       for obj in asset_handlers:
         if obj['asset']['text_type'] == text_type_to_assign:
           obj['asset'] = _asset_ag_update(obj['asset'],adgroup,action)  
+          successeful_assign.append(adgroup)
 
   Service_Class.reset_cid(client)
 
@@ -260,7 +276,15 @@ def _text_asset_mutate(data, asset_id, asset_struct):
   with open(asset_to_ag_json_path, 'w') as f:
     json.dump(asset_struct, f,indent=2)
 
-  return _build_response(msg=json.dumps(asset_handlers), status=200)
+  if failed_assign and successeful_assign:
+    status = 206
+  elif successeful_assign:
+    status = 200
+  else:
+    status = 500
+  
+  logging.info("mutate response: msg={} , status={}".format(str(asset_handlers),index))
+  return _build_response(msg=json.dumps(asset_handlers), status=status)
 
 
 def _asset_ag_update(asset,adgroup,action):
