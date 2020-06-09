@@ -19,6 +19,7 @@ import {
   VideoAsset,
 } from './../model/asset';
 import { AssetService } from './../services/asset.service';
+import { STATUS } from '../model/response';
 
 const MAX_HEADLINES_LEN = 30;
 enum nodeType {
@@ -138,25 +139,20 @@ export class AccountCampaignsComponent implements OnChanges {
       this.updateInProgress = false;
       if (response) {
         this.updateMessage = response.msg;
-        console.log('UpdatedAsset: ', response.assets);
-        console.log('UpdateMessage: ', response.msg);
-        this.isErrorMessage = !response.success;
+        this.isErrorMessage = response.status_code !== STATUS.SUCCESS;
         // Clear previous edit icons from nodes
         let editedNodes = this.treeControl.dataNodes.filter(
           (node) => node.isEdited === true
         );
-        if (response.success) {
-          editedNodes.forEach((node) => {
-            node.isEdited = false;
-          });
-        } else {
-          // This is assuming that success or failure is for all the ad g
-          editedNodes.forEach((node) => {
-            node.isEdited = false;
-            // Undo the changes
+        editedNodes.forEach((node) => {
+          node.isEdited = false;
+          if (
+            response.status_code !== STATUS.SUCCESS &&
+            response.status_code !== STATUS.PARTIAL_SUCCESS
+          ) {
             this.nodeSelectionToggle(node);
-          });
-        }
+          }
+        });
       }
     });
   }

@@ -11,7 +11,7 @@ import {
   AssetType,
   MutateRecord,
 } from './../model/asset';
-import { UpdateResponse } from './../model/response';
+import { UpdateResponse, STATUS } from './../model/response';
 import { Account } from './../model/account';
 
 @Injectable({
@@ -116,36 +116,44 @@ export class AssetService {
   updateAsset(changedAsset: Asset, updateArray: MutateRecord[]) {
     const endpoint = this.API_SERVER + '/mutate-ad/';
     console.log('FE Updates: ', updateArray);
-    let subscritpion = this.http.post(endpoint, updateArray).subscribe(
-      (response) => {
-        console.log('Returned Updates:', response);
-        console.log('Before: ', this._assetsToAdGroups);
-        // updated the asset to adgroup cache
-        let updatedAssets: Asset[] = [];
-        for (let update of <any[]>response) {
-          updatedAssets.push(update.asset);
-          if (!update.id) {
-            this._assetsToAdGroups.push(update.asset);
-          } else {
-            this._assetsToAdGroups[update.id] = update.asset;
+    let subscritpion = this.http
+      .post(endpoint, updateArray, { observe: 'response' })
+      .subscribe(
+        (response) => {
+          // updated the asset to adgroup cache
+          let updatedAssets: Asset[] = [];
+          for (let update of <any[]>response.body) {
+            updatedAssets.push(update.asset);
+            if (!update.id) {
+              this._assetsToAdGroups.push(update.asset);
+            } else {
+              this._assetsToAdGroups[update.id] = update.asset;
+            }
           }
+          // Update the new selection
+          this._activeAssetAdGroups$.next(
+            this.getActiveAssetAdGroups(changedAsset.id)
+          );
+          // Updated the caller that the API is done
+          this._updateFinished$.next({
+            status_code: response.status,
+            msg:
+              response.status === STATUS.SUCCESS
+                ? ''
+                : 'Update failed for some ad-groups',
+            assets: updatedAssets,
+          });
+          subscritpion.unsubscribe();
+        },
+        (error) => {
+          // API call failed - Returned status 500
+          this._updateFinished$.next({
+            status_code: STATUS.FAIL,
+            msg: 'Update failed',
+            assets: [],
+          });
+          subscritpion.unsubscribe();
         }
-        this._updateFinished$.next({
-          success: true,
-          msg: '',
-          assets: updatedAssets,
-        });
-        subscritpion.unsubscribe();
-      },
-      (error) => {
-        console.log('Error: ', error);
-        this._updateFinished$.next({
-          success: false,
-          msg: 'Failed to update asset',
-          assets: [],
-        });
-        subscritpion.unsubscribe();
-      }
-    );
+      );
   }
 }
