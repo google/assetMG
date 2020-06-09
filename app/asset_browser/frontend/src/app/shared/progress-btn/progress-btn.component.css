@@ -7,3 +7,9 @@ mat-progress-bar {
 button {
   min-width: 90px;
 }
+.button-update-msg {
+  color: grey;
+  line-height: 1.2em;
+  transform: translateY(10px);
+  font-size: 75%;
+}

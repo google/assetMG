@@ -71,7 +71,11 @@ export class AccountCampaignsComponent implements OnChanges {
   treeFlattener: MatTreeFlattener<TreeNode, TreeNode>;
   dataSource: MatTreeFlatDataSource<TreeNode, TreeNode>;
   checklistSelection = new SelectionModel<TreeNode>(true, [], true);
+
+  /** Update button params */
   updateInProgress: boolean = false;
+  updateMessage: string = '';
+  isErrorMessage: boolean = false;
 
   @Input()
   set account(account: Account) {
@@ -80,6 +84,8 @@ export class AccountCampaignsComponent implements OnChanges {
   get account(): Account {
     return this._account;
   }
+
+  @Input() buttonLabel: string;
 
   get showUpdateBtn(): boolean {
     return this._showUpdateBtn;
@@ -123,18 +129,35 @@ export class AccountCampaignsComponent implements OnChanges {
     });
     this.dataService.activeAssetAdGroups$.subscribe((adGroups) => {
       // Refresh the selected AdGroups
+      this.updateMessage = '';
+      this.isErrorMessage = false;
       this._selAdGroups = adGroups;
       this.updateSelectedNodes();
     });
-    this.dataService.updateFinished$.subscribe(() => {
+    this.dataService.updateFinished$.subscribe((response) => {
       this.updateInProgress = false;
-      // Clear previous edits
-      let editedNodes = this.treeControl.dataNodes.filter(
-        (node) => node.isEdited === true
-      );
-      editedNodes.forEach((node) => {
-        node.isEdited = false;
-      });
+      if (response) {
+        this.updateMessage = response.msg;
+        console.log('UpdatedAsset: ', response.assets);
+        console.log('UpdateMessage: ', response.msg);
+        this.isErrorMessage = !response.success;
+        // Clear previous edit icons from nodes
+        let editedNodes = this.treeControl.dataNodes.filter(
+          (node) => node.isEdited === true
+        );
+        if (response.success) {
+          editedNodes.forEach((node) => {
+            node.isEdited = false;
+          });
+        } else {
+          // This is assuming that success or failure is for all the ad g
+          editedNodes.forEach((node) => {
+            node.isEdited = false;
+            // Undo the changes
+            this.nodeSelectionToggle(node);
+          });
+        }
+      }
     });
   }
 
@@ -313,6 +336,14 @@ export class AccountCampaignsComponent implements OnChanges {
     if (!selected && allSelected) {
       this.checklistSelection.select(node);
       this.changeDetectorRef.markForCheck();
+    } else {
+      const noneSelected = descendants.every(
+        (child) => !this.checklistSelection.isSelected(child)
+      );
+      if (selected && noneSelected) {
+        this.checklistSelection.deselect(node);
+        this.changeDetectorRef.markForCheck();
+      }
     }
     return allSelected;
   }
@@ -330,14 +361,19 @@ export class AccountCampaignsComponent implements OnChanges {
   }
 
   /** Toggle the entity selection. Select/deselect all the descendants node */
-  nodeSelectionToggle(node: TreeNode, checked: boolean): void {
-    this.trackChanges(node, checked);
+  nodeSelectionToggle(node: TreeNode): void {
     this.checklistSelection.toggle(node);
     const descendants = this.treeControl.getDescendants(node);
     this.checklistSelection.isSelected(node)
       ? this.checklistSelection.select(...descendants, node)
       : this.checklistSelection.deselect(...descendants, node);
     this.changeDetectorRef.markForCheck();
+  }
+
+  /** Track changes made then select/deselect all the descendants node */
+  nodeClicked(node: TreeNode, checked: boolean): void {
+    this.trackChanges(node, checked);
+    this.nodeSelectionToggle(node);
   }
 
   /** Update the mutate map to keep track of user's changes */

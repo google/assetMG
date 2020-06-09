@@ -4,7 +4,7 @@
     <mat-checkbox [disabled] = "node.disabled"
                   [checked]="descendantsAllSelected(node)"
                   [indeterminate]="descendantsPartiallySelected(node)"
-                  (change)="nodeSelectionToggle(node, $event.checked)"
+                  (change)="nodeClicked(node, $event.checked)"
                   [attr.data-entity-id]="node.getId()">
       {{node.getName()}}
     </mat-checkbox>
@@ -18,13 +18,15 @@
     </button>
     <mat-checkbox [checked]="descendantsAllSelected(node)"
                   [indeterminate]="descendantsPartiallySelected(node)"
-                  (change)="nodeSelectionToggle(node, $event.checked)"
+                  (change)="nodeClicked(node, $event.checked)"
                   [attr.data-entity-id]="node.getId()">
     {{node.getName()}}
     </mat-checkbox>
   </mat-tree-node>
 </mat-tree>
 <app-progress-btn *ngIf="showUpdateBtn"
-  btnLabel= 'Update'
+  [btnLabel]="buttonLabel"
+  [btnUpdateMsg]="updateMessage"
+  [isError]="isErrorMessage"
   [inProgress]="updateInProgress"
   (btnClick)="updateAsset()"></app-progress-btn>

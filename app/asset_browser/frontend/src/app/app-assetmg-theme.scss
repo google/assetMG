@@ -9,7 +9,7 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$assetmg-app-primary: mat-palette($mat-blue, 800, 700, 700);
+$assetmg-app-primary: mat-palette($mat-blue, 800, 700, 600);
 $assetmg-app-accent:  mat-palette($mat-blue, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
@@ -34,4 +34,7 @@ $assetmg-app-theme: mat-light-theme($assetmg-app-primary, $assetmg-app-accent, $
 .accent-border {
   border: solid;
   border-color: mat-color($assetmg-app-accent);
+}
+.warning-msg {
+  color: mat-color($assetmg-app-warn) !important;
 }

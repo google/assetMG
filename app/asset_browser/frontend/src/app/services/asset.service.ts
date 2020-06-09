@@ -11,8 +11,8 @@ import {
   AssetType,
   MutateRecord,
 } from './../model/asset';
+import { UpdateResponse } from './../model/response';
 import { Account } from './../model/account';
-import { Action } from 'rxjs/internal/scheduler/Action';
 
 @Injectable({
   providedIn: 'root',
@@ -31,7 +31,7 @@ export class AssetService {
   private _activeAssetAdGroups$ = new BehaviorSubject<AssetAdGroups>(null);
 
   /** Gets updated when the update Asset is called */
-  private _updateFinished$ = new BehaviorSubject<Asset>(null);
+  private _updateFinished$ = new BehaviorSubject<UpdateResponse>(null);
 
   allAssets$ = this._allAssets$.asObservable();
   activeAccount$ = this._activeAccount$.asObservable();
@@ -117,23 +117,33 @@ export class AssetService {
     const endpoint = this.API_SERVER + '/mutate-ad/';
     console.log('FE Updates: ', updateArray);
     let subscritpion = this.http.post(endpoint, updateArray).subscribe(
-      (updatedAssets) => {
-        console.log('Returned Updates:', updatedAssets);
+      (response) => {
+        console.log('Returned Updates:', response);
         console.log('Before: ', this._assetsToAdGroups);
         // updated the asset to adgroup cache
-        for (let update of <any[]>updatedAssets) {
+        let updatedAssets: Asset[] = [];
+        for (let update of <any[]>response) {
+          updatedAssets.push(update.asset);
           if (!update.id) {
             this._assetsToAdGroups.push(update.asset);
           } else {
             this._assetsToAdGroups[update.id] = update.asset;
           }
         }
-        this._updateFinished$.next(changedAsset);
+        this._updateFinished$.next({
+          success: true,
+          msg: '',
+          assets: updatedAssets,
+        });
         subscritpion.unsubscribe();
       },
       (error) => {
         console.log('Error: ', error);
-        this._updateFinished$.next(changedAsset);
+        this._updateFinished$.next({
+          success: false,
+          msg: 'Failed to update asset',
+          assets: [],
+        });
         subscritpion.unsubscribe();
       }
     );

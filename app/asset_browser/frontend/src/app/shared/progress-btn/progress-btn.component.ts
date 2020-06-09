@@ -16,6 +16,8 @@ export class ProgressBtnComponent implements OnInit {
   @Input() btnLabel: string;
   @Input() inProgress: boolean;
   @Input() disabled: boolean;
+  @Input() btnUpdateMsg: string;
+  @Input() isError: boolean = false;
 
   constructor() {}
 

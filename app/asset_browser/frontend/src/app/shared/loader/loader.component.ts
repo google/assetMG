@@ -8,6 +8,5 @@ import { LoaderService } from '../../services/loader.service';
 })
 export class LoaderComponent {
   isLoading: Subject<boolean> = this.loaderService.isLoading;
-  temp: boolean = true;
   constructor(private loaderService: LoaderService) {}
 }
