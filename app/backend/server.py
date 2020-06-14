@@ -1,4 +1,17 @@
-# Lint as: python3
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """ server configuration for the assetMG tool"""
 import json
 from flask import Flask
@@ -22,7 +35,9 @@ server = Flask(__name__, static_url_path="",
 
 setup.set_api_configs()
 
-CONFIG_PATH = '../config/'
+CONFIG_PATH = Path('../config/')
+LOGS_PATH = Path('../logs/server.log')
+
 client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH + 'googleads.yaml')
 googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH + 'google-ads.yaml')
 
@@ -30,6 +45,7 @@ asset_to_ag_json_path = Path('../cache/asset_to_ag.json')
 account_struct_json_path = Path('../cache/account_struct.json')
 
 create_mcc_struct(client)
+
 
 logging.basicConfig(filename='server_logs.log',level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
 
@@ -167,7 +183,7 @@ def mutate():
     except:
       failed_assign.append(adgroup)
       mutation = 'failed'
-      logging.error("could not execute mutation on adgroup: " + adgroup)
+      logging.error("could not execute mutation on adgroup: " + str(adgroup))
 
 
     if mutation is None:
@@ -258,6 +274,7 @@ def _text_asset_mutate(data, asset_id, asset_struct):
     except:
       failed_assign.append(adgroup)
       mutation = 'failed'
+      logging.error("could not execute mutation on adgroup: " + str(adgroup))
     
     if mutation is None:
       for obj in asset_handlers:

@@ -1,3 +1,17 @@
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """This module allows uploading new assets to a google ads account.
 
 This module allows uploading assets threw the assetMG tool, and assigning them
@@ -185,20 +199,3 @@ def upload(client,
 
   if asset_type == 'MEDIA_BUNDLE':
     print(upload_html5_asset(client, account, asset_name, path, adgroups))
-
-
-# Uncomment this section for module testing
-
-# def main(client):
-#   upload(
-#       client,
-#       9489090398,
-#       'html5',
-#       'generic html5',
-#       path = html_path,
-#       adgroups=[97909190375])
-#
-#
-# if __name__ == '__main__':
-#   adwords_client = adwords.AdWordsClient.LoadFromStorage()
-#   main(adwords_client)

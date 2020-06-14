@@ -1,4 +1,17 @@
-# Lint as: python3
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """This module is a part of the UAC AssetMG tool.
 
 there are two ways to use this module:
@@ -7,7 +20,6 @@ the first one is the top MCC account structure down to the asset level, and the
 second one is a mapping from each asset to its adgroups.
 2. "create_mcc_struct" function returns an account structure down to assets, and
 creates an asset-to-adgroup mapping json, to be used later.
-(TODO): Change file's PATH to local directory for use outside google3
 """
 
 import json
@@ -303,17 +315,3 @@ def _revert_json():
 
   with open(account_struct_json_path, 'w') as f:
     json.dump(clean, f, indent=2)
-
-# # Uncomment this section for module testing
-# def main(client):
-
-#   # use this function to return a json with both structures:
-#   # print(get_struct(client))
-
-#   # use this function to return account structure and create asset-to-ag json:
-#   print(create_mcc_struct(client))
-
-
-# if __name__ == '__main__':
-#   adwords_client = adwords.AdWordsClient.LoadFromStorage()
-#   main(adwords_client)
