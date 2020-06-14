@@ -38,8 +38,8 @@ setup.set_api_configs()
 CONFIG_PATH = Path('../config/')
 LOGS_PATH = Path('../logs/server.log')
 
-client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH + 'googleads.yaml')
-googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH + 'google-ads.yaml')
+client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH / 'googleads.yaml')
+googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH / 'google-ads.yaml')
 
 asset_to_ag_json_path = Path('../cache/asset_to_ag.json')
 account_struct_json_path = Path('../cache/account_struct.json')
@@ -47,7 +47,7 @@ account_struct_json_path = Path('../cache/account_struct.json')
 create_mcc_struct(client)
 
 
-logging.basicConfig(filename='server_logs.log',level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
+logging.basicConfig(filename=LOGS_PATH ,level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
 
 @server.route('/')
 def upload_frontend():

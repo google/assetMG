@@ -24,6 +24,9 @@ import pip
 import platform
 
 config_file = 'config.yaml'
+LOGS_PATH = Path('logs/app.log')
+
+logging.basicConfig(filename=LOGS_PATH ,level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
 
 def get_refresh_token():
   with open(config_file, 'r') as f:
