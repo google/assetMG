@@ -27,33 +27,106 @@ from service import Service_Class
 from pathlib import Path
 import copy
 import logging
+import yaml
+from google_auth_oauthlib.flow import InstalledAppFlow
 
 server = Flask(__name__, static_url_path="",
             static_folder="../asset_browser/frontend/dist/frontend",
             template_folder="../asset_browser/frontend/dist/frontend")
 
-
-setup.set_api_configs()
-
 CONFIG_PATH = Path('../config/')
+CONFIG_FILE_PATH = Path('../../config.yaml')
 LOGS_PATH = Path('../logs/server.log')
-
-client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH / 'googleads.yaml')
-googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH / 'google-ads.yaml')
 
 asset_to_ag_json_path = Path('../cache/asset_to_ag.json')
 account_struct_json_path = Path('../cache/account_struct.json')
 
-create_mcc_struct(client)
-
-
 logging.basicConfig(filename=LOGS_PATH ,level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
+
+client=''
+googleads_client=''
+
+
+# check if config is valid. if yes, init clients and create struct
+with open(CONFIG_FILE_PATH, 'r') as f:
+  config_file = yaml.load(f, Loader=yaml.FullLoader)
+
+if config_file['config_valid']:
+  client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH / 'googleads.yaml')
+  googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH / 'google-ads.yaml')
+  create_mcc_struct(client)
+
+
 
 @server.route('/')
 def upload_frontend():
   return render_template("index.html")
   # return 'Hello, World!'
   # use this route to upload front-end
+
+
+@server.route('/config/', methods=['GET'])
+def get_configs():
+  """return all config parameters"""
+  with open(CONFIG_FILE_PATH, 'r') as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
+
+  return _build_response(json.dumps(config))
+
+
+@server.route('/set-configs/', methods=['POST'])
+def set_secret():
+  """gets client id, client secret, dev token.
+  Saves to config.yaml and returns refresh url"""
+  global flow
+  data = request.get_json(force=True)
+  data['refresh_token'] = None
+  data['config_valid'] = 0
+
+  with open(CONFIG_FILE_PATH, 'w') as f:
+    yaml.dump(data, f)
+
+  try:
+    client_config = {
+        'installed': {
+            'client_id': data['client_id'],
+            'client_secret': data['client_secret'],
+            'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
+            'token_uri': 'https://accounts.google.com/o/oauth2/token',
+        }
+    }
+    flow = InstalledAppFlow.from_client_config(
+        client_config, scopes=['https://www.googleapis.com/auth/adwords'])
+    flow.redirect_uri = 'urn:ietf:wg:oauth:2.0:oob'
+    auth_url, _ = flow.authorization_url()
+    status=200
+
+  except Exception as e:
+    logging.error(str(e))
+    status=500
+    auth_url = ''
+
+  return _build_response(msg=json.dumps(auth_url), status=status)
+
+
+@server.route('/set-refresh/', methods=['POST'])
+def set_refresh_token():
+  """Can only be called if set-configs was called before.
+  Gets the refresh token and saves it to config.yaml
+  If succesfull calls init_client()"""
+  data = request.get_json(force=True)
+  code = data['code']
+  set_status = setup.set_refresh(code,flow)
+  if set_status:
+    # meaning that set_refresh failed
+    return _build_response(msg=json.dumps("could not update refresh token"), status=500)
+
+  init_status = init_clients()
+  
+  if init_status:
+    return _build_response(msg=json.dumps("config invalid"), status=500)
+  else:
+    return _build_response(status=200)
 
 
 @server.route('/accounts/', methods=['GET'])
@@ -363,6 +436,37 @@ def _build_response(msg='', status=200, mimetype='application/json'):
   response = server.response_class(msg, status=status, mimetype=mimetype)
   response.headers['Access-Control-Allow-Origin'] = '*'
   return response
+
+
+def init_clients():
+  """Sets up googleads.yaml and google-ads.yaml and inits both clients.
+  tries to create struct. if succesful, marks config_valid=1 in config.yaml
+  to mark config is valid. Marks 0 otherwise."""
+  setup.set_api_configs()
+
+  status = 0
+
+  global client
+  global googleads_client
+  client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH / 'googleads.yaml')
+  googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH / 'google-ads.yaml')
+  
+  try:
+    create_mcc_struct(client)
+
+    with open(CONFIG_FILE_PATH, 'r') as f:
+      config = yaml.load(f, Loader=yaml.FullLoader)
+
+    config['config_valid'] = 1
+
+    with open(CONFIG_FILE_PATH, 'w') as f:
+      yaml.dump(config, f)
+
+  except Exception as e:
+    logging.error(str(e))
+    status=1
+
+  return status
 
 
 server.run(debug=True)

@@ -20,20 +20,55 @@ with the paramaters given by the user in the config.yaml file
 
 import yaml
 import os
+from pathlib import Path
+import logging
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleads import adwords
+
+LOGS_PATH = Path('../logs/server.log')
+logging.basicConfig(filename=LOGS_PATH ,level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
+
+CONFIG_PATH = Path('../config/')
+CONFIG_FILE_PATH = Path('../../config.yaml')
 
 
 def set_api_configs():
   """set API configuration files."""
 
-  with open('../../config.yaml', 'r') as f:
+  with open(CONFIG_FILE_PATH, 'r') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 
   aw_config = {'adwords': config}
-  with open('../config/googleads.yaml', 'w') as f:
+  with open(CONFIG_PATH / 'googleads.yaml', 'w') as f:
     yaml.dump(aw_config, f)
 
   config['login_customer_id'] = config['client_customer_id']
-  with open('../config/google-ads.yaml', 'w') as f:
+  with open(CONFIG_PATH / 'google-ads.yaml', 'w') as f:
     yaml.dump(config, f)
 
+
+def set_refresh(code,flow):
+  """Gets the refresh token, using code from the user"""
+  code = code.strip()
+  finish_status = 0
+
+  try:
+    flow.fetch_token(code=code)
+  except Exception as ex:
+    logging.error('Authentication has failed: %s' % ex)
+    finish_status = 1
+
+  try:  
+    with open(CONFIG_FILE_PATH, 'r') as f:
+      credentials = yaml.safe_load(f)
+
+    credentials['refresh_token'] = flow.credentials.refresh_token
+    with open(CONFIG_FILE_PATH, 'w') as f:
+      yaml.dump(credentials, f, default_flow_style=False)
+
+  except Exception as e:
+    logging.error(str(e))
+    finish_status = 1
+    
+  return finish_status
 
