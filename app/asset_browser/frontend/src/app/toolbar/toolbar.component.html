@@ -4,7 +4,7 @@
     	<img src="assets/gtech_logo.png" style="width: 40px;">
     	<span>AssetMG - Prototype</span>
       </div>
-      <div class="toolbar_select">
+      <div *ngIf="this.loadAccounts" class="toolbar_select">
         <mat-form-field class="account_select">
         <mat-label>Account</mat-label>
         <mat-select [(value)]="defaultAccount">
@@ -13,6 +13,10 @@
           </mat-option>
         </mat-select>
         </mat-form-field>
+    </div>
+    <div *ngIf="this.loadAccounts" class="right-align">
+      <button mat-icon-button (click)="openSettings()"><mat-icon>settings</mat-icon></button>
+      <button mat-icon-button (click)="feedbackClicked()"><mat-icon>feedback</mat-icon></button>
     </div>
     </mat-toolbar-row>
   </mat-toolbar>

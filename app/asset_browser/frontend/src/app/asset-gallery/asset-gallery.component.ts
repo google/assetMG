@@ -19,6 +19,9 @@ import { Asset, TextAsset, AssetType } from './../model/asset';
 import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatSidenav } from '@angular/material/sidenav';
+import { ConfigService } from '../services/config.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AppSetupComponent } from '../app-setup/app-setup.component';
 
 const ASSET_TYPES = [
   {
@@ -63,18 +66,41 @@ export class AssetGalleryComponent implements OnInit {
 
   @ViewChild('sideNav') sideNav: MatSidenav;
 
-  constructor(private dataService: AssetService) {}
+  constructor(
+    private _dataService: AssetService,
+    private _configService: ConfigService,
+    private _setupDialog: MatDialog
+  ) {}
+
+  getConfigService(): ConfigService {
+    return this._configService;
+  }
 
   ngOnInit(): void {
+    this._configService.loadConfigSettings();
+
+    this._configService.configLoaded$.subscribe((loaded) => {
+      if (!loaded) {
+        const configDialogRef = this._setupDialog.open(AppSetupComponent, {
+          disableClose: true,
+        });
+
+        configDialogRef.afterClosed().subscribe((success) => {
+          if (success) {
+            this.getConfigService().configValid = true;
+          }
+        });
+      }
+    });
     this._subscriptions.push(
-      this.dataService.activeAccount$.subscribe((account) => {
+      this._dataService.activeAccount$.subscribe((account) => {
         this.account = account;
         this.sideNav?.close();
       })
     );
 
     this._subscriptions.push(
-      this.dataService.allAssets$.subscribe((assets) => {
+      this._dataService.allAssets$.subscribe((assets) => {
         this.assets = assets;
         this.filteredAssets = assets;
       })

@@ -13,8 +13,8 @@
 # limitations under the License.
 
 adwords:
-  client_customer_id: 
-  client_id: 
-  client_secret: 
-  developer_token: 
+  client_customer_id:
+  client_id:
+  client_secret:
+  developer_token:
   refresh_token:

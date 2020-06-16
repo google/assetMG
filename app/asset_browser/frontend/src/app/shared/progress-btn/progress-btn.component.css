@@ -6,6 +6,12 @@ mat-progress-bar {
 
 button {
   min-width: 90px;
+  display: block;
+  margin: 0 auto;
+}
+
+.addedPadding{
+  padding: 12px;
 }
 .button-update-msg {
   color: grey;

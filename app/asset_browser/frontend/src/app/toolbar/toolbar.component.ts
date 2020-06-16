@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Account } from './../model/account';
 import { AssetService } from './../services/asset.service';
 
 import { Asset } from './../model/asset';
 import { tap } from 'rxjs/operators';
+import { MatDialog } from '@angular/material/dialog';
+import { SettingsComponent } from '../settings/settings.component';
+import { ConfigService } from '../services/config.service';
+
 @Component({
   selector: 'app-toolbar',
   templateUrl: './toolbar.component.html',
@@ -29,14 +33,19 @@ export class ToolbarComponent implements OnInit {
   accounts$: Observable<Account[]>;
   defaultAccount: number;
 
-  constructor(private dataService: AssetService) {}
+  @Input() loadAccounts: boolean = false;
+
+  constructor(
+    private _dataService: AssetService,
+    private _settingsDialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
-    this.accounts$ = this.dataService.getAccountIds().pipe(
+    this.accounts$ = this._dataService.getAccountIds().pipe(
       tap((accounts) => {
         if (accounts.length) {
           this.defaultAccount = accounts[0].id;
-          this.dataService.changeAccount(accounts[0].id);
+          this._dataService.changeAccount(accounts[0].id);
         }
       })
     );
@@ -45,7 +54,20 @@ export class ToolbarComponent implements OnInit {
   accountChanged(event) {
     // Only get a notification for the selected account not the "unselected" account
     if (event.isUserInput) {
-      this.dataService.changeAccount(event.source.value);
+      this._dataService.changeAccount(event.source.value);
     }
+  }
+  openSettings() {
+    const dialogRef = this._settingsDialog.open(SettingsComponent);
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
+    });
+  }
+
+  /** TODO: add a proper email here */
+  feedbackClicked() {
+    let mailText = 'mailto:abc@abc.com+?subject=AssetMG%Feedback';
+    window.location.href = mailText;
   }
 }
