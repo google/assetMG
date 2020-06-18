@@ -82,12 +82,12 @@ def set_secret():
   data = request.get_json(force=True)
 
   # determines if its a reset to previous valid config or trying to setup new config
-  is_reset = False
+  is_reset = True
 
   if not data.get('config_valid'):
     data['refresh_token'] = None
     data['config_valid'] = 0
-    is_reset = True
+    is_reset = False
 
   with open(CONFIG_FILE_PATH, 'w') as f:
     yaml.dump(data, f)
