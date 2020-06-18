@@ -76,15 +76,25 @@ def get_configs():
 
 @server.route('/set-configs/', methods=['POST'])
 def set_secret():
-  """gets client id, client secret, dev token.
+  """gets client id, client secret, dev token, account id.
   Saves to config.yaml and returns refresh url"""
   global flow
   data = request.get_json(force=True)
-  data['refresh_token'] = None
-  data['config_valid'] = 0
+
+  # determines if its a reset to previous valid config or trying to setup new config
+  is_reset = False
+
+  if not data.get('config_dalid'):
+    data['refresh_token'] = None
+    data['config_valid'] = 0
+    is_reset = True
 
   with open(CONFIG_FILE_PATH, 'w') as f:
     yaml.dump(data, f)
+
+  # If its just a reset - no need to generate a url
+  if is_reset:
+    return _build_response(msg=json.dumps('successfully restored previous configs'), status=200)
 
   try:
     client_config = {
