@@ -84,7 +84,7 @@ def set_secret():
   # determines if its a reset to previous valid config or trying to setup new config
   is_reset = False
 
-  if not data.get('config_dalid'):
+  if not data.get('config_valid'):
     data['refresh_token'] = None
     data['config_valid'] = 0
     is_reset = True
@@ -147,6 +147,7 @@ def get_all_accounts():
     return _build_response(msg=json.dumps(accounts), status=200)
   except:
     return _build_response(msg="Couldn't get accoutns", status=500)
+
 
 
 @server.route('/accounts-assets/', methods=['GET'])
