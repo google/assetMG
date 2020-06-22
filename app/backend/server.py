@@ -52,6 +52,7 @@ with open(CONFIG_FILE_PATH, 'r') as f:
   config_file = yaml.load(f, Loader=yaml.FullLoader)
 
 if config_file['config_valid']:
+  setup.set_api_configs()
   client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH / 'googleads.yaml')
   googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH / 'google-ads.yaml')
   create_mcc_struct(client)
@@ -76,15 +77,25 @@ def get_configs():
 
 @server.route('/set-configs/', methods=['POST'])
 def set_secret():
-  """gets client id, client secret, dev token.
+  """gets client id, client secret, dev token, account id.
   Saves to config.yaml and returns refresh url"""
   global flow
   data = request.get_json(force=True)
-  data['refresh_token'] = None
-  data['config_valid'] = 0
+
+  # determines if its a reset to previous valid config or trying to setup new config
+  is_reset = True
+
+  if not data.get('config_valid'):
+    data['refresh_token'] = None
+    data['config_valid'] = 0
+    is_reset = False
 
   with open(CONFIG_FILE_PATH, 'w') as f:
     yaml.dump(data, f)
+
+  # If its just a reset - no need to generate a url
+  if is_reset:
+    return _build_response(msg=json.dumps('successfully restored previous configs'), status=200)
 
   try:
     client_config = {
@@ -129,6 +140,18 @@ def set_refresh_token():
     return _build_response(status=200)
 
 
+@server.route('/create-struct/', methods=['GET'])
+def create_struct():
+  try:
+    create_mcc_struct(client)
+    status=200
+  except Exception as e:
+    status=500
+    logging.error(str(e))
+
+  return _build_response(status=status)
+
+
 @server.route('/accounts/', methods=['GET'])
 def get_all_accounts():
   """gets all accounts under the configured MCC. name and id"""
@@ -137,6 +160,7 @@ def get_all_accounts():
     return _build_response(msg=json.dumps(accounts), status=200)
   except:
     return _build_response(msg="Couldn't get accoutns", status=500)
+
 
 
 @server.route('/accounts-assets/', methods=['GET'])
@@ -442,17 +466,19 @@ def init_clients():
   """Sets up googleads.yaml and google-ads.yaml and inits both clients.
   tries to create struct. if succesful, marks config_valid=1 in config.yaml
   to mark config is valid. Marks 0 otherwise."""
+
   setup.set_api_configs()
 
   status = 0
 
   global client
   global googleads_client
-  client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH / 'googleads.yaml')
-  googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH / 'google-ads.yaml')
+
 
   try:
-    create_mcc_struct(client)
+
+    client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH / 'googleads.yaml')
+    googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH / 'google-ads.yaml')
 
     with open(CONFIG_FILE_PATH, 'r') as f:
       config = yaml.load(f, Loader=yaml.FullLoader)
