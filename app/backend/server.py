@@ -29,6 +29,8 @@ import copy
 import logging
 import yaml
 from google_auth_oauthlib.flow import InstalledAppFlow
+import webbrowser
+from threading import Timer
 
 server = Flask(__name__, static_url_path="",
             static_folder="../asset_browser/frontend/dist/frontend",
@@ -495,5 +497,10 @@ def init_clients():
   return status
 
 
-server.run(debug=True)
+def open_browser():
+      webbrowser.open_new('http://127.0.0.1:5000/')
+
+
+Timer(1, open_browser).start()
+server.run()
 
