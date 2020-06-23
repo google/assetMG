@@ -14,8 +14,7 @@
 
 """ server configuration for the assetMG tool"""
 import json
-from flask import Flask
-from flask import request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template
 from googleads import adwords
 from google.ads.google_ads.client import GoogleAdsClient
 import setup
@@ -495,6 +494,19 @@ def init_clients():
     status=1
 
   return status
+
+
+def shutdown_server():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
+
+
+@server.route('/shutdown', methods=['GET'])
+def shutdown():
+    shutdown_server()
+    return 'Server shutting down...'
 
 
 def open_browser():
