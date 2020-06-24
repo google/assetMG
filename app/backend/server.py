@@ -29,7 +29,9 @@ import logging
 import yaml
 from google_auth_oauthlib.flow import InstalledAppFlow
 import webbrowser
-from threading import Timer
+import threading
+import sys
+import webview
 
 server = Flask(__name__, static_url_path="",
             static_folder="../asset_browser/frontend/dist/frontend",
@@ -128,7 +130,7 @@ def set_refresh_token():
   If succesfull calls init_client()"""
   data = request.get_json(force=True)
   code = data['code']
-  set_status = setup.set_refresh(code,flow)
+  set_status, refresh_token = setup.set_refresh(code,flow)
   if set_status:
     # meaning that set_refresh failed
     return _build_response(msg=json.dumps("could not update refresh token"), status=500)
@@ -138,7 +140,7 @@ def set_refresh_token():
   if init_status:
     return _build_response(msg=json.dumps("config invalid"), status=500)
   else:
-    return _build_response(status=200)
+    return _build_response(msg=json.dumps(refresh_token),status=200)
 
 
 @server.route('/create-struct/', methods=['GET'])
@@ -513,6 +515,18 @@ def open_browser():
       webbrowser.open_new('http://127.0.0.1:5000/')
 
 
-Timer(1, open_browser).start()
-server.run()
+def start_server():
+  server.run()
+
+if __name__ == '__main__':
+  # Timer(1, open_browser).start()
+  # server.run()
+  t = threading.Thread(target=start_server)
+  t.daemon = True
+  t.start()
+
+  webview.create_window("assetMG", "http://127.0.0.1:5000")
+  webview.start()
+  sys.exit()
+
 

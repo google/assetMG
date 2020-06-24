@@ -62,7 +62,8 @@ def set_refresh(code,flow):
     with open(CONFIG_FILE_PATH, 'r') as f:
       credentials = yaml.safe_load(f)
 
-    credentials['refresh_token'] = flow.credentials.refresh_token
+    refresh_token = flow.credentials.refresh_token
+    credentials['refresh_token'] = refresh_token
     with open(CONFIG_FILE_PATH, 'w') as f:
       yaml.dump(credentials, f, default_flow_style=False)
 
@@ -70,5 +71,5 @@ def set_refresh(code,flow):
     logging.error(str(e))
     finish_status = 1
     
-  return finish_status
+  return finish_status , refresh_token
 
