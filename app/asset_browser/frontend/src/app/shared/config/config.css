@@ -1,0 +1,11 @@
+.settings-field {
+  padding: inherit;
+  margin: inherit;
+}
+
+.long-field {
+  width: 100%;
+}
+mat-form-field {
+  width: inherit;
+}

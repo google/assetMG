@@ -80,14 +80,21 @@ export class AssetGalleryComponent implements OnInit {
     this._configService.loadConfigSettings();
 
     this._configService.configLoaded$.subscribe((loaded) => {
-      if (!loaded) {
+      let config = this._configService.getConfigSettings();
+      if (!loaded && config) {
         const configDialogRef = this._setupDialog.open(AppSetupComponent, {
           disableClose: true,
+          data: config,
         });
 
         configDialogRef.afterClosed().subscribe((success) => {
           if (success) {
-            this.getConfigService().configValid = true;
+            let subscription = this._dataService
+              .loadMccStruct()
+              .subscribe(() => {
+                this._configService.configValid = true;
+                subscription.unsubscribe();
+              });
           }
         });
       }

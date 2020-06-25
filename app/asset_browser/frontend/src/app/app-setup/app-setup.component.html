@@ -1,0 +1,57 @@
+<h1 mat-dialog-title>Setup AssetMG</h1>
+<div mat-dialog-content>
+  <mat-vertical-stepper linear=true (selectionChange)="selectionChange($event)" #stepper>
+    <mat-step [stepControl]="credentialsFormGroup">
+        <ng-template matStepLabel>Enter your account credentials</ng-template>
+        <app-credentials #credentialsFormGroup
+          [data]="this.data"
+          editMode="true"></app-credentials>
+        <div>
+          <button
+            mat-stroked-button
+            matStepperNext
+            [disabled]="!credentialsFormGroup.form.valid"
+            color="primary"
+            class="right-align">Next</button>
+        </div>
+    </mat-step>
+    <mat-step [stepControl]="refreshCodeFormGroup">
+        <ng-template matStepLabel>Generate a refresh token</ng-template>
+        <p>Click on the 'Generate Code' button and login with your account, then copy the generated code back here</p>
+        <app-refresh-code
+          #refreshCodeFormGroup
+          [openURL]="generateTokenURL"></app-refresh-code>
+        <div>
+          <button mat-stroked-button matStepperPrevious color="primary">Back</button>
+          <button mat-stroked-button
+            matStepperNext
+            [disabled]="!refreshCodeFormGroup.form.valid"
+            color="primary"
+            class="right-align">Next</button>
+        </div>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>{{verificationTitle}}</ng-template>
+      <div class="vertical-padding setup-result">
+        <p [ngClass]="{'error-msg': this.errorFound }">{{verificationText}}</p>
+    </div>
+      <div><app-loader></app-loader></div>
+      <div *ngIf="!this.setupInProgress" mat-dialog-actions>
+        <button mat-stroked-button
+          matStepperPrevious
+          color="primary">Back</button>
+        <button *ngIf="!this.errorFound"
+          mat-stroked-button
+          [mat-dialog-close]="true"
+          color="primary"
+          class="right-align">Done</button>
+        <!-- <button *ngIf="this.errorFound && this.getOldConf().config_valid"
+          mat-stroked-button
+          [mat-dialog-close]="true"
+          (click)="revertChanges()"
+          color="primary"
+          class="right-align">Revert</button> -->
+      </div>
+    </mat-step>
+  </mat-vertical-stepper>
+</div>

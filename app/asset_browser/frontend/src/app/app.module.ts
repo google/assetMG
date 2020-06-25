@@ -37,7 +37,8 @@ import { ProgressBtnComponent } from './shared/progress-btn/progress-btn.compone
 import { SettingsComponent } from './settings/settings.component';
 import { AppSetupComponent } from './app-setup/app-setup.component';
 import { CredentialsComponent } from './shared/config/credentials/credentials.component';
-import { RefreshTokenComponent } from './shared/config/refresh-token/refresh-token.component';
+import { refreshCodeComponent } from './shared/config/refresh-code/refresh-code.component';
+import { ClientIDPipe } from './shared/client-id.pipe';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,7 @@ import { RefreshTokenComponent } from './shared/config/refresh-token/refresh-tok
     SettingsComponent,
     AppSetupComponent,
     CredentialsComponent,
-    RefreshTokenComponent,
+    refreshCodeComponent,
   ],
   imports: [
     BrowserModule,
@@ -66,6 +67,7 @@ import { RefreshTokenComponent } from './shared/config/refresh-token/refresh-tok
   ],
   providers: [
     LoaderService,
+    ClientIDPipe,
     { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
   ],

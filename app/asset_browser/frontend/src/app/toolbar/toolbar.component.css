@@ -18,23 +18,23 @@
 */
 
 .toolbar_class{
-    display: table;
-    color: grey;
-    font-size: 14px;
+  display: table;
+  color: grey;
+  font-size: 14px;
 }
 
 .toolbar_class img{
-    margin-right: 15px;
-    vertical-align: middle;
+  margin-right: 15px;
+  vertical-align: middle;
 }
 
 .toolbar_class span{
-    color: grey;
+  color: grey;
 	font-size: 18px;
 }
 
 .toolbar_select{
-    margin-left: 2%;
+  margin-left: 2%;
 }
 
 .right-align {

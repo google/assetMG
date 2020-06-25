@@ -424,7 +424,7 @@ export class AccountCampaignsComponent implements OnChanges {
         }
       }
     }
-    console.log('******');
+
     if (mutateRecords.length) {
       this.updateInProgress = true;
       this.dataService.updateAsset(this._asset, mutateRecords);
@@ -449,7 +449,6 @@ export class AccountCampaignsComponent implements OnChanges {
       action: action,
       asset: assetObj,
     };
-    console.log(action, node.getId(), connection);
     return mutateObj;
   }
 

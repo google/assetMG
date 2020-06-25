@@ -38,3 +38,12 @@ $assetmg-app-theme: mat-light-theme($assetmg-app-primary, $assetmg-app-accent, $
 .warning-msg {
   color: mat-color($assetmg-app-warn) !important;
 }
+
+.mat-h1, .mat-headline, .mat-typography h1 {
+  color:mat-color($assetmg-app-primary);
+  font-weight: 500;
+}
+
+.mat-step-header .mat-step-label.mat-step-label-active {
+  color:mat-color($assetmg-app-primary);
+}

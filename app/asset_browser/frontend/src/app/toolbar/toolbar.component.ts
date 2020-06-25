@@ -37,6 +37,7 @@ export class ToolbarComponent implements OnInit {
 
   constructor(
     private _dataService: AssetService,
+    private _configService: ConfigService,
     private _settingsDialog: MatDialog
   ) {}
 
@@ -58,16 +59,22 @@ export class ToolbarComponent implements OnInit {
     }
   }
   openSettings() {
-    const dialogRef = this._settingsDialog.open(SettingsComponent);
-
-    dialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
+    let config = this._configService.getConfigSettings();
+    this._settingsDialog.open(SettingsComponent, {
+      data: {
+        client_customer_id: config.client_customer_id,
+        client_id: config.client_id,
+        client_secret: config.client_secret,
+        developer_token: config.developer_token,
+        refresh_token: config.refresh_token,
+        config_valid: config.config_valid
+      },
     });
   }
 
   /** TODO: add a proper email here */
   feedbackClicked() {
-    let mailText = 'mailto:abc@abc.com+?subject=AssetMG%Feedback';
+    let mailText = 'mailto:assetmg@google.com+?subject=AssetMG%Feedback';
     window.location.href = mailText;
   }
 }
