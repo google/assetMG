@@ -25,11 +25,11 @@ import logging
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleads import adwords
 
-LOGS_PATH = Path('../logs/server.log')
+LOGS_PATH = Path('app/logs/server.log')
 logging.basicConfig(filename=LOGS_PATH ,level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
 
-CONFIG_PATH = Path('../config/')
-CONFIG_FILE_PATH = Path('../../config.yaml')
+CONFIG_PATH = Path('app/config/')
+CONFIG_FILE_PATH = Path('config.yaml')
 
 
 def set_api_configs():

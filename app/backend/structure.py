@@ -24,7 +24,7 @@ creates an asset-to-adgroup mapping json, to be used later.
 
 import json
 from googleads import adwords
-from service import Service_Class
+from app.backend.service import Service_Class
 from pathlib import Path
 
 ASSET_TYPE_MAP = {
@@ -36,8 +36,8 @@ ASSET_TYPE_MAP = {
 
 PAGE_SIZE = 500
 PATH = Path('./')
-asset_to_ag_json_path = Path('../cache/asset_to_ag.json')
-account_struct_json_path = Path('../cache/account_struct.json')
+asset_to_ag_json_path = Path('app/cache/asset_to_ag.json')
+account_struct_json_path = Path('app/cache/account_struct.json')
 
 def create_mcc_struct(client):
   """create the full structure of an mcc account down to asset level."""

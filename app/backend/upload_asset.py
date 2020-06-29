@@ -19,8 +19,8 @@ to a list of adgroups utilaizing the mutate module.
 """
 
 from googleads import adwords
-import mutate
-from service import Service_Class
+import app.backend.mutate
+from app.backend.service import Service_Class
 
 
 def upload_html5_asset(client, account, asset_name, path, adgroups):

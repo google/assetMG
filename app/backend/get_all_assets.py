@@ -25,7 +25,7 @@ This module takes no-argumens.
 
 import sys
 from googleads import adwords
-import structure
+import app.backend.structure
 from google.ads.google_ads.client import GoogleAdsClient
 from google.ads.google_ads.errors import GoogleAdsException
 
