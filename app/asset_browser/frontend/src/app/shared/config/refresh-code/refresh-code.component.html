@@ -1,0 +1,16 @@
+<form [formGroup]="form">
+  <app-progress-btn
+    btnLabel='Generate Code'
+    [btnUpdateMsg]="updateMessage"
+    [isError]="isErrorMessage"
+    [inProgress]="workInProgress"
+    (btnClick)="onGenerateToken()">
+  </app-progress-btn>
+  <div class="settings-field long-field">
+    <mat-form-field>
+      <mat-label>Refresh Code</mat-label>
+      <input matInput formControlName="refreshCodeCtrl"  autocomplete="off"
+            required>
+    </mat-form-field>
+  </div>
+</form>

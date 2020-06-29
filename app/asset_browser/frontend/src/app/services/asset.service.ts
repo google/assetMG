@@ -96,6 +96,11 @@ export class AssetService {
     return this.http.get<Account[]>(endpoint);
   }
 
+  loadMccStruct(): Observable<any> {
+    const endpoint = this.API_SERVER + '/create-struct/';
+    return this.http.get(endpoint);
+  }
+
   changeAsset(asset: Asset) {
     this._activeAsset$.next(asset);
     if (asset) {
@@ -130,7 +135,6 @@ export class AssetService {
 
   updateAsset(changedAsset: Asset, updateArray: MutateRecord[]) {
     const endpoint = this.API_SERVER + '/mutate-ad/';
-    console.log('FE Updates: ', updateArray);
     let subscritpion = this.http
       .post(endpoint, updateArray, { observe: 'response' })
       .subscribe(

@@ -21,7 +21,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MaterialModule } from './shared/material.module';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AssetGalleryComponent } from './asset-gallery/asset-gallery.component';
 import { AssetDetailsComponent } from './asset-details/asset-details.component';
@@ -34,6 +34,11 @@ import { LoaderInterceptor } from './interceptors/loader.interceptor';
 import { HttpErrorInterceptor } from './interceptors/http-error.interceptor';
 import { SearchBarComponent } from './search-bar/search-bar.component';
 import { ProgressBtnComponent } from './shared/progress-btn/progress-btn.component';
+import { SettingsComponent } from './settings/settings.component';
+import { AppSetupComponent } from './app-setup/app-setup.component';
+import { CredentialsComponent } from './shared/config/credentials/credentials.component';
+import { refreshCodeComponent } from './shared/config/refresh-code/refresh-code.component';
+import { ClientIDPipe } from './shared/client-id.pipe';
 
 @NgModule({
   declarations: [
@@ -46,6 +51,10 @@ import { ProgressBtnComponent } from './shared/progress-btn/progress-btn.compone
     LoaderComponent,
     SearchBarComponent,
     ProgressBtnComponent,
+    SettingsComponent,
+    AppSetupComponent,
+    CredentialsComponent,
+    refreshCodeComponent,
   ],
   imports: [
     BrowserModule,
@@ -54,9 +63,11 @@ import { ProgressBtnComponent } from './shared/progress-btn/progress-btn.compone
     BrowserAnimationsModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
   ],
   providers: [
     LoaderService,
+    ClientIDPipe,
     { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
   ],

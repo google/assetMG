@@ -1,0 +1,18 @@
+<h1 mat-dialog-title>AssetMG Settings</h1>
+<div mat-dialog-content>
+  <app-credentials #credentialsFormGroup
+    [data]="this.data"
+    [editMode]=false>
+  </app-credentials>
+</div>
+<div mat-dialog-actions>
+  <button mat-stroked-button
+    color="primary"
+    (click)="onEdit()">Edit</button>
+  <button mat-stroked-button
+    color="primary"
+    class="right-align"
+    [mat-dialog-close]="true"
+    cdkFocusInitial>Ok</button>
+</div>
+

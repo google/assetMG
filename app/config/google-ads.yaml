@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-client_customer_id: 
+client_customer_id:
 client_id:
-client_secret: 
+client_secret:
 developer_token:
 login_customer_id:
 refresh_token:

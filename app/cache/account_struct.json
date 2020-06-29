@@ -1,1 +1,470 @@
-[]
+[
+  {
+    "name": "zilbert Account",
+    "id": 9489090398,
+    "campaigns": [
+      {
+        "campaign_name": "App promotion-App-2",
+        "id": 9542449896,
+        "adgroups": [
+          {
+            "name": "Ad group 18",
+            "id": 97909190375,
+            "assets": [
+              {
+                "id": 8478193099,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "headlines",
+                "asset_text": "Search trends",
+                "adgroups": [
+                  97909190375
+                ]
+              },
+              {
+                "id": 8478193105,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "headlines",
+                "asset_text": "YouTube Trends",
+                "adgroups": [
+                  97909190375
+                ]
+              },
+              {
+                "id": 8714304610,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "headlines",
+                "asset_text": "Free",
+                "adgroups": [
+                  97909190375
+                ]
+              },
+              {
+                "id": 8714304625,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "headlines",
+                "asset_text": "online mp3 cutter",
+                "adgroups": [
+                  97909190375
+                ]
+              },
+              {
+                "id": 2045098257,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "headlines",
+                "asset_text": "Build your own city",
+                "adgroups": [
+                  97909190375
+                ]
+              },
+              {
+                "id": 8714304616,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "descriptions",
+                "asset_text": "Free & Online",
+                "adgroups": [
+                  97909190375
+                ]
+              },
+              {
+                "id": 8714304625,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "descriptions",
+                "asset_text": "online mp3 cutter",
+                "adgroups": [
+                  97909190375
+                ]
+              },
+              {
+                "id": 2045098260,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "descriptions",
+                "asset_text": "Your city come alive",
+                "adgroups": [
+                  97909190375
+                ]
+              },
+              {
+                "id": 8478193111,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "descriptions",
+                "asset_text": "Coronaviruse Search and Youtube trends",
+                "adgroups": [
+                  97909190375
+                ]
+              },
+              {
+                "id": 2045098257,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "descriptions",
+                "asset_text": "Build your own city",
+                "adgroups": [
+                  97909190375
+                ]
+              },
+              {
+                "id": 8170555649,
+                "name": null,
+                "type": "YOUTUBE_VIDEO",
+                "video_id": "MkOlifBjmBI",
+                "link": "https://www.youtube.com/watch?v=MkOlifBjmBI",
+                "image_url": "https://img.youtube.com/vi/MkOlifBjmBI/1.jpg",
+                "adgroups": [
+                  97909190375
+                ]
+              },
+              {
+                "id": 8761531830,
+                "name": "generic html5",
+                "type": "MEDIA_BUNDLE",
+                "adgroups": [
+                  97909190375
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Ad group 1",
+            "id": 97982663179,
+            "assets": [
+              {
+                "id": 8478193099,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "headlines",
+                "asset_text": "Search trends"
+              },
+              {
+                "id": 2045098263,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "headlines",
+                "asset_text": "Be a mayor",
+                "adgroups": [
+                  97982663179
+                ]
+              },
+              {
+                "id": 2045098260,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "headlines",
+                "asset_text": "Your city come alive",
+                "adgroups": [
+                  97982663179
+                ]
+              },
+              {
+                "id": 2045098263,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "descriptions",
+                "asset_text": "Be a mayor",
+                "adgroups": [
+                  97982663179
+                ]
+              },
+              {
+                "id": 8478193108,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "descriptions",
+                "asset_text": "Coronaviruse search trends per country by time",
+                "adgroups": [
+                  97982663179
+                ]
+              },
+              {
+                "id": 8478193111,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "descriptions",
+                "asset_text": "Coronaviruse Search and Youtube trends"
+              },
+              {
+                "id": 8431029619,
+                "name": "ph.jpg",
+                "type": "IMAGE",
+                "image_url": "https://tpc.googlesyndication.com/simgad/5465745966475300362",
+                "adgroups": [
+                  97982663179
+                ]
+              },
+              {
+                "id": 8170555649,
+                "name": null,
+                "type": "YOUTUBE_VIDEO",
+                "video_id": "MkOlifBjmBI",
+                "link": "https://www.youtube.com/watch?v=MkOlifBjmBI",
+                "image_url": "https://img.youtube.com/vi/MkOlifBjmBI/1.jpg"
+              },
+              {
+                "id": 8761531830,
+                "name": "generic html5",
+                "type": "MEDIA_BUNDLE"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "mariamyoussef Account",
+    "id": 7935681790,
+    "campaigns": [
+      {
+        "campaign_name": "UAC Test - Gardenscapes",
+        "id": 9505034345,
+        "adgroups": [
+          {
+            "name": "Ad group 1",
+            "id": 95186899405,
+            "assets": [
+              {
+                "id": 8037638620,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "headlines",
+                "asset_text": "Become a virtual Gardner",
+                "adgroups": [
+                  95186899405
+                ]
+              },
+              {
+                "id": 8278629807,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "headlines",
+                "asset_text": "Nine Nine!",
+                "adgroups": [
+                  95186899405
+                ]
+              },
+              {
+                "id": 8528677664,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "headlines",
+                "asset_text": "Brain it",
+                "adgroups": [
+                  95186899405
+                ]
+              },
+              {
+                "id": 8037638623,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "descriptions",
+                "asset_text": "the best gardening game out there",
+                "adgroups": [
+                  95186899405
+                ]
+              },
+              {
+                "id": 8315727242,
+                "name": "video1",
+                "type": "YOUTUBE_VIDEO",
+                "video_id": "ZRCdORJiUgU",
+                "link": "https://www.youtube.com/watch?v=ZRCdORJiUgU",
+                "image_url": "https://img.youtube.com/vi/ZRCdORJiUgU/1.jpg",
+                "adgroups": [
+                  95186899405
+                ]
+              },
+              {
+                "id": 8774834020,
+                "name": null,
+                "type": "YOUTUBE_VIDEO",
+                "video_id": "nP7JtxdxdwI",
+                "link": "https://www.youtube.com/watch?v=nP7JtxdxdwI",
+                "image_url": "https://img.youtube.com/vi/nP7JtxdxdwI/1.jpg",
+                "adgroups": [
+                  95186899405
+                ]
+              },
+              {
+                "id": 8319374654,
+                "name": "html5 1",
+                "type": "MEDIA_BUNDLE",
+                "adgroups": [
+                  95186899405
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Ad group 2",
+            "id": 96689486386,
+            "assets": [
+              {
+                "id": 8048702501,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "headlines",
+                "asset_text": "second adgroup headline",
+                "adgroups": [
+                  96689486386
+                ]
+              },
+              {
+                "id": 8048702504,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "headlines",
+                "asset_text": "second adgroup headline 2",
+                "adgroups": [
+                  96689486386
+                ]
+              },
+              {
+                "id": 8037638620,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "descriptions",
+                "asset_text": "Become a virtual Gardner",
+                "adgroups": [
+                  96689486386
+                ]
+              },
+              {
+                "id": 8528677664,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "descriptions",
+                "asset_text": "Brain it",
+                "adgroups": [
+                  96689486386
+                ]
+              },
+              {
+                "id": 8048065853,
+                "name": "ph.jpg",
+                "type": "IMAGE",
+                "image_url": "https://tpc.googlesyndication.com/simgad/14098414386513970705",
+                "adgroups": [
+                  96689486386
+                ]
+              },
+              {
+                "id": 8752440428,
+                "name": "food_pic",
+                "type": "IMAGE",
+                "image_url": "https://tpc.googlesyndication.com/simgad/1739479047822347740",
+                "adgroups": [
+                  96689486386
+                ]
+              },
+              {
+                "id": 8749689141,
+                "name": "google vid",
+                "type": "YOUTUBE_VIDEO",
+                "video_id": "QRRnoCHC8vg",
+                "link": "https://www.youtube.com/watch?v=QRRnoCHC8vg",
+                "image_url": "https://img.youtube.com/vi/QRRnoCHC8vg/1.jpg",
+                "adgroups": [
+                  96689486386
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "campaign_name": "UAC Test 2",
+        "id": 9922970788,
+        "adgroups": [
+          {
+            "name": "Ad group 1",
+            "id": 103529185394,
+            "assets": [
+              {
+                "id": 8278629807,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "headlines",
+                "asset_text": "Nine Nine!"
+              },
+              {
+                "id": 8037638620,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "headlines",
+                "asset_text": "Become a virtual Gardner"
+              },
+              {
+                "id": 8037638620,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "descriptions",
+                "asset_text": "Become a virtual Gardner"
+              },
+              {
+                "id": 8048702507,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "descriptions",
+                "asset_text": "second adgroup description",
+                "adgroups": [
+                  103529185394
+                ]
+              },
+              {
+                "id": 8037638617,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "descriptions",
+                "asset_text": "Loads of fun!",
+                "adgroups": [
+                  103529185394
+                ]
+              },
+              {
+                "id": 8037638623,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "descriptions",
+                "asset_text": "the best gardening game out there"
+              },
+              {
+                "id": 8528677664,
+                "name": null,
+                "type": "TEXT",
+                "text_type": "descriptions",
+                "asset_text": "Brain it"
+              },
+              {
+                "id": 8752440428,
+                "name": "food_pic",
+                "type": "IMAGE",
+                "image_url": "https://tpc.googlesyndication.com/simgad/1739479047822347740"
+              },
+              {
+                "id": 8774834020,
+                "name": null,
+                "type": "YOUTUBE_VIDEO",
+                "video_id": "nP7JtxdxdwI",
+                "link": "https://www.youtube.com/watch?v=nP7JtxdxdwI",
+                "image_url": "https://img.youtube.com/vi/nP7JtxdxdwI/1.jpg"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "aprikhodko Account",
+    "id": 8791307154,
+    "campaigns": []
+  }
+]

@@ -1,7 +1,7 @@
 <!-- <div class ="main-container"> -->
-  <app-toolbar class="toolbar"></app-toolbar>
+  <app-toolbar class="toolbar" [loadAccounts]="this.getConfigService().configValid"></app-toolbar>
   <app-loader></app-loader>
-  <mat-sidenav-container>
+  <mat-sidenav-container *ngIf="this.getConfigService().configValid">
     <mat-sidenav #sideNav
       class="asset-details-container mat-elevation-z8"
       position="end"
@@ -27,3 +27,4 @@
       </div>
     </mat-sidenav-content>
   </mat-sidenav-container>
+  <!-- <app-setup *ngIf="!this.getConfigService().configValid" ></app-setup> -->

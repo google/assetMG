@@ -11,12 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-client_customer_id: 
+client_customer_id:
 # OAuth2 credentials for Installed App.
-client_id: 
-client_secret: 
+client_id:
+client_secret:
 # Google Ads developer token.
 # Refer to [Apply for access to the AdWords API](https://developers.google.com/adwords/api/docs/guides/signup#step-2).
-developer_token: 
+developer_token:
 refresh_token:

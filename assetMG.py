@@ -136,7 +136,7 @@ def set_refresh_token():
     return _build_response(msg=json.dumps("could not update refresh token"), status=500)
 
   init_status = init_clients()
-  
+
   if init_status:
     return _build_response(msg=json.dumps("config invalid"), status=500)
   else:
@@ -153,7 +153,7 @@ def create_struct():
     logging.error(str(e))
 
   return _build_response(status=status)
-    
+
 
 @server.route('/accounts/', methods=['GET'])
 def get_all_accounts():
@@ -288,7 +288,7 @@ def mutate():
 
     if mutation is None:
       successeful_assign.append(adgroup)
-      asset_handler = _asset_ag_update(asset_handler,adgroup,action)  
+      asset_handler = _asset_ag_update(asset_handler,adgroup,action)
 
   Service_Class.reset_cid(client)
 
@@ -370,16 +370,16 @@ def _text_asset_mutate(data, asset_id, asset_struct):
     try:
       mutation = mutate_ad(client, account, adgroup, asset, action,
                        text_type_to_assign)
-    
+
     except:
       failed_assign.append(adgroup)
       mutation = 'failed'
       logging.error("could not execute mutation on adgroup: " + str(adgroup))
-    
+
     if mutation is None:
       for obj in asset_handlers:
         if obj['asset']['text_type'] == text_type_to_assign:
-          obj['asset'] = _asset_ag_update(obj['asset'],adgroup,action)  
+          obj['asset'] = _asset_ag_update(obj['asset'],adgroup,action)
           successeful_assign.append(adgroup)
 
   Service_Class.reset_cid(client)
@@ -399,7 +399,7 @@ def _text_asset_mutate(data, asset_id, asset_struct):
     status = 200
   else:
     status = 500
-  
+
   logging.info("mutate response: msg={} , status={}".format(str(asset_handlers),index))
   return _build_response(msg=json.dumps(asset_handlers), status=status)
 
@@ -469,7 +469,7 @@ def init_clients():
   """Sets up googleads.yaml and google-ads.yaml and inits both clients.
   tries to create struct. if succesful, marks config_valid=1 in config.yaml
   to mark config is valid. Marks 0 otherwise."""
- 
+
   setup.set_api_configs()
 
   status = 0
@@ -477,12 +477,12 @@ def init_clients():
   global client
   global googleads_client
 
-  
+
   try:
- 
+
     client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH / 'googleads.yaml')
     googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH / 'google-ads.yaml')
- 
+
     with open(CONFIG_FILE_PATH, 'r') as f:
       config = yaml.load(f, Loader=yaml.FullLoader)
 

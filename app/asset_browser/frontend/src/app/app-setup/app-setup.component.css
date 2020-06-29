@@ -1,0 +1,15 @@
+.right-align {
+  float: right;
+  margin-left: auto !important;
+}
+
+.error-msg {
+  color: red;
+}
+
+.vertical-padding {
+  padding-top: 24px;
+  padding-bottom: 12px;
+
+  font-size: 115%;
+}
