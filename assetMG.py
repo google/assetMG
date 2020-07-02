@@ -23,6 +23,8 @@ from app.backend.structure import create_mcc_struct, get_accounts, get_struct
 from app.backend.get_all_assets import get_assets, get_accounts_assets
 from app.backend.upload_asset import upload
 from app.backend.service import Service_Class
+from app.backend.yt_upload import initialize_upload
+from googleapiclient.discovery import build
 from pathlib import Path
 import copy
 import logging
@@ -39,7 +41,9 @@ server = Flask(__name__, static_url_path="",
 
 CONFIG_PATH = Path('app/config/')
 CONFIG_FILE_PATH = Path('config.yaml')
+YT_CONFIG_FILE_PATH = Path('app/config/yt_config.json')
 LOGS_PATH = Path('app/logs/server.log')
+YT_CLIENT_SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
 
 asset_to_ag_json_path = Path('app/cache/asset_to_ag.json')
 account_struct_json_path = Path('app/cache/account_struct.json')
@@ -142,6 +146,52 @@ def set_refresh_token():
   else:
     return _build_response(msg=json.dumps(refresh_token),status=200)
 
+
+@server.route('/init-yt/', methods=['GET'])
+def init_yt():
+  """opens a browser with the login window. """
+  setup.set_yt_config()
+  yt_flow = InstalledAppFlow.from_client_secrets_file(YT_CONFIG_FILE_PATH , YT_CLIENT_SCOPES)
+  credentials = yt_flow.run_local_server(host='localhost',
+    port=8080, 
+    authorization_prompt_message='Please visit this URL: {url}', 
+    success_message='The auth flow is complete; you may close this window.',
+    open_browser=True)
+  global yt_client
+  yt_client = build('youtube', 'v3', credentials = credentials)
+  print(yt_client)
+  return _build_response(status=200)
+
+
+@server.route('/upload-to-yt/', methods=['POST'])
+def upload_to_yt():
+  """Call this route to upload a video to YT.
+  Send a JSON with the following params:
+
+  file - str, path to the file to upload
+  title - str,
+  description - str, video description
+  category - str representing a number. https://developers.google.com/youtube/v3/docs/videoCategories/list',
+  keywords - list,
+  privacyStatus - str, private/public/unlisted
+
+  Returns:
+  dict - {"vid_id" : id}
+  """
+  data = request.get_json(force=True)
+  if data.get('file') is None:
+    return _build_response(msg=json.loads("File not specified", status=404))
+  try:
+    id = initialize_upload(yt_client,**{k: v for k, v in data.items() if v is not None})
+    status=200
+    msg = {"vid_id" : id}
+  except Exception as e:
+    msg = str(e)
+    logging.error(str(e))
+    status=500
+
+  return _build_response(msg = json.dumps(msg), status=status)
+  
 
 @server.route('/create-struct/', methods=['GET'])
 def create_struct():

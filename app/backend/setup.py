@@ -19,6 +19,7 @@ with the paramaters given by the user in the config.yaml file
 """
 
 import yaml
+import json
 import os
 from pathlib import Path
 import logging
@@ -29,7 +30,7 @@ LOGS_PATH = Path('app/logs/server.log')
 logging.basicConfig(filename=LOGS_PATH ,level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
 
 CONFIG_PATH = Path('app/config/')
-CONFIG_FILE_PATH = Path('config.yaml')
+CONFIG_FILE_PATH = Path('./config.yaml')
 
 
 def set_api_configs():
@@ -73,3 +74,16 @@ def set_refresh(code,flow):
     
   return finish_status , refresh_token
 
+def set_yt_config():
+  """set the YT api config file"""
+  with open(CONFIG_PATH / "yt_config.json", encoding="utf-8") as f:
+    yt = json.load(f)
+
+  with open(CONFIG_FILE_PATH, 'r') as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
+
+  yt['web']['client_secret'] = config['client_secret']
+  yt['web']['client_id'] = config['client_id']
+
+  with open(CONFIG_PATH / "yt_config.json", 'w') as f:
+      json.dump(yt, f, indent=2)
