@@ -22,6 +22,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { ConfigService } from '../services/config.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AppSetupComponent } from '../app-setup/app-setup.component';
+import { UploadAssetsComponent } from '../upload-assets/upload-assets.component';
 
 const ASSET_TYPES = [
   {
@@ -69,7 +70,8 @@ export class AssetGalleryComponent implements OnInit {
   constructor(
     private _dataService: AssetService,
     private _configService: ConfigService,
-    private _setupDialog: MatDialog
+    private _setupDialog: MatDialog,
+    private _uploadDialog: MatDialog
   ) {}
 
   getConfigService(): ConfigService {
@@ -128,6 +130,14 @@ export class AssetGalleryComponent implements OnInit {
     }
   }
 
+  uploadAsset() {
+    const uploadDialogRef = this._uploadDialog.open(UploadAssetsComponent, {
+      disableClose: true,
+      data: this.account,
+    });
+
+    uploadDialogRef.afterClosed().subscribe(() => {});
+  }
   /** Close side nav when escape is pressed */
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(
     event: KeyboardEvent

@@ -40,10 +40,16 @@ $assetmg-app-theme: mat-light-theme($assetmg-app-primary, $assetmg-app-accent, $
 }
 
 .mat-h1, .mat-headline, .mat-typography h1 {
-  color:mat-color($assetmg-app-primary);
+  background-color: mat-color($assetmg-app-primary);
+  color:white;
   font-weight: 500;
+  padding: 12px;
 }
 
 .mat-step-header .mat-step-label.mat-step-label-active {
   color:mat-color($assetmg-app-primary);
+}
+
+.mat-dialog-container {
+  color: grey;
 }

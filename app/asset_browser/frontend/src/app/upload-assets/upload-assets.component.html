@@ -1,0 +1,76 @@
+
+<div class="fixActionRow">
+  <h1 mat-dialog-title>Add Asset
+    <button mat-icon-button class="close-button" (click)="onClose()">
+      <mat-icon class="close-icon">close</mat-icon>
+    </button>
+  </h1>
+  <div mat-dialog-content>
+    <mat-horizontal-stepper linear="false" #stepper>
+      <mat-step [stepControl]="typeFormGroup">
+          <ng-template matStepLabel>Type</ng-template>
+          <h3>Select Asset Type:</h3>
+          <mat-radio-group
+            class="type-radio-group"
+            [(ngModel)]="assetType">
+            <mat-radio-button *ngFor="let type of types| keyvalue"
+              class="type-radio-button"
+              [value]="type.value">
+              {{type.value}}
+            </mat-radio-button>
+          </mat-radio-group>
+      </mat-step>
+      <mat-step [stepControl]="uploadFormGroup">
+        <!-- <form [formGroup]="uploadFormGroup"> -->
+          <ng-template matStepLabel>Asset</ng-template>
+          <h3>Add Asset</h3>
+          <div [ngSwitch]="true">
+              <app-upload-text
+                #uploadText
+                (isChildFormValid)="updateStepValid($event)"
+                [isHeadline]="assetType === types.get('headline')"
+                *ngSwitchCase="assetType === types.get('headline')||
+                               assetType === types.get('description')">
+              </app-upload-text>
+              <app-upload-img
+                #uploadImg
+                *ngSwitchCase="assetType === types.get('img')">
+              </app-upload-img>
+              <app-upload-video
+                #uploadVideo
+                *ngSwitchCase="assetType === types.get('video')">
+              </app-upload-video>
+              <app-upload-html
+                #uploadHtml
+                *ngSwitchCase="assetType === types.get('html')">
+              </app-upload-html>
+          </div>
+        <!-- </form> -->
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>Add</ng-template>
+        <app-account-campaigns
+          [account]="account"
+          showTextNodes=false
+          buttonLabel='Add'>
+        </app-account-campaigns>
+      </mat-step>
+    </mat-horizontal-stepper>
+  </div>
+  <div class="spacer"></div>
+  <div mat-dialog-actions >
+    <div>
+      <button mat-stroked-button
+        color="primary"
+        *ngIf="stepper.selectedIndex !== 0"
+        (click)="onBack(stepper)">Back</button>
+    </div>
+      <button mat-stroked-button
+        color="primary"
+        class="right-align"
+        *ngIf="stepper.selectedIndex !== 2"
+        [disabled]="!isChildFormValid"
+        (click)="onNext(stepper)">Next</button>
+  </div>
+</div>
+

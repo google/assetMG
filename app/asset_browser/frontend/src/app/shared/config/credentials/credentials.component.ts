@@ -26,7 +26,6 @@ import { ClientIDPipe, transformAction } from '../../client-id.pipe';
 export class CredentialsComponent implements OnInit {
   form: FormGroup;
   mcc_cid: string = '';
-  anything: boolean = true;
   constructor(
     private _formBuilder: FormBuilder,
     private _cidPipe: ClientIDPipe
@@ -82,7 +81,6 @@ export class CredentialsComponent implements OnInit {
         },
       ],
     });
-    this.anything = false;
   }
   onBlur() {
     // Update the cid to remove any spaces and have dashes if it doesn't

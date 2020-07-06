@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ChangeDetectorRef, Component, Input, OnChanges } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+} from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import {
   MatTreeFlattener,
@@ -102,6 +107,7 @@ export class AccountCampaignsComponent implements OnChanges {
   }
 
   @Input() buttonLabel: string;
+  @Input() showTextNodes: boolean;
 
   get showUpdateBtn(): boolean {
     return this._showUpdateBtn;
@@ -176,7 +182,9 @@ export class AccountCampaignsComponent implements OnChanges {
   ngOnChanges() {
     if (this.account) {
       this._showUpdateBtn = false;
-      this._isTextAsset = true;
+      this.showTextNodes || this.showTextNodes == undefined
+        ? (this._isTextAsset = true)
+        : (this._isTextAsset = false);
       this.buildTreeNodes();
     }
   }

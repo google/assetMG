@@ -15,20 +15,21 @@
  */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RefreshCodeComponent } from './refresh-code.component';
+import { UploadVideoComponent } from './upload-video.component';
 
-describe('RefreshCodeComponent', () => {
-  let component: RefreshCodeComponent;
-  let fixture: ComponentFixture<RefreshCodeComponent>;
+describe('UploadVideoComponent', () => {
+  let component: UploadVideoComponent;
+  let fixture: ComponentFixture<UploadVideoComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [RefreshCodeComponent],
-    }).compileComponents();
+      declarations: [ UploadVideoComponent ]
+    })
+    .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RefreshCodeComponent);
+    fixture = TestBed.createComponent(UploadVideoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

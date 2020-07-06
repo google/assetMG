@@ -1,0 +1,7 @@
+<input #fileInput
+  class="file-input"
+  type="file"
+  name="fileInput"
+  [accept]="acceptsType"
+  (change)="onChange(fileInput.files[0])"
+  />

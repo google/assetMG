@@ -14,31 +14,39 @@
  * limitations under the License.
  */
 import { Component, OnInit, Input } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
+export enum FileType {
+  IMG = 'image/*',
+  VIDEO = 'video/*',
+  HTML = '.zip',
+}
 @Component({
-  selector: 'app-refresh-code',
-  templateUrl: './refresh-code.component.html',
-  styleUrls: ['./../config.css'],
+  selector: 'app-upload-img',
+  templateUrl: './upload-img.component.html',
+  styleUrls: ['./upload-img.component.css'],
 })
-export class RefreshCodeComponent implements OnInit {
+export class UploadImgComponent implements OnInit {
   form: FormGroup;
-  updateMessage: string = '';
-  isErrorMessage: boolean = false;
-  workInProgress: boolean = false;
-
-  @Input() openURL: string = '';
+  acceptsType: FileType = FileType.IMG;
+  // @Input() acceptsType: FileType;
 
   constructor(private _formBuilder: FormBuilder) {}
 
-  ngOnInit(): void {
-    this.form = this._formBuilder.group({
-      refreshCodeCtrl: ['', Validators.required],
-    });
-  }
-  onGenerateToken() {
-    if (this.openURL.length) {
-      window.open(this.openURL, '_blank');
+  ngOnInit(): void {}
+
+  onChange(file: File) {
+    if (file) {
+      console.log('File:', file);
+
+      // this.fileName = file.name;
+      // this.file = file;
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        // this.imageUrl = reader.result;
+        console.log('Reader:', event);
+      };
     }
   }
 }

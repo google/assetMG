@@ -18,6 +18,14 @@
         (filterCriteria)="filterByType($event)">
       </app-search-bar>
       <div class = "grid-layout">
+        <div *ngIf="filteredAssets" class="grid-item placeholder-card">
+          <button mat-mini-fab color="accent"
+            aria-label="Add Asset"
+            (click)="uploadAsset()">
+            <mat-icon>add</mat-icon>
+          </button>
+          <p>Add Assets</p>
+        </div>
         <app-asset class = "grid-item"
         *ngFor="let asset of filteredAssets"
         [asset] = "asset"

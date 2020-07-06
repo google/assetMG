@@ -1,0 +1,12 @@
+<form [formGroup]="form">
+  <mat-form-field [ngClass]="{'short-input': this.isHeadline }">
+    <mat-label>{{textAssetType}}</mat-label>
+    <input matInput #textAsset
+          [errorStateMatcher]="errorMatcher"
+          formControlName="textCtrl"
+          autocomplete="off"
+          (keydown.backspace)="onBackspace()"
+          required>
+    <mat-hint align="end">{{textAsset.value.length}} /{{this.maxLength}} </mat-hint>
+  </mat-form-field>
+</form>

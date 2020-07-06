@@ -13,32 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, OnInit, Input } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
-  selector: 'app-refresh-code',
-  templateUrl: './refresh-code.component.html',
-  styleUrls: ['./../config.css'],
+  selector: 'app-upload-html',
+  templateUrl: './upload-html.component.html',
+  styleUrls: ['./upload-html.component.css'],
 })
-export class RefreshCodeComponent implements OnInit {
+export class UploadHtmlComponent implements OnInit {
   form: FormGroup;
-  updateMessage: string = '';
-  isErrorMessage: boolean = false;
-  workInProgress: boolean = false;
-
-  @Input() openURL: string = '';
-
   constructor(private _formBuilder: FormBuilder) {}
 
-  ngOnInit(): void {
-    this.form = this._formBuilder.group({
-      refreshCodeCtrl: ['', Validators.required],
-    });
-  }
-  onGenerateToken() {
-    if (this.openURL.length) {
-      window.open(this.openURL, '_blank');
-    }
-  }
+  ngOnInit(): void {}
 }

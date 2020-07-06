@@ -38,7 +38,7 @@ export class SettingsComponent {
     @Inject(MAT_DIALOG_DATA) public data: ConfigSettings
   ) {}
   ngOnInit() {
-    this.dialogRef.updateSize('900px', '430px');
+    this.dialogRef.updateSize('900px', '450px');
   }
   onEdit() {
     this.dialogRef.close();

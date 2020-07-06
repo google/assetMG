@@ -49,3 +49,14 @@ mat-sidenav-content {
 .left-align-content {
   margin: unset;
 }
+
+.placeholder-card {
+  color:grey;
+  display: flex;
+  flex-direction: column;
+  border: 1px dashed lightgray;
+}
+
+.placeholder-card p {
+  margin: revert;
+}

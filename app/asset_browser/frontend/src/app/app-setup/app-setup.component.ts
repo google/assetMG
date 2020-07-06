@@ -21,7 +21,10 @@ import {
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 import { ConfigSettings } from '../model/settings';
-import { StepperSelectionEvent } from '@angular/cdk/stepper';
+import {
+  StepperSelectionEvent,
+  STEPPER_GLOBAL_OPTIONS,
+} from '@angular/cdk/stepper';
 import { ConfigService } from '../services/config.service';
 import { CredentialsComponent } from '../shared/config/credentials/credentials.component';
 import { ClientIDPipe, transformAction } from '../shared/client-id.pipe';
@@ -30,6 +33,12 @@ import { ClientIDPipe, transformAction } from '../shared/client-id.pipe';
   selector: 'app-app-setup',
   templateUrl: './app-setup.component.html',
   styleUrls: ['./app-setup.component.css'],
+  providers: [
+    {
+      provide: STEPPER_GLOBAL_OPTIONS,
+      useValue: { displayDefaultIndicatorType: false },
+    },
+  ],
 })
 export class AppSetupComponent implements OnInit {
   // private _oldConfig: ConfigSettings;
@@ -50,7 +59,7 @@ export class AppSetupComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.setupDialogRef.updateSize('800px', '500px');
+    this.setupDialogRef.updateSize('800px', '520px');
     // if (this.data.config_valid) {
     //    this._oldConfig = this.data;
     // }

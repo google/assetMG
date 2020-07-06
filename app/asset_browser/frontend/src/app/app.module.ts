@@ -19,26 +19,20 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { MaterialModule } from './shared/material.module';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
 import { AssetGalleryComponent } from './asset-gallery/asset-gallery.component';
 import { AssetDetailsComponent } from './asset-details/asset-details.component';
 import { AssetComponent } from './asset/asset.component';
 import { AccountCampaignsComponent } from './account-campaigns/account-campaigns.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
-import { LoaderComponent } from './shared/loader/loader.component';
-import { LoaderService } from './services/loader.service';
-import { LoaderInterceptor } from './interceptors/loader.interceptor';
-import { HttpErrorInterceptor } from './interceptors/http-error.interceptor';
 import { SearchBarComponent } from './search-bar/search-bar.component';
-import { ProgressBtnComponent } from './shared/progress-btn/progress-btn.component';
 import { SettingsComponent } from './settings/settings.component';
 import { AppSetupComponent } from './app-setup/app-setup.component';
-import { CredentialsComponent } from './shared/config/credentials/credentials.component';
-import { refreshCodeComponent } from './shared/config/refresh-code/refresh-code.component';
-import { ClientIDPipe } from './shared/client-id.pipe';
+import { UploadAssetsComponent } from './upload-assets/upload-assets.component';
+import { UploadTextComponent } from './upload-assets/upload-text/upload-text.component';
+import { UploadImgComponent } from './upload-assets/upload-img/upload-img.component';
+import { UploadVideoComponent } from './upload-assets/upload-video/upload-video.component';
+import { UploadHtmlComponent } from './upload-assets/upload-html/upload-html.component';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -48,29 +42,23 @@ import { ClientIDPipe } from './shared/client-id.pipe';
     AssetComponent,
     AccountCampaignsComponent,
     ToolbarComponent,
-    LoaderComponent,
     SearchBarComponent,
-    ProgressBtnComponent,
     SettingsComponent,
     AppSetupComponent,
-    CredentialsComponent,
-    refreshCodeComponent,
+    UploadAssetsComponent,
+    UploadTextComponent,
+    UploadImgComponent,
+    UploadVideoComponent,
+    UploadHtmlComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    MaterialModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
+    SharedModule,
   ],
-  providers: [
-    LoaderService,
-    ClientIDPipe,
-    { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
-  ],
+  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

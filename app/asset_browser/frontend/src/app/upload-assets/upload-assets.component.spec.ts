@@ -15,20 +15,21 @@
  */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RefreshCodeComponent } from './refresh-code.component';
+import { UploadAssetsComponent } from './upload-assets.component';
 
-describe('RefreshCodeComponent', () => {
-  let component: RefreshCodeComponent;
-  let fixture: ComponentFixture<RefreshCodeComponent>;
+describe('UploadAssetsComponent', () => {
+  let component: UploadAssetsComponent;
+  let fixture: ComponentFixture<UploadAssetsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [RefreshCodeComponent],
-    }).compileComponents();
+      declarations: [ UploadAssetsComponent ]
+    })
+    .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RefreshCodeComponent);
+    fixture = TestBed.createComponent(UploadAssetsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
