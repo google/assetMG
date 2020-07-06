@@ -19,7 +19,7 @@ to a list of adgroups utilaizing the mutate module.
 """
 
 from googleads import adwords
-import app.backend.mutate
+import app.backend.mutate as mutate
 from app.backend.service import Service_Class
 
 
@@ -44,7 +44,7 @@ def upload_html5_asset(client, account, asset_name, path, adgroups):
     new_asset = {
         'id': asset['assetId'],
         'name': asset['assetName'],
-        'type': asset['Asset.Type'],
+        'type': 'MEDIA_BUNDLE',
     }
 
     return _assign_new_asset_to_adgroups(client, account, new_asset, adgroups)
@@ -74,7 +74,7 @@ def upload_yt_video_asset(client, account, asset_name, url, adgroups):
     new_asset = {
         'id': asset['assetId'],
         'name': asset['assetName'],
-        'type': asset['Asset.Type'],
+        'type': 'YOUTUBE_VIDEO',
         'video_id': video_id
     }
 
@@ -107,7 +107,7 @@ def upload_image_asset(client, account, asset_name, path, adgroups):
     new_asset = {
         'id': asset['assetId'],
         'name': asset['assetName'],
-        'type': asset['Asset.Type'],
+        'type': 'IMAGE',
     }
 
     return _assign_new_asset_to_adgroups(client, account, new_asset, adgroups)
@@ -121,7 +121,7 @@ def upload_text_asset(client, account, text_type, name, text, adgroups):
   asset = {
       'id': None,
       'name': name,
-      'type': 'TextAsset',
+      'type': 'TEXT',
       'text_type': text_type,
       'asset_text': text
   }
