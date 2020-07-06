@@ -1,7 +1,10 @@
-<input #fileInput
-  class="file-input"
-  type="file"
-  name="fileInput"
-  [accept]="acceptsType"
-  (change)="onChange(fileInput.files[0])"
-  />
+<!-- <form [formGroup]="form">
+  <mat-form-field> -->
+    <input #fileInput
+      class="file-input"
+      type="file"
+      [accept]="acceptsType"
+      (change)="onChange(fileInput.files[0])"
+      />
+  <!-- </mat-form-field>
+</form> -->

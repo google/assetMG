@@ -51,7 +51,7 @@
         <ng-template matStepLabel>Add</ng-template>
         <app-account-campaigns
           [account]="account"
-          showTextNodes=false
+          [showTextNodes]=false
           buttonLabel='Add'>
         </app-account-campaigns>
       </mat-step>
@@ -71,6 +71,12 @@
         *ngIf="stepper.selectedIndex !== 2"
         [disabled]="!isChildFormValid"
         (click)="onNext(stepper)">Next</button>
+      <button mat-stroked-button
+        color="primary"
+        class="right-align"
+        *ngIf="stepper.selectedIndex == 2"
+        [disabled]="!canAddAsset"
+        (click)="onAddAsset()">Add Asset</button>
   </div>
 </div>
 

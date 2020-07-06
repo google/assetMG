@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Component, OnInit, Input } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+// import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 export enum FileType {
   IMG = 'image/*',
@@ -27,13 +27,19 @@ export enum FileType {
   styleUrls: ['./upload-img.component.css'],
 })
 export class UploadImgComponent implements OnInit {
-  form: FormGroup;
+  //form: FormGroup;
+  validImage: boolean = false;
   acceptsType: FileType = FileType.IMG;
   // @Input() acceptsType: FileType;
 
-  constructor(private _formBuilder: FormBuilder) {}
+  // constructor(private _formBuilder: FormBuilder) {}
+  constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // this.form = this._formBuilder.group({
+    //   fileInputCtrl: ['', [Validators.required]],
+    // });
+  }
 
   onChange(file: File) {
     if (file) {

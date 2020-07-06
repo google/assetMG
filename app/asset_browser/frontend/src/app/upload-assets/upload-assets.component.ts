@@ -33,6 +33,7 @@ import { UploadVideoComponent } from './upload-video/upload-video.component';
 import { UploadHtmlComponent } from './upload-html/upload-html.component';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { isNgContainer } from '@angular/compiler';
+import { UploadAssetService } from '../services/upload-asset.service';
 
 @Component({
   selector: 'app-upload-assets',
@@ -50,6 +51,7 @@ export class UploadAssetsComponent implements OnInit {
   uploadFormGroup: FormGroup;
   types: Map<string, string>;
   isChildFormValid: boolean = true;
+  canAddAsset: boolean = true;
   assetType: string;
   @ViewChild('uploadText') uploadText: UploadTextComponent;
   @ViewChild('uploadImg') uploadImg: UploadImgComponent;
@@ -57,6 +59,7 @@ export class UploadAssetsComponent implements OnInit {
   @ViewChild('uploadHtml') uploadHtml: UploadHtmlComponent;
 
   constructor(
+    private _uploadService: UploadAssetService,
     public uploadDialogRef: MatDialogRef<UploadAssetsComponent>,
     private _formBuilder: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public account: Account
@@ -96,7 +99,7 @@ export class UploadAssetsComponent implements OnInit {
     } else {
       switch (this.assetType) {
         case this.types.get('img'):
-          return !this.uploadImg.form.invalid;
+          return this.uploadImg.validImage;
         case this.types.get('video'):
           return !this.uploadVideo.form.invalid;
         case this.types.get('html'):
@@ -109,5 +112,9 @@ export class UploadAssetsComponent implements OnInit {
 
   updateStepValid(isValid: boolean) {
     this.isChildFormValid = isValid;
+  }
+
+  onAddAsset() {
+    this._uploadService.uploadImage('name', 'account', [122133]);
   }
 }
