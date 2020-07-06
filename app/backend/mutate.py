@@ -20,7 +20,7 @@ This module ads or removes an asset from this ad
 """
 
 from googleads import adwords
-from service import Service_Class
+from app.backend.service import Service_Class
 
 
 PAGE_SIZE = 500

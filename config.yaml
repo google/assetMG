@@ -19,3 +19,4 @@ client_secret:
 # Refer to [Apply for access to the AdWords API](https://developers.google.com/adwords/api/docs/guides/signup#step-2).
 developer_token:
 refresh_token:
+config_valid: 0

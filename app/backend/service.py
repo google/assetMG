@@ -44,7 +44,7 @@ class Service_Class:
 
   @staticmethod
   def reset_cid(client):
-    with open('../config/googleads.yaml', 'r') as f:
+    with open('app/config/googleads.yaml', 'r') as f:
       config = yaml.load(f, Loader=yaml.FullLoader)
     
     cid = config['adwords']['client_customer_id']
