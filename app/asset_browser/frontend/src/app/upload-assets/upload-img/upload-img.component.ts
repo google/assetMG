@@ -28,8 +28,10 @@ export enum FileType {
 })
 export class UploadImgComponent implements OnInit {
   //form: FormGroup;
-  validImage: boolean = false;
+  validImage: boolean = true;
   acceptsType: FileType = FileType.IMG;
+  fileName: string;
+  fileUrl: string | ArrayBuffer;
   // @Input() acceptsType: FileType;
 
   // constructor(private _formBuilder: FormBuilder) {}
@@ -43,14 +45,16 @@ export class UploadImgComponent implements OnInit {
 
   onChange(file: File) {
     if (file) {
-      console.log('File:', file);
+      this.validImage = true;
 
-      // this.fileName = file.name;
+      // TODO add some checks on the file
+
+      this.fileName = file.name;
       // this.file = file;
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = (event) => {
-        // this.imageUrl = reader.result;
+        this.fileUrl = reader.result;
         console.log('Reader:', event);
       };
     }

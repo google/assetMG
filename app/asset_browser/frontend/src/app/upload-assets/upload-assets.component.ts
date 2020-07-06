@@ -115,6 +115,10 @@ export class UploadAssetsComponent implements OnInit {
   }
 
   onAddAsset() {
-    this._uploadService.uploadImage('name', 'account', [122133]);
+    this._uploadService.uploadImage(
+      this.uploadImg.fileName,
+      this.uploadImg.fileUrl,
+      [122133]
+    );
   }
 }
