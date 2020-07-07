@@ -33,11 +33,24 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 import webbrowser
 import threading
 import sys
+import os
+from werkzeug.utils import secure_filename
 import webview
 
-server = Flask(__name__, static_url_path="",
-            static_folder="app/asset_browser/frontend/dist/frontend",
-            template_folder="app/asset_browser/frontend/dist/frontend")
+
+# server = Flask(__name__, static_url_path="",
+#             static_folder="app/asset_browser/frontend/dist/frontend",
+#             template_folder="app/asset_browser/frontend/dist/frontend")
+
+from flask_cors import CORS
+
+server = Flask(__name__)
+CORS(server)
+
+UPLOAD_FOLDER = 'app/uploads'
+ALLOWED_EXTENSIONS = {'txt','png', 'jpg', 'jpeg', 'zip'}
+
+server.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 CONFIG_PATH = Path('app/config/')
 CONFIG_FILE_PATH = Path('config.yaml')
@@ -63,6 +76,27 @@ if config_file['config_valid']:
   client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH / 'googleads.yaml')
   googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH / 'google-ads.yaml')
   create_mcc_struct(client)
+
+
+############################################################
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@server.route('/upload-file/', methods=['POST'])
+def upload_file():
+  file = request.files[0]
+  if file and allowed_file(file.filename):
+    filename = secure_filename(file.filename)
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+  
+  return _build_response(status=200)
+  # for file in request.files:
+  #   print(file)
+
+  # return _build_response(status=200)
+
+############################################################
 
 
 
@@ -488,20 +522,21 @@ def upload_asset():
       url=data.get('url'),
       adgroups=data.get('adgroups'))
 
+  Service_Class.reset_cid(client)
   if result['status'] == 3:
     return _build_response(msg='could not upload asset', status=500)
 
   if result['status'] == 0:
     return _build_response(
         msg='Asset successfully uploaded and assigned to %s' %
-        (', '.join(map(str, result['successeful_assign']))),
+        (', '.join(map(str, result['successfull']))),
         status=200)
 
   if result['status'] == 1:
     return _build_response(
         msg='Asset successfully uploaded and assigned to %s but could not '
-        'assign to %s' % (', '.join(map(str, result['successeful'])), ', '.join(
-            map(str, result['unsuccesseful_assign']))),
+        'assign to %s' % (', '.join(map(str, result['successfull'])), ', '.join(
+            map(str, result['unsuccessfull']))),
         status=206)
 
   else:
