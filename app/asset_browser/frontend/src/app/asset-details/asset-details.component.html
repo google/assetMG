@@ -1,6 +1,13 @@
 
 <!-- <div *ngIf="activeAsset">{{activeAsset.name}}</div> -->
 <app-account-campaigns
+  #campaignsTree
   [account]="account"
   buttonLabel='Update'>
 </app-account-campaigns>
+<app-progress-btn
+  btnLabel="Update"
+  [btnUpdateMsg]="updateMessage"
+  [isError]="isErrorMessage"
+  [inProgress]="updateInProgress"
+  (btnClick)="updateAsset()"></app-progress-btn>

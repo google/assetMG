@@ -13,12 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnChanges,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges } from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import {
   MatTreeFlattener,
@@ -42,7 +37,7 @@ import { AssetService } from './../services/asset.service';
 import { STATUS } from '../model/response';
 
 const MAX_HEADLINES_LEN = 30;
-enum nodeType {
+export enum nodeType {
   campNode,
   agNode,
   textPropertyNode,
@@ -86,17 +81,12 @@ export class AccountCampaignsComponent implements OnChanges {
   private _asset: Asset;
   private _selAdGroups: AssetAdGroups;
   private _isTextAsset: boolean; /** When this is set, additional nodes appear under adgroups */
-  private _showUpdateBtn: boolean; /** This is only true when an asset is selected */
+
   levels = new Map<TreeNode, number>();
   treeControl: FlatTreeControl<TreeNode>;
   treeFlattener: MatTreeFlattener<TreeNode, TreeNode>;
   dataSource: MatTreeFlatDataSource<TreeNode, TreeNode>;
   checklistSelection = new SelectionModel<TreeNode>(true, [], true);
-
-  /** Update button params */
-  updateInProgress: boolean = false;
-  updateMessage: string = '';
-  isErrorMessage: boolean = false;
 
   @Input()
   set account(account: Account) {
@@ -109,8 +99,11 @@ export class AccountCampaignsComponent implements OnChanges {
   @Input() buttonLabel: string;
   @Input() showTextNodes: boolean;
 
-  get showUpdateBtn(): boolean {
-    return this._showUpdateBtn;
+  asset(): Asset {
+    return this._asset;
+  }
+  isTextAsset(): boolean {
+    return this._isTextAsset;
   }
 
   constructor(
@@ -137,31 +130,20 @@ export class AccountCampaignsComponent implements OnChanges {
 
   ngOnInit(): void {
     this._asset = null;
-    this._showUpdateBtn = false;
     this.dataService.activeAsset$.subscribe((asset) => {
       this._asset = asset;
       if (asset) {
         asset.type == 'TEXT'
           ? (this._isTextAsset = true)
           : (this._isTextAsset = false);
-        this._showUpdateBtn = true;
-      } else {
-        this._showUpdateBtn = false;
       }
     });
     this.dataService.activeAssetAdGroups$.subscribe((adGroups) => {
-      // Refresh the selected AdGroups
-      this.updateMessage = '';
-      this.isErrorMessage = false;
       this._selAdGroups = adGroups;
       this.updateSelectedNodes();
     });
     this.dataService.updateFinished$.subscribe((response) => {
-      this.updateInProgress = false;
       if (response) {
-        this.updateMessage = response.msg;
-        this.isErrorMessage = response.status_code !== STATUS.SUCCESS;
-        // Clear previous edit icons from nodes
         let editedNodes = this.treeControl.dataNodes.filter(
           (node) => node.isEdited === true
         );
@@ -181,7 +163,6 @@ export class AccountCampaignsComponent implements OnChanges {
   /** Is called when the accountId changes in the parent component */
   ngOnChanges() {
     if (this.account) {
-      this._showUpdateBtn = false;
       this.showTextNodes || this.showTextNodes == undefined
         ? (this._isTextAsset = true)
         : (this._isTextAsset = false);
@@ -415,66 +396,5 @@ export class AccountCampaignsComponent implements OnChanges {
 
     // Update the edit icon as needed
     node.isEdited = !node.isEdited;
-  }
-
-  updateAsset() {
-    let mutateRecords: MutateRecord[] = [];
-    for (let campNode of this.dataSource.data) {
-      for (let agNode of campNode.children.value) {
-        if (this._isTextAsset) {
-          for (let node of agNode.children.value) {
-            if (node.isEdited) {
-              mutateRecords.push(this.createMutateRecord(node));
-            }
-          }
-        } else if (agNode.isEdited) {
-          mutateRecords.push(this.createMutateRecord(agNode));
-        }
-      }
-    }
-
-    if (mutateRecords.length) {
-      this.updateInProgress = true;
-      this.dataService.updateAsset(this._asset, mutateRecords);
-    }
-  }
-
-  /** Creates mutate records for a mutate map */
-  createMutateRecord(node: TreeNode): MutateRecord {
-    if (!node.isEdited) return;
-
-    let action = this.checklistSelection.isSelected(node)
-      ? MutateAction.ADD
-      : MutateAction.REMOVE;
-    let connection =
-      node.type === nodeType.textPropertyNode
-        ? <AssetConn>node.getName()
-        : AssetConn.ADGROUP;
-    let assetObj = this.createMutateAssetObj(connection);
-    let mutateObj: MutateRecord = {
-      account: this._account.id,
-      adgroup: node.getId(),
-      action: action,
-      asset: assetObj,
-    };
-    return mutateObj;
-  }
-
-  /** Helper function that creates the appropriate asset object */
-  createMutateAssetObj(connection: AssetConn) {
-    let assetObj: MutateAsset = {
-      id: this._asset.id,
-      type: <AssetType>this._asset.type,
-    };
-    switch (this._asset.type) {
-      case AssetType.TEXT:
-        assetObj.asset_text = (this._asset as TextAsset).asset_text;
-        assetObj.text_type_to_assign = connection.toLowerCase();
-        break;
-      case AssetType.VIDEO:
-        assetObj.video_id = (this._asset as VideoAsset).video_id;
-        break;
-    }
-    return assetObj;
   }
 }
