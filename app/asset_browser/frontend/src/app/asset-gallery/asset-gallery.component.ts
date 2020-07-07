@@ -131,6 +131,10 @@ export class AssetGalleryComponent implements OnInit {
   }
 
   uploadAsset() {
+    // Make sure to unselect any assets to avoid loading the campaign selection
+    // of any previously selected assets
+    this.unselectAsset();
+
     const uploadDialogRef = this._uploadDialog.open(UploadAssetsComponent, {
       disableClose: true,
       data: this.account,
@@ -142,7 +146,13 @@ export class AssetGalleryComponent implements OnInit {
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(
     event: KeyboardEvent
   ) {
+    this.unselectAsset();
+  }
+
+  unselectAsset() {
     this.sideNav.close();
+    this.activeAssetId = null;
+    this._dataService.unselectAsset();
   }
 
   filterByStr(searchStr) {

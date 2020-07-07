@@ -26,7 +26,7 @@ import {
   AssetType,
   MutateRecord,
 } from './../model/asset';
-import { UpdateResponse, STATUS } from './../model/response';
+import { UpdateResponse, STATUS } from '../model/response';
 import { Account } from './../model/account';
 
 @Injectable({
@@ -106,6 +106,10 @@ export class AssetService {
     if (asset) {
       this._activeAssetAdGroups$.next(this.getActiveAssetAdGroups(asset.id));
     }
+  }
+
+  unselectAsset() {
+    this.changeAsset(null);
   }
 
   changeAccount(accountId: number) {

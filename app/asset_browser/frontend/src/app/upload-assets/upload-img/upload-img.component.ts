@@ -28,6 +28,7 @@ export enum FileType {
 })
 export class UploadImgComponent implements OnInit {
   //form: FormGroup;
+  uploadAPI: string = 'http://127.0.0.1:5000/upload-files/';
   validImage: boolean = true;
   acceptsType: FileType = FileType.IMG;
   //fileName: string;
@@ -44,20 +45,22 @@ export class UploadImgComponent implements OnInit {
     // });
   }
 
-  onChange(file: File) {
-    if (file) {
-      this.validImage = true;
-      this.file = file;
-      // TODO add some checks on the file
+  onChange(event) {
+    console.log('Target:', event.target.files);
+    // let file: File;
+    // if (file) {
+    //   this.validImage = true;
+    //   this.file = file;
+    // TODO add some checks on the file
 
-      //this.fileName = file.name;
-      // this.file = file;
-      // const reader = new FileReader();
-      // reader.readAsDataURL(file);
-      // reader.onload = (event) => {
-      //   this.fileUrl = reader.result;
-      //   console.log('Reader:', event);
-      // };
-    }
+    //this.fileName = file.name;
+    // this.file = file;
+    // const reader = new FileReader();
+    // reader.readAsDataURL(file);
+    // reader.onload = (event) => {
+    //   this.fileUrl = reader.result;
+    //   console.log('Reader:', event);
+    // };
+    // }
   }
 }

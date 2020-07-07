@@ -1,10 +1,14 @@
-<!-- <form [formGroup]="form">
-  <mat-form-field> -->
+<form [action]="this.uploadAPI" method="post" enctype="multipart/form-data">
     <input #fileInput
+
       class="file-input"
       type="file"
       [accept]="acceptsType"
-      (change)="onChange(fileInput.files[0])"
+      (change)="onChange($event)"
       />
-  <!-- </mat-form-field>
-</form> -->
+      <!-- <button
+        mat-stroked-button
+        color="primary">
+        Upload
+      </button> -->
+</form>
