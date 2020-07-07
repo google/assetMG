@@ -30,8 +30,9 @@ export class UploadImgComponent implements OnInit {
   //form: FormGroup;
   validImage: boolean = true;
   acceptsType: FileType = FileType.IMG;
-  fileName: string;
-  fileUrl: string | ArrayBuffer;
+  //fileName: string;
+  // fileUrl: string | ArrayBuffer;
+  file: File;
   // @Input() acceptsType: FileType;
 
   // constructor(private _formBuilder: FormBuilder) {}
@@ -46,17 +47,17 @@ export class UploadImgComponent implements OnInit {
   onChange(file: File) {
     if (file) {
       this.validImage = true;
-
+      this.file = file;
       // TODO add some checks on the file
 
-      this.fileName = file.name;
+      //this.fileName = file.name;
       // this.file = file;
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (event) => {
-        this.fileUrl = reader.result;
-        console.log('Reader:', event);
-      };
+      // const reader = new FileReader();
+      // reader.readAsDataURL(file);
+      // reader.onload = (event) => {
+      //   this.fileUrl = reader.result;
+      //   console.log('Reader:', event);
+      // };
     }
   }
 }

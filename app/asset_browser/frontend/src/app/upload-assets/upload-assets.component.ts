@@ -49,10 +49,16 @@ import { UploadAssetService } from '../services/upload-asset.service';
 export class UploadAssetsComponent implements OnInit {
   typeFormGroup: FormGroup;
   uploadFormGroup: FormGroup;
-  types: Map<string, string>;
-  isChildFormValid: boolean = true;
-  canAddAsset: boolean = true;
   assetType: string;
+  types: Map<string, string>;
+  canAddAsset: boolean = true;
+  isChildFormValid: boolean = true;
+
+  /** Update button params */
+  updateInProgress: boolean = false;
+  updateMessage: string = '';
+  isErrorMessage: boolean = false;
+
   @ViewChild('uploadText') uploadText: UploadTextComponent;
   @ViewChild('uploadImg') uploadImg: UploadImgComponent;
   @ViewChild('uploadVideo') uploadVideo: UploadVideoComponent;
@@ -116,8 +122,7 @@ export class UploadAssetsComponent implements OnInit {
 
   onAddAsset() {
     this._uploadService.uploadImage(
-      this.uploadImg.fileName,
-      this.uploadImg.fileUrl,
+      this.uploadImg.file,
       [122133]
     );
   }

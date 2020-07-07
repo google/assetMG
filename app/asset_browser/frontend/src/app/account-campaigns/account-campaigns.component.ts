@@ -22,17 +22,7 @@ import {
 import { SelectionModel } from '@angular/cdk/collections';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Account } from './../model/account';
-import {
-  AssetAdGroups,
-  AssetConn,
-  Asset,
-  MutateAction,
-  MutateRecord,
-  AssetType,
-  MutateAsset,
-  TextAsset,
-  VideoAsset,
-} from './../model/asset';
+import { AssetAdGroups, AssetConn, Asset, TextAsset } from './../model/asset';
 import { AssetService } from './../services/asset.service';
 import { STATUS } from '../model/response';
 
@@ -42,8 +32,6 @@ export enum nodeType {
   agNode,
   textPropertyNode,
 }
-
-type MutateMap = Map<string, AssetConn>;
 
 /* The node deifinition that will be used in the tree */
 export class TreeNode {
@@ -58,6 +46,7 @@ export class TreeNode {
   getName(): string {
     return this._name;
   }
+
   constructor(
     private _name: string,
     private _id?: number,
@@ -96,7 +85,6 @@ export class AccountCampaignsComponent implements OnChanges {
     return this._account;
   }
 
-  @Input() buttonLabel: string;
   @Input() showTextNodes: boolean;
 
   asset(): Asset {

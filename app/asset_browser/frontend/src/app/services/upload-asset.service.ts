@@ -23,17 +23,13 @@ export class UploadAssetService {
   private API_SERVER = 'http://127.0.0.1:5000';
   constructor(private http: HttpClient) {}
 
-  uploadImage(
-    name: string,
-    asset_url: string | ArrayBuffer,
-    adGroups: number[]
-  ) {
+  uploadImage(file: File, adGroups: number[]) {
     const endpoint = this.API_SERVER + '/upload-asset/';
     let imgAsset = {
       account: 7935681790,
       asset_type: 'IMAGE',
-      asset_name: name,
-      path: asset_url,
+      asset_name: file.name,
+      path: file,
       adgroups: [95186899405],
     };
     let subscritpion = this.http

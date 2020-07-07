@@ -71,12 +71,16 @@
         *ngIf="stepper.selectedIndex !== 2"
         [disabled]="!isChildFormValid"
         (click)="onNext(stepper)">Next</button>
-      <button mat-stroked-button
-        color="primary"
+      <app-progress-btn
+        btnLabel='Add Asset'
         class="right-align"
         *ngIf="stepper.selectedIndex == 2"
         [disabled]="!canAddAsset"
-        (click)="onAddAsset()">Add Asset</button>
+        [btnUpdateMsg]="updateMessage"
+        [isError]="isErrorMessage"
+        [inProgress]="updateInProgress"
+        (btnClick)="onAddAsset()">
+      </app-progress-btn>
   </div>
 </div>
 
