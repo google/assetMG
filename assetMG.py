@@ -83,18 +83,14 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@server.route('/upload-file/', methods=['POST'])
-def upload_file():
-  file = request.files[0]
+@server.route('/upload-files/', methods=['POST'])
+def upload_files():
+  file = request.files['file']
   if file and allowed_file(file.filename):
     filename = secure_filename(file.filename)
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
   
-  return _build_response(status=200)
-  # for file in request.files:
-  #   print(file)
-
-  # return _build_response(status=200)
+  return _build_response(msg=json.dumps(request.files),status=200)
 
 ############################################################
 
