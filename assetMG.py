@@ -48,7 +48,7 @@ server = Flask(__name__)
 CORS(server)
 
 UPLOAD_FOLDER = 'app/uploads'
-ALLOWED_EXTENSIONS = {'txt','png', 'jpg', 'jpeg', 'zip'}
+ALLOWED_EXTENSIONS = {'txt','png', 'jpg', 'jpeg', 'zip','gif'}
 
 server.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -85,12 +85,13 @@ def allowed_file(filename):
 
 @server.route('/upload-files/', methods=['POST'])
 def upload_files():
+  logging.info('receieved upload files call')
   file = request.files['file']
   if file and allowed_file(file.filename):
     filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    file.save(os.path.join(server.config['UPLOAD_FOLDER'], filename))
   
-  return _build_response(msg=json.dumps(request.files),status=200)
+  return _build_response(status=200)
 
 ############################################################
 
