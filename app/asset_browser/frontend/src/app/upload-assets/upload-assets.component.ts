@@ -91,6 +91,18 @@ export class UploadAssetsComponent implements OnInit {
   }
 
   onNext(stepper: MatStepper) {
+    if (stepper.selectedIndex == 1) {
+      switch (this.assetType) {
+        case this.types.get('img'):
+          this.uploadImg.uploadToServer();
+        // case this.types.get('video'):
+        //   return !this.uploadVideo.form.invalid;
+        // case this.types.get('html'):
+        //   this.uploadHtml.uploadToServer();
+        // default:
+        //   return !this.uploadText.form.invalid;
+      }
+    }
     stepper.next();
     this.isChildFormValid = this.isCurrentStepValid(stepper);
   }
@@ -121,6 +133,7 @@ export class UploadAssetsComponent implements OnInit {
   }
 
   onAddAsset() {
-    // this._uploadService.uploadImage(this.uploadImg.file, [122133]);
+    // this._uploadService.uploadImage(this.uploadImg.fileName, [122133]);
+    this.uploadDialogRef.close();
   }
 }

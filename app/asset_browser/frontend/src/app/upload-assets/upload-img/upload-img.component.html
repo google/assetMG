@@ -1,13 +1,25 @@
-<form ngNoForm #form action='http://127.0.0.1:5000/upload-files/' method="POST" enctype="multipart/form-data">
+<!-- <iframe id="hiddenFrame" name="hiddenFrame"></iframe>
+<form #form
+  ngNoForm
+  action='http://127.0.0.1:5000/upload-files/'
+  method="POST"
+  enctype="multipart/form-data"
+  target="hiddenFrame">
   <input #fileInput
     name="file"
     type="file"
-    />
-    <input type="submit" value="Upload" />
-    <!-- <input class="btn btn-default" type="submit"> -->
-    <!-- <button
-      mat-stroked-button
-      color="primary">
-      Upload
-    </button> -->
+    multiple
+    (change)="onChange($event)"/>
+</form> -->
+<iframe id="hiddenFrame" name="hiddenFrame"></iframe>
+<form #form
+  ngNoForm
+  action='http://127.0.0.1:5000/upload-files/'
+  method="POST"
+  enctype="multipart/form-data"
+  target="hiddenFrame">
+  <input #fileInput
+    name="file"
+    type="file"
+    (change)="onChange($event)"/>
 </form>
