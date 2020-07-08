@@ -27,6 +27,7 @@ import { LoaderInterceptor } from '../interceptors/loader.interceptor';
 import { MaterialModule } from './material.module';
 import { LoaderService } from '../services/loader.service';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+import { UploadComponent } from './upload/upload.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
     LoaderComponent,
     CredentialsComponent,
     RefreshCodeComponent,
+    UploadComponent,
   ],
   imports: [
     CommonModule,
@@ -51,6 +53,7 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
     FormsModule,
     ReactiveFormsModule,
     RxReactiveFormsModule,
+    UploadComponent,
   ],
   providers: [
     LoaderService,

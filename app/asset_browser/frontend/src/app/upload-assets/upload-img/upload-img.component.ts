@@ -14,41 +14,30 @@
  * limitations under the License.
  */
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
-// import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-export enum FileType {
-  IMG = 'image/*',
-  VIDEO = 'video/*',
-  HTML = '.zip',
-}
+import {
+  UploadComponent,
+  FileType,
+} from 'src/app/shared/upload/upload.component';
+
 @Component({
   selector: 'app-upload-img',
   templateUrl: './upload-img.component.html',
   styleUrls: ['./upload-img.component.css'],
 })
 export class UploadImgComponent implements OnInit {
-  //form: FormGroup;
-  uploadAPI: string = 'http://127.0.0.1:5000/upload-files/';
-  validImage: boolean = true;
-  acceptsType: FileType = FileType.IMG;
-  @ViewChild('form') form: ElementRef;
-  fileNames: string[] = [];
+  isValid: boolean = true;
+  fileTypes: FileType = FileType.IMG;
+
+  @ViewChild('uploadImg') upload: UploadComponent;
 
   constructor() {}
   ngOnInit(): void {}
 
-  onChange(event) {
-    for (let file of event.target.files) {
-      this.fileNames.push(file.name);
-    }
-    if (this.fileNames.length > 0) {
-      this.validImage = true;
-    }
-    console.log('names', this.fileNames);
-    // To do - check for valid image sizes here
+  uploadToServer() {
+    this.upload.uploadToServer();
   }
 
-  uploadToServer() {
-    console.log('Submit');
-    this.form.nativeElement.submit();
+  updateIsValid(event) {
+    this.isValid = event;
   }
 }

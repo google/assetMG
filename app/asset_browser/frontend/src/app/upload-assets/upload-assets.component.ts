@@ -25,10 +25,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AssetType } from '../model/asset';
 import { MatStepper } from '@angular/material/stepper';
 import { UploadTextComponent } from './upload-text/upload-text.component';
-import {
-  UploadImgComponent,
-  FileType,
-} from './upload-img/upload-img.component';
+import { UploadImgComponent } from './upload-img/upload-img.component';
 import { UploadVideoComponent } from './upload-video/upload-video.component';
 import { UploadHtmlComponent } from './upload-html/upload-html.component';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
@@ -95,10 +92,12 @@ export class UploadAssetsComponent implements OnInit {
       switch (this.assetType) {
         case this.types.get('img'):
           this.uploadImg.uploadToServer();
+          break;
         // case this.types.get('video'):
         //   return !this.uploadVideo.form.invalid;
-        // case this.types.get('html'):
-        //   this.uploadHtml.uploadToServer();
+        case this.types.get('html'):
+          this.uploadHtml.uploadToServer();
+          break;
         // default:
         //   return !this.uploadText.form.invalid;
       }
@@ -117,11 +116,11 @@ export class UploadAssetsComponent implements OnInit {
     } else {
       switch (this.assetType) {
         case this.types.get('img'):
-          return this.uploadImg.validImage;
+          return this.uploadImg.isValid;
         case this.types.get('video'):
           return !this.uploadVideo.form.invalid;
         case this.types.get('html'):
-          return !this.uploadHtml.form.invalid;
+          return this.uploadHtml.isValid;
         default:
           return !this.uploadText.form.invalid;
       }
