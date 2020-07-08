@@ -23,24 +23,25 @@ export class UploadAssetService {
   private API_SERVER = 'http://127.0.0.1:5000';
   constructor(private http: HttpClient) {}
 
-  uploadImage(file: File, adGroups: number[]) {
-    const endpoint = this.API_SERVER + '/upload-asset/';
-    let imgAsset = {
-      account: 7935681790,
-      asset_type: 'IMAGE',
-      asset_name: file.name,
-      path: file,
-      adgroups: [95186899405],
-    };
-    let subscritpion = this.http
-      .post(endpoint, imgAsset, { observe: 'response' })
-      .subscribe(
-        (response) => {
-          subscritpion.unsubscribe();
-        },
-        (error) => {
-          subscritpion.unsubscribe();
-        }
-      );
+  uploadImage(file, adGroups: number[]) {
+    // const endpoint = this.API_SERVER + '/upload-files/';
+    // let imgAsset = {
+    //   account: 7935681790,
+    //   asset_type: 'IMAGE',
+    //   asset_name: file.name,
+    //   path: file,
+    //   adgroups: [95186899405],
+    // };
+    // let files = { file: file };
+    // let subscritpion = this.http
+    //   .post(endpoint, files, { observe: 'response' })
+    //   .subscribe(
+    //     (response) => {
+    //       subscritpion.unsubscribe();
+    //     },
+    //     (error) => {
+    //       subscritpion.unsubscribe();
+    //     }
+    //   );
   }
 }

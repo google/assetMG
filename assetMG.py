@@ -43,7 +43,6 @@ import webview
 #             template_folder="app/asset_browser/frontend/dist/frontend")
 
 from flask_cors import CORS
-
 server = Flask(__name__)
 CORS(server)
 
@@ -184,8 +183,8 @@ def init_yt():
   setup.set_yt_config()
   yt_flow = InstalledAppFlow.from_client_secrets_file(YT_CONFIG_FILE_PATH , YT_CLIENT_SCOPES)
   credentials = yt_flow.run_local_server(host='localhost',
-    port=8080, 
-    authorization_prompt_message='Please visit this URL: {url}', 
+    port=8080,
+    authorization_prompt_message='Please visit this URL: {url}',
     success_message='The auth flow is complete; you may close this window.',
     open_browser=True)
   global yt_client
@@ -222,7 +221,7 @@ def upload_to_yt():
     status=500
 
   return _build_response(msg = json.dumps(msg), status=status)
-  
+
 
 @server.route('/create-struct/', methods=['GET'])
 def create_struct():
@@ -601,7 +600,7 @@ def open_browser():
 #   server.run()
 
 if __name__ == '__main__':
-  threading.Timer(1, open_browser).start()
+  # Timer(1, open_browser).start()
   server.run()
   # t = threading.Thread(target=start_server)
   # t.daemon = True
