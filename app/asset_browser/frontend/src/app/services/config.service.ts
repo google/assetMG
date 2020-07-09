@@ -79,12 +79,9 @@ export class ConfigService {
   }
 
   revertConfigSettings(config: ConfigSettings) {
-    console.log('One', config);
     if (config.config_valid) {
-      console.log('Two');
       const endpoint = this.API_SERVER + '/set-configs/';
       let subscritpion = this.http.post(endpoint, config).subscribe((_) => {
-        console.log('Three');
         this.updateConfigCache(config);
         subscritpion.unsubscribe();
       });

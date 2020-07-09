@@ -13,10 +13,10 @@
           <mat-radio-group
             class="type-radio-group"
             (change)="onAssetTypeChange($event.value)"
-            [(ngModel)]="assetType">
+            [(ngModel)]="uploadAssetType">
             <mat-radio-button *ngFor="let type of types| keyvalue"
               class="type-radio-button"
-              [value]="type.value">
+              [value]="type.key">
               {{type.value}}
             </mat-radio-button>
           </mat-radio-group>
@@ -24,29 +24,28 @@
       <mat-step [stepControl]="uploadFormGroup">
           <ng-template matStepLabel>Asset</ng-template>
           <h3>Add Asset</h3>
-          <div [ngSwitch]="true">
-              <app-upload-text
-                #uploadText
-                (isChildFormValid)="updateStepValid($event)"
-                [isHeadline]="assetType === types.get('headline')"
-                *ngSwitchCase="assetType === types.get('headline')||
-                               assetType === types.get('description')">
-              </app-upload-text>
+          <div [ngSwitch]="uploadAssetType">
               <app-upload-img
                 #uploadImg
                 (isChildFormValid)="updateStepValid($event)"
-                *ngSwitchCase="assetType === types.get('img')">
+                *ngSwitchCase="assetTypes.IMG">
               </app-upload-img>
               <app-upload-video
                 #uploadVideo
                 (isChildFormValid)="updateStepValid($event)"
-                *ngSwitchCase="assetType === types.get('video')">
+                *ngSwitchCase="assetTypes.VIDEO">
               </app-upload-video>
               <app-upload-html
                 #uploadHtml
                 (isChildFormValid)="updateStepValid($event)"
-                *ngSwitchCase="assetType === types.get('html')">
+                *ngSwitchCase="assetTypes.HTML">
               </app-upload-html>
+              <app-upload-text
+                #uploadText
+                (isChildFormValid)="updateStepValid($event)"
+                [isHeadline]="uploadAssetType === this.assetTypes.TEXT_HEADLINE"
+                *ngSwitchDefault>
+              </app-upload-text>
           </div>
       </mat-step>
       <mat-step>
@@ -80,9 +79,9 @@
         class="right-align"
         *ngIf="stepper.selectedIndex == 2"
         [disabled]="!canAddAsset"
-        [btnUpdateMsg]="updateMessage"
+        [btnUpdateMsg]="uploadMessage"
         [isError]="isErrorMessage"
-        [inProgress]="updateInProgress"
+        [inProgress]="uploadInProgress"
         (btnClick)="onAddAsset()">
       </app-progress-btn>
   </div>

@@ -34,8 +34,7 @@ import { UploadVideoComponent } from './upload-assets/upload-video/upload-video.
 import { UploadHtmlComponent } from './upload-assets/upload-html/upload-html.component';
 import { SharedModule } from './shared/shared.module';
 import { PreviewComponent } from './preview/preview.component';
-import {YouTubePlayerModule} from '@angular/youtube-player';
-
+// import {YouTubePlayerModule} from '@angular/youtube-player';
 
 @NgModule({
   declarations: [
@@ -61,7 +60,7 @@ import {YouTubePlayerModule} from '@angular/youtube-player';
     BrowserAnimationsModule,
     HttpClientModule,
     SharedModule,
-    YouTubePlayerModule,
+    // YouTubePlayerModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

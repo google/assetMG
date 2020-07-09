@@ -36,11 +36,11 @@ import { UploadImgComponent } from './upload-img/upload-img.component';
 import { UploadVideoComponent } from './upload-video/upload-video.component';
 import { UploadHtmlComponent } from './upload-html/upload-html.component';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
-import { isNgContainer } from '@angular/compiler';
 import { UploadAssetService } from '../services/upload-asset.service';
 
 import { ErrorStateMatcher } from '@angular/material/core';
 import { AccountCampaignsComponent } from '../account-campaigns/account-campaigns.component';
+import { AssetType } from '../model/asset';
 
 /** Error when the parent is invalid */
 export class ErrorMatcher implements ErrorStateMatcher {
@@ -66,15 +66,17 @@ export class ErrorMatcher implements ErrorStateMatcher {
 export class UploadAssetsComponent implements OnInit {
   typeFormGroup: FormGroup;
   uploadFormGroup: FormGroup;
-  assetType: string;
-  types: Map<string, string>;
-  canAddAsset: boolean = false;
+  uploadAssetType: AssetType;
+  assetTypes = AssetType;
+  types: Map<AssetType, string>;
+
+  canAddAsset: boolean;
   isTextAsset: boolean = true;
   isChildFormValid: boolean = true;
 
   /** Update button params */
-  updateInProgress: boolean = false;
-  updateMessage: string = '';
+  uploadInProgress: boolean = false;
+  uploadMessage: string = '';
   isErrorMessage: boolean = false;
 
   @ViewChild('uploadText') uploadText: UploadTextComponent;
@@ -92,15 +94,23 @@ export class UploadAssetsComponent implements OnInit {
 
   ngOnInit(): void {
     this.types = new Map();
-    this.types.set('headline', 'Text - Headline');
-    this.types.set('description', 'Text - Description');
-    this.types.set('img', 'Image');
-    this.types.set('video', 'YouTube Video');
-    this.types.set('html', 'HTML');
+    this.types.set(this.assetTypes.TEXT_HEADLINE, 'Text - Headline');
+    this.types.set(this.assetTypes.TEXT_DESC, 'Text - Description');
+    this.types.set(this.assetTypes.IMG, 'Image');
+    this.types.set(this.assetTypes.VIDEO, 'YouTube Video');
+    this.types.set(this.assetTypes.HTML, 'HTML');
 
-    this.assetType = this.types.get('description');
+    // First selected asset type is image when the dialog loads
+    this.canAddAsset = true;
+    this.uploadAssetType = this.assetTypes.IMG;
 
     this.uploadDialogRef.updateSize('800px', '520px');
+
+    this._uploadService.uploadFinished$.subscribe((response) => {
+      if (response) {
+        console.log('Response:', response);
+      }
+    });
   }
 
   onClose() {
@@ -108,11 +118,11 @@ export class UploadAssetsComponent implements OnInit {
     // Alert if in the middl eof uploads
   }
 
-  onAssetTypeChange(assetType) {
+  onAssetTypeChange(type) {
     // Update whether an asset can be added without getting linked to an ad group
     if (
-      assetType == this.types.get('headline') ||
-      assetType == this.types.get('description')
+      type == this.assetTypes.TEXT_DESC ||
+      type == this.assetTypes.TEXT_HEADLINE
     ) {
       this.isTextAsset = true;
       this.canAddAsset = false;
@@ -124,14 +134,14 @@ export class UploadAssetsComponent implements OnInit {
 
   onNext(stepper: MatStepper) {
     if (stepper.selectedIndex == 1) {
-      switch (this.assetType) {
-        case this.types.get('img'):
+      switch (this.uploadAssetType) {
+        case this.assetTypes.IMG:
           this.uploadImg.uploadToServer();
           break;
-        case this.types.get('video'):
+        case this.assetTypes.VIDEO:
           !this.uploadVideo.form.invalid;
           break;
-        case this.types.get('html'):
+        case this.assetTypes.HTML:
           this.uploadHtml.uploadToServer();
           break;
         default:
@@ -150,12 +160,12 @@ export class UploadAssetsComponent implements OnInit {
     if (stepper.selectedIndex == 0 || stepper.selectedIndex == 2) {
       return true;
     } else {
-      switch (this.assetType) {
-        case this.types.get('img'):
+      switch (this.uploadAssetType) {
+        case this.assetTypes.IMG:
           return this.uploadImg.isValid;
-        case this.types.get('html'):
+        case this.assetTypes.HTML:
           return this.uploadHtml.isValid;
-        case this.types.get('video'):
+        case this.assetTypes.VIDEO:
           return !this.uploadVideo.form.invalid;
         default:
           return !this.uploadText.form.invalid;
@@ -169,20 +179,57 @@ export class UploadAssetsComponent implements OnInit {
 
   updateCanAddAsset(canAdd: boolean) {
     if (
-      this.assetType == this.types.get('headline') ||
-      this.assetType == this.types.get('description')
+      this.uploadAssetType == this.assetTypes.TEXT_DESC ||
+      this.uploadAssetType == this.assetTypes.TEXT_HEADLINE
     ) {
       this.canAddAsset = canAdd;
     }
   }
   onAddAsset() {
+    let assetName = '';
+    let assetText = '';
     let adGroups = this.campaigns.getSelectedAdGroups();
+
+    switch (this.uploadAssetType) {
+      case this.assetTypes.IMG:
+        assetName = this.uploadImg.upload.fileNames[0];
+        break;
+      case this.assetTypes.HTML:
+        assetName = this.uploadHtml.upload.fileNames[0];
+        break;
+      case this.assetTypes.VIDEO:
+        assetName = this.uploadVideo.form.get('videoUrlCtrl').value;
+        break;
+      case this.assetTypes.TEXT_DESC:
+      case this.assetTypes.TEXT_HEADLINE:
+        assetText = this.uploadText.form.get('textCtrl').value;
+        break;
+    }
+
+    if (
+      this.uploadAssetType == this.assetTypes.TEXT_DESC ||
+      this.uploadAssetType == this.assetTypes.TEXT_HEADLINE
+    ) {
+      this._uploadService.addTextAsset(
+        this.account.id,
+        assetText,
+        this.uploadAssetType,
+        adGroups
+      );
+    } else {
+      this._uploadService.uploadAsset(
+        this.account.id,
+        assetName,
+        this.uploadAssetType,
+        adGroups
+      );
+    }
     /** Image */
-    this._uploadService.uploadImage(
-      this.account.id,
-      this.uploadImg.upload.fileNames[0],
-      adGroups
-    );
+    // this._uploadService.uploadImage(
+    //   this.account.id,
+    //   this.uploadImg.upload.fileNames[0],
+    //   adGroups
+    // );
 
     // /** Html */
     // this._uploadService.uploadHtml(
@@ -213,6 +260,6 @@ export class UploadAssetsComponent implements OnInit {
     //   adGroups,
     //   true
     // );
-    this.uploadDialogRef.close();
+    //this.uploadDialogRef.close();
   }
 }

@@ -17,6 +17,8 @@
 /** Different kinds of assets as returned from API */
 export enum AssetType {
   TEXT = 'TEXT',
+  TEXT_HEADLINE = 'headlines',
+  TEXT_DESC = 'descriptions',
   IMG = 'IMAGE',
   VIDEO = 'YOUTUBE_VIDEO',
   HTML = 'MEDIA_BUNDLE',

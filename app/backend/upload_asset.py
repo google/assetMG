@@ -171,11 +171,11 @@ def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='d
 def _update_asset_struct(client, asset, adgroups):
   if asset['type'] == 'TEXT':
     create_mcc_struct(client)
-    
+
   else:
     with open(asset_to_ag_json_path, 'r') as f:
       struct = json.load(f)
-    
+
     asset['adgroups'] = adgroups
     struct.append(asset)
 

@@ -27,3 +27,8 @@ export interface UpdateResponse {
   msg: string;
   assets: Asset[];
 }
+
+export interface UploadResponse {
+  status_code: STATUS;
+  msg: string;
+}
