@@ -30,17 +30,7 @@ import {
   FormGroupDirective,
   NgForm,
 } from '@angular/forms';
-import { ErrorStateMatcher } from '@angular/material/core';
-
-/** Error when the parent is invalid */
-class ErrorMatcher implements ErrorStateMatcher {
-  isErrorState(
-    control: FormControl | null,
-    form: FormGroupDirective | NgForm | null
-  ): boolean {
-    return control.dirty && form.invalid;
-  }
-}
+import {ErrorMatcher} from '../upload-assets.component';
 
 @Component({
   selector: 'app-upload-text',
@@ -86,7 +76,7 @@ export class UploadTextComponent implements OnInit, AfterViewInit {
     // This gets triggered before the actual text os deleted
     // so we want to emit it when there's one character in the textbox
     if (this.form.get('textCtrl').value.length == 1) {
-      this.isChildFormValid.emit(!this.form.invalid);
+      this.isChildFormValid.emit(false);
     }
   }
 

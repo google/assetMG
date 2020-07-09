@@ -15,6 +15,7 @@
  */
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AssetType } from '../model/asset';
 
 @Injectable({
   providedIn: 'root',
@@ -23,24 +24,23 @@ export class UploadAssetService {
   private API_SERVER = 'http://127.0.0.1:5000';
   constructor(private http: HttpClient) {}
 
-  uploadImage(formData, adGroups: number[]) {
-    const endpoint = this.API_SERVER + '/upload-files/';
-    const httpUploadOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':
-          'multipart/form-data; charset=utf-8; boundary="another cool boundary"',
-      }),
+  uploadImage(account: number, fileName: string, adGroups: number[]) {
+    const endpoint = this.API_SERVER + '/upload-asset/';
+
+    let imgAsset = {
+      account: 7935681790,
+      asset_type: 'IMAGE',
+      asset_name: 'cow.jpeg',
+      adgroups: [95186899405, 96689486386],
     };
     // let imgAsset = {
-    //   account: 7935681790,
+    //   account: account,
     //   asset_type: 'IMAGE',
-    //   asset_name: file.name,
-    //   path: file,
+    //   asset_name: fileName,
     //   adgroups: [95186899405],
     // };
-    let files = { files: formData };
     let subscritpion = this.http
-      .post(endpoint, files, httpUploadOptions)
+      .post(endpoint, imgAsset, { observe: 'response' })
       .subscribe(
         (response) => {
           subscritpion.unsubscribe();
@@ -50,4 +50,108 @@ export class UploadAssetService {
         }
       );
   }
+
+  uploadHtml(account: number, fileName: string, adGroups: number[]) {
+    const endpoint = this.API_SERVER + '/upload-asset/';
+    let htmlAsset = {
+      account: 7935681790,
+      asset_type: 'MEDIA_BUNDLE',
+      asset_name: 'zip_5MB.zip',
+      adgroups: [95186899405, 96689486386],
+    };
+
+    let subscritpion = this.http
+      .post(endpoint, htmlAsset, { observe: 'response' })
+      .subscribe(
+        (response) => {
+          subscritpion.unsubscribe();
+        },
+        (error) => {
+          subscritpion.unsubscribe();
+        }
+      );
+  }
+
+  uploadVideo(account: number, videoUrl: string, adGroups: number[]) {
+    const endpoint = this.API_SERVER + '/upload-asset/';
+
+    let videoAsset = {
+      account: 7935681790,
+      asset_type: 'YOUTUBE_VIDEO',
+      asset_name: 'Awesome vid', //optional
+      url: 'https://www.youtube.com/watch?v=UVT3l7dpTRs',
+      adgroups: [95186899405, 96689486386],
+    };
+
+    let subscritpion = this.http
+      .post(endpoint, videoAsset, { observe: 'response' })
+      .subscribe(
+        (response) => {
+          subscritpion.unsubscribe();
+        },
+        (error) => {
+          subscritpion.unsubscribe();
+        }
+      );
+  }
+
+  addTextAsset(
+    account: number,
+    text: string,
+    adGroups: number[],
+    isHeadline: boolean
+  ) {
+    const endpoint = this.API_SERVER + '/upload-asset/';
+
+    let assetType = 'descriptions';
+    if (isHeadline) {
+      assetType = 'headlines';
+    }
+
+    let textAsset = {
+      account: 7935681790,
+      asset_type: assetType,
+      asset_name: '',
+      asset_text: 'its a-me! mario!',
+      adgroups: [95186899405, 96689486386],
+    };
+
+    let subscritpion = this.http
+      .post(endpoint, textAsset, { observe: 'response' })
+      .subscribe(
+        (response) => {
+          subscritpion.unsubscribe();
+        },
+        (error) => {
+          subscritpion.unsubscribe();
+        }
+      );
+  }
+
+  // uploadAsset(account: number, assetName: string, assetType: AssetType, adGroups: number[]) {
+  //   const endpoint = this.API_SERVER + '/upload-asset/';
+
+  //   let imgAsset = {
+  //     account: 7935681790,
+  //     asset_type: 'IMAGE',
+  //     asset_name: 'cow.jpeg',
+  //     adgroups: [95186899405, 96689486386],
+  //   };
+  //   // let imgAsset = {
+  //   //   account: account,
+  //   //   asset_type: 'IMAGE',
+  //   //   asset_name: fileName,
+  //   //   adgroups: [95186899405],
+  //   // };
+  //   let subscritpion = this.http
+  //     .post(endpoint, imgAsset, { observe: 'response' })
+  //     .subscribe(
+  //       (response) => {
+  //         subscritpion.unsubscribe();
+  //       },
+  //       (error) => {
+  //         subscritpion.unsubscribe();
+  //       }
+  //     );
+  // }
 }

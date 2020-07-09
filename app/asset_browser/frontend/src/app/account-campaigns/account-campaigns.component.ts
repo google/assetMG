@@ -13,7 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ChangeDetectorRef, Component, Input, OnChanges } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import {
   MatTreeFlattener,
@@ -86,6 +93,8 @@ export class AccountCampaignsComponent implements OnChanges {
   }
 
   @Input() showTextNodes: boolean;
+  @Input() notifyOnSelection: boolean = false;
+  @Output() selectionMade: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   asset(): Asset {
     return this._asset;
@@ -362,6 +371,10 @@ export class AccountCampaignsComponent implements OnChanges {
   nodeClicked(node: TreeNode, checked: boolean): void {
     this.trackChanges(node, checked);
     this.nodeSelectionToggle(node);
+
+    if (this.notifyOnSelection) {
+      this.lookForSelection(this.dataSource.data);
+    }
   }
 
   /** Update the mutate map to keep track of user's changes */
@@ -384,5 +397,31 @@ export class AccountCampaignsComponent implements OnChanges {
 
     // Update the edit icon as needed
     node.isEdited = !node.isEdited;
+  }
+
+  /** Looks for at least one selected adGroup */
+  private lookForSelection(campaigns: TreeNode[]) {
+    for (let camp of campaigns) {
+      for (let adGroup of camp.children.value) {
+        if (this.checklistSelection.isSelected(adGroup)) {
+          this.selectionMade.emit(true);
+          return;
+        }
+      }
+    }
+    this.selectionMade.emit(false);
+  }
+
+  /** Gets an array of selected ad groups - this is mainly used when uploading assets*/
+  getSelectedAdGroups(): number[] {
+    let adGroups = [];
+    for (let camp of this.dataSource.data) {
+      for (let adGroup of camp.children.value) {
+        if (this.checklistSelection.isSelected(adGroup)) {
+          adGroups.push(adGroup.getId());
+        }
+      }
+    }
+    return adGroups;
   }
 }

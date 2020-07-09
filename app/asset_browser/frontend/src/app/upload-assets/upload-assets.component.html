@@ -12,6 +12,7 @@
           <h3>Select Asset Type:</h3>
           <mat-radio-group
             class="type-radio-group"
+            (change)="onAssetTypeChange($event.value)"
             [(ngModel)]="assetType">
             <mat-radio-button *ngFor="let type of types| keyvalue"
               class="type-radio-button"
@@ -21,7 +22,6 @@
           </mat-radio-group>
       </mat-step>
       <mat-step [stepControl]="uploadFormGroup">
-        <!-- <form [formGroup]="uploadFormGroup"> -->
           <ng-template matStepLabel>Asset</ng-template>
           <h3>Add Asset</h3>
           <div [ngSwitch]="true">
@@ -34,25 +34,29 @@
               </app-upload-text>
               <app-upload-img
                 #uploadImg
+                (isChildFormValid)="updateStepValid($event)"
                 *ngSwitchCase="assetType === types.get('img')">
               </app-upload-img>
               <app-upload-video
                 #uploadVideo
+                (isChildFormValid)="updateStepValid($event)"
                 *ngSwitchCase="assetType === types.get('video')">
               </app-upload-video>
               <app-upload-html
                 #uploadHtml
+                (isChildFormValid)="updateStepValid($event)"
                 *ngSwitchCase="assetType === types.get('html')">
               </app-upload-html>
           </div>
-        <!-- </form> -->
       </mat-step>
       <mat-step>
         <ng-template matStepLabel>Add</ng-template>
         <app-account-campaigns
+          #accountCampaigns
           [account]="account"
           [showTextNodes]=false
-          buttonLabel='Add'>
+          [notifyOnSelection]="isTextAsset"
+          (selectionMade)="updateCanAddAsset($event)">
         </app-account-campaigns>
       </mat-step>
     </mat-horizontal-stepper>

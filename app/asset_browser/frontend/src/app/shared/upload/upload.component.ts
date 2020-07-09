@@ -47,6 +47,7 @@ export class UploadComponent implements OnInit {
   ngOnInit(): void {}
 
   onChange(event) {
+    this.fileNames = [];
     for (let file of event.target.files) {
       this.fileNames.push(file.name);
     }
@@ -55,12 +56,11 @@ export class UploadComponent implements OnInit {
     } else {
       this.isValid.emit(false);
     }
-    console.log('names', this.fileNames);
+
     // To do - check for valid image sizes here
   }
 
   uploadToServer() {
-    console.log('Submit');
     this.form.nativeElement.submit();
   }
 }

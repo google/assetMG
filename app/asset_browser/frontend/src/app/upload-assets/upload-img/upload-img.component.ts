@@ -13,7 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  ViewChild,
+  ElementRef,
+  EventEmitter,
+  Output,
+} from '@angular/core';
 import {
   UploadComponent,
   FileType,
@@ -25,19 +33,24 @@ import {
   styleUrls: ['./upload-img.component.css'],
 })
 export class UploadImgComponent implements OnInit {
-  isValid: boolean = true;
+  isValid: boolean = false;
   fileTypes: FileType = FileType.IMG;
 
   @ViewChild('uploadImg') upload: UploadComponent;
+  @Output() isChildFormValid: EventEmitter<boolean> = new EventEmitter<
+    boolean
+  >();
 
   constructor() {}
+
   ngOnInit(): void {}
 
   uploadToServer() {
     this.upload.uploadToServer();
   }
 
-  updateIsValid(event) {
-    this.isValid = event;
+  updateIsValid(validEvent: boolean) {
+    this.isValid = validEvent;
+    this.isChildFormValid.emit(validEvent);
   }
 }

@@ -13,19 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ErrorMatcher } from '../upload-assets.component';
 
 @Component({
   selector: 'app-upload-video',
   templateUrl: './upload-video.component.html',
-  styleUrls: ['./upload-video.component.css']
+  styleUrls: ['./upload-video.component.css'],
 })
 export class UploadVideoComponent implements OnInit {
   form: FormGroup;
-  constructor(private _formBuilder: FormBuilder) { }
+  errorMatcher = new ErrorMatcher();
+  @Output() isChildFormValid: EventEmitter<boolean> = new EventEmitter<
+    boolean
+  >();
+
+  constructor(private _formBuilder: FormBuilder) {}
 
   ngOnInit(): void {
+    this.form = this._formBuilder.group({
+      videoUrlCtrl: ['', [Validators.required]],
+    });
+
+    // Update parent form when the value changes to detect valid and invalid states
+    this.form.valueChanges.subscribe((value) => {
+      if (this.form.get('videoUrlCtrl').value.length) {
+        this.isChildFormValid.emit(!this.form.invalid);
+      }
+    });
   }
 
+  // Reflect valid/invalid state to parent - "empty space" is bypassed by the
+  // event emitter previous
+  onBackspace() {
+    // This gets triggered before the actual text os deleted
+    // so we want to emit it when there's one character in the textbox
+    if (this.form.get('videoUrlCtrl').value.length == 1) {
+      this.isChildFormValid.emit(false);
+    }
+  }
 }
