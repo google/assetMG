@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import {
+  FileType,
+  UploadComponent,
+} from 'src/app/shared/upload/upload.component';
 
 @Component({
   selector: 'app-upload-html',
@@ -22,8 +26,19 @@ import { FormBuilder, FormGroup } from '@angular/forms';
   styleUrls: ['./upload-html.component.css'],
 })
 export class UploadHtmlComponent implements OnInit {
-  form: FormGroup;
-  constructor(private _formBuilder: FormBuilder) {}
+  isValid: boolean = true;
+  fileTypes: FileType = FileType.HTML;
+
+  @ViewChild('uploadHtml') upload: UploadComponent;
+  constructor() {}
 
   ngOnInit(): void {}
+
+  uploadToServer() {
+    this.upload.uploadToServer();
+  }
+
+  updateIsValid(event) {
+    this.isValid = event;
+  }
 }

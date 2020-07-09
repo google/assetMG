@@ -13,80 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, OnInit, Input } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RxFormGroup, RxFormBuilder } from '@rxweb/reactive-form-validators';
+import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import {
+  UploadComponent,
+  FileType,
+} from 'src/app/shared/upload/upload.component';
 
-export enum FileType {
-  IMG = 'image/*',
-  VIDEO = 'video/*',
-  HTML = '.zip',
-}
 @Component({
   selector: 'app-upload-img',
   templateUrl: './upload-img.component.html',
   styleUrls: ['./upload-img.component.css'],
 })
 export class UploadImgComponent implements OnInit {
-  form: RxFormGroup;
-  uploadAPI: string = 'http://127.0.0.1:5000/upload-files/';
-  validImage: boolean = true;
-  acceptsType: FileType = FileType.IMG;
-  //fileName: string;
-  // fileUrl: string | ArrayBuffer;
-  file: File;
-  // @Input() acceptsType: FileType;
+  isValid: boolean = true;
+  fileTypes: FileType = FileType.IMG;
 
-  constructor(private _formBuilder: RxFormBuilder) {}
-  // constructor() {}
+  @ViewChild('uploadImg') upload: UploadComponent;
 
-  ngOnInit(): void {
-    this.form = <RxFormGroup>this._formBuilder.group({
-      file: [null, [Validators.required]],
-    });
+  constructor() {}
+  ngOnInit(): void {}
+
+  uploadToServer() {
+    this.upload.uploadToServer();
   }
 
-  onChange(event) {
-    console.log('Target:', event);
-
-    console.log('formData', this.form.toFormData());
-    // this.file = event.target.files;
-
-    // let file: File;
-    // if (file) {
-    //   this.validImage = true;
-    //   this.file = file;
-    // TODO add some checks on the file
-
-    //this.fileName = file.name;
-    // this.file = file;
-    // const reader = new FileReader();
-    // reader.readAsDataURL(file);
-    // reader.onload = (event) => {
-    //   this.fileUrl = reader.result;
-    //   console.log('Reader:', event);
-    // };
-    // }
-  }
-
-  onSave() {
-    console.log('formData', this.form.toFormData());
-    // this.file = event.target.files;
-
-    // let file: File;
-    // if (file) {
-    //   this.validImage = true;
-    //   this.file = file;
-    // TODO add some checks on the file
-
-    //this.fileName = file.name;
-    // this.file = file;
-    // const reader = new FileReader();
-    // reader.readAsDataURL(file);
-    // reader.onload = (event) => {
-    //   this.fileUrl = reader.result;
-    //   console.log('Reader:', event);
-    // };
-    // }
+  updateIsValid(event) {
+    this.isValid = event;
   }
 }

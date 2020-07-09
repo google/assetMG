@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -23,8 +23,14 @@ export class UploadAssetService {
   private API_SERVER = 'http://127.0.0.1:5000';
   constructor(private http: HttpClient) {}
 
-  uploadImage(file, adGroups: number[]) {
-    // const endpoint = this.API_SERVER + '/upload-files/';
+  uploadImage(formData, adGroups: number[]) {
+    const endpoint = this.API_SERVER + '/upload-files/';
+    const httpUploadOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':
+          'multipart/form-data; charset=utf-8; boundary="another cool boundary"',
+      }),
+    };
     // let imgAsset = {
     //   account: 7935681790,
     //   asset_type: 'IMAGE',
@@ -32,16 +38,16 @@ export class UploadAssetService {
     //   path: file,
     //   adgroups: [95186899405],
     // };
-    // let files = { file: file };
-    // let subscritpion = this.http
-    //   .post(endpoint, files, { observe: 'response' })
-    //   .subscribe(
-    //     (response) => {
-    //       subscritpion.unsubscribe();
-    //     },
-    //     (error) => {
-    //       subscritpion.unsubscribe();
-    //     }
-    //   );
+    let files = { files: formData };
+    let subscritpion = this.http
+      .post(endpoint, files, httpUploadOptions)
+      .subscribe(
+        (response) => {
+          subscritpion.unsubscribe();
+        },
+        (error) => {
+          subscritpion.unsubscribe();
+        }
+      );
   }
 }

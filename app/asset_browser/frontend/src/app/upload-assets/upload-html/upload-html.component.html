@@ -1,1 +1,3 @@
-<p>upload-html works!</p>
+<app-upload #uploadHtml
+  [acceptsType]="fileTypes"
+  (isValid)=updateIsValid($event)></app-upload>
