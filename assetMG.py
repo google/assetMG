@@ -545,6 +545,10 @@ def upload_asset():
     return _build_response(msg=json.dumps(str(e)), status=500)
 
   Service_Class.reset_cid(client)
+  
+  if result['status'] == -1:
+    return _build_response(msg=json.dumps('Asset Uploaded'), status=200)
+
   if result['status'] == 3:
     return _build_response(msg=json.dumps('could not upload asset'), status=500)
 
