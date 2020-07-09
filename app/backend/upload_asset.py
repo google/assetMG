@@ -20,7 +20,12 @@ to a list of adgroups utilaizing the mutate module.
 
 from googleads import adwords
 import app.backend.mutate as mutate
+from app.backend.structure import create_mcc_struct
 from app.backend.service import Service_Class
+from pathlib import Path
+
+
+asset_to_ag_json_path = Path('app/cache/asset_to_ag.json')
 
 
 def upload_html5_asset(client, account, asset_name, path, adgroups):
@@ -153,11 +158,28 @@ def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='d
   elif successeful_assign:
     status = 0
 
+  _update_asset_struct(client,asset,successeful_assign)
+
   return {
       'status': status,
       'successfull': successeful_assign,
       'unsuccessfull': unsuccesseful_assign
   }
+
+
+def _update_asset_struct(client, asset, adgroups):
+  if asset['type'] == 'TEXT':
+    create_mcc_struct(client)
+    
+  else:
+    with open(asset_to_ag_json_path, 'r') as f:
+      struct = json.load(f)
+    
+    asset['adgroups'] = adgroups
+    struct.append(asset)
+
+    with open(CONFIG_FILE_PATH, 'w') as f:
+      yaml.dumps(f)
 
 
 def upload(client,
