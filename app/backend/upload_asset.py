@@ -141,6 +141,9 @@ def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='d
   successeful_assign = []
   unsuccesseful_assign = []
 
+  if not adgroups:
+    return {'status':-1}
+    
   for ag in adgroups:
     # mutate_ad returns None if it finishes succesfully
     if mutate.mutate_ad(client, account, ag, asset, 'ADD', text_type):
@@ -148,7 +151,7 @@ def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='d
     else:
       successeful_assign.append(ag)
 
-  # assignment status: 0 - succesfull, 1 - partialy succesfull, 2 - unsuccesfull
+  # assignment status: 0 - succesfull, 1 - partialy succesfull, 2 - unsuccesfull, -1 - no adgroups to assign
   status = 2
 
   # if successfully assigend only to some ad groups
