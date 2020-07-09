@@ -18,7 +18,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
 
-import { Asset, AssetType, ImgAsset } from './../model/asset';
+import { Asset, AssetType, ImgAsset, VideoAsset } from './../model/asset';
 import { AssetService } from './../services/asset.service';
 import { PreviewComponent } from '../preview/preview.component';
 
@@ -31,10 +31,10 @@ export class AssetComponent implements OnInit {
   assetType = AssetType;
   private _asset: Asset;
   @Input()
-  set asset(asset: Asset) {
+  set asset(asset: any) {
     this._asset = asset;
   }
-  get asset(): Asset {
+  get asset(): any {
     return this._asset;
   }
 
@@ -50,10 +50,17 @@ export class AssetComponent implements OnInit {
   }
 
   openPreview(){
+    let url =''
     if (this._asset.type === AssetType.IMG){
-      let url = (this._asset as ImgAsset).image_url
+      url = (this._asset as ImgAsset).image_url
+    }
+    else if (this._asset.type === AssetType.VIDEO){
+      url = (this._asset as VideoAsset).link
+
     }
     this._previewDialog.open(PreviewComponent,{data:{
+      type: this.asset.type,
+      url: url
     }});
   }
 }

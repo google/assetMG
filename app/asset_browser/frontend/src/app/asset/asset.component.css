@@ -24,7 +24,6 @@ mat-card img {
   object-fit:scale-down ; /*this makes the image in src fit to the size specified below*/
   height: 100%;
   width: 100%;
-  /* width: auto; */
   border-radius: 8px;
   margin: auto;
 }
@@ -39,4 +38,14 @@ mat-card-content p {
   position: relative;
   top: 20%;
   font-size: larger;
+}
+
+mat-card-content img {
+  position: relative;
+  /* width: auto; */
+}
+mat-card-content button {
+  position: absolute;
+  top: 75%;
+  right: 2%;
 }
