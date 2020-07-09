@@ -34,20 +34,21 @@ import webbrowser
 import threading
 import sys
 import os
+import shutil
 from werkzeug.utils import secure_filename
 import webview
 
 
-# server = Flask(__name__, static_url_path="",
-#             static_folder="app/asset_browser/frontend/dist/frontend",
-#             template_folder="app/asset_browser/frontend/dist/frontend")
+server = Flask(__name__, static_url_path="",
+            static_folder="app/asset_browser/frontend/dist/frontend",
+            template_folder="app/asset_browser/frontend/dist/frontend")
 
-from flask_cors import CORS
-server = Flask(__name__)
-CORS(server)
+# from flask_cors import CORS
+# server = Flask(__name__)
+# CORS(server)
 
-UPLOAD_FOLDER = 'app/uploads'
-ALLOWED_EXTENSIONS = {'txt','png', 'jpg', 'jpeg', 'zip'}
+UPLOAD_FOLDER = Path('app/uploads')
+ALLOWED_EXTENSIONS = {'txt','png', 'jpg', 'jpeg', 'zip','gif'}
 
 server.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -75,26 +76,6 @@ if config_file['config_valid']:
   client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH / 'googleads.yaml')
   googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH / 'google-ads.yaml')
   create_mcc_struct(client)
-
-
-############################################################
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-@server.route('/upload-files/', methods=['POST'])
-def upload_files():
-  logging.info(request.files)
-  file = request.files['file']
-  if file and allowed_file(file.filename):
-    filename = secure_filename(file.filename)
-    logging.info(os.path.join(server.config['UPLOAD_FOLDER'], filename))
-    file.save(os.path.join(server.config['UPLOAD_FOLDER'], filename))
-
-  return _build_response(status=200)
-
-############################################################
-
 
 
 @server.route('/')
@@ -497,6 +478,45 @@ def _asset_ag_update(asset,adgroup,action):
   return asset
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@server.route('/upload-files/', methods=['POST'])
+def upload_files():
+  status=200
+  file = request.files['file']
+  if file and allowed_file(file.filename):
+    filename = secure_filename(file.filename)
+    try:
+      file.save(os.path.join(server.config['UPLOAD_FOLDER'], filename))
+    except Exception as e:
+      logging.error(str(e))
+      status=500
+  return _build_response(status=status)
+
+
+@server.route('/clean-dir/')
+def clean_dir():
+  status=200
+  folder = UPLOAD_FOLDER
+  for filename in os.listdir(folder):
+      file_path = os.path.join(folder, filename)
+      try:
+          if os.path.isfile(file_path) or os.path.islink(file_path):
+              os.unlink(file_path)
+          elif os.path.isdir(file_path):
+              shutil.rmtree(file_path)
+      except Exception as e:
+          logging.error('Failed to delete %s. Reason: %s' % (file_path, e))
+
+  if len(os.listdir(folder)) != 0:
+    status=500
+
+  return _build_response(status=status)
+
+
+
 @server.route('/upload-asset/', methods=['POST'])
 def upload_asset():
   """upload new asset to account and assign to specified adgroups.
@@ -509,35 +529,40 @@ def upload_asset():
   if data.get('account') is None or data.get('asset_type') is None:
     return _build_response(msg='invalid arguments', status=400)
 
-  result = upload(
-      client,
-      data.get('account'),
-      data.get('asset_type'),
-      data['asset_name'],
-      asset_text=data.get('asset_text'),
-      path=data.get('path'),
-      url=data.get('url'),
-      adgroups=data.get('adgroups'))
+  try:
+    result = upload(
+        client,
+        data.get('account'),
+        data.get('asset_type'),
+        data.get('asset_name'),
+        asset_text=data.get('asset_text'),
+        path= UPLOAD_FOLDER / data.get('asset_name'),
+        url=data.get('url'),
+        adgroups=data.get('adgroups'))
+
+  except Exception as e:
+    logging.error(str(e))
+    return _build_response(msg=json.dumps(str(e)), status=500)
 
   Service_Class.reset_cid(client)
   if result['status'] == 3:
-    return _build_response(msg='could not upload asset', status=500)
+    return _build_response(msg=json.dumps('could not upload asset'), status=500)
 
   if result['status'] == 0:
     return _build_response(
-        msg='Asset successfully uploaded and assigned to %s' %
-        (', '.join(map(str, result['successfull']))),
+        msg=json.dumps('Asset successfully uploaded and assigned to %s' %
+        (', '.join(map(str, result['successfull'])))),
         status=200)
 
   if result['status'] == 1:
     return _build_response(
-        msg='Asset successfully uploaded and assigned to %s but could not '
+        msg=json.dumps('Asset successfully uploaded and assigned to %s but could not '
         'assign to %s' % (', '.join(map(str, result['successfull'])), ', '.join(
-            map(str, result['unsuccessfull']))),
+            map(str, result['unsuccessfull'])))),
         status=206)
 
   else:
-    return _build_response(msg='could not assign asset', status=500)
+    return _build_response(msg=json.dumps('could not assign asset'), status=500)
 
 
 def _build_response(msg='', status=200, mimetype='application/json'):

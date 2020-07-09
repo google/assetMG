@@ -33,6 +33,7 @@ import { UploadImgComponent } from './upload-assets/upload-img/upload-img.compon
 import { UploadVideoComponent } from './upload-assets/upload-video/upload-video.component';
 import { UploadHtmlComponent } from './upload-assets/upload-html/upload-html.component';
 import { SharedModule } from './shared/shared.module';
+import { PreviewComponent } from './preview/preview.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { SharedModule } from './shared/shared.module';
     UploadImgComponent,
     UploadVideoComponent,
     UploadHtmlComponent,
+    PreviewComponent,
   ],
   imports: [
     BrowserModule,

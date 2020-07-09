@@ -1,4 +1,5 @@
 googleads==20.0.0
 google-ads
 flask
+google-api-python-client
 pywebview

@@ -15,9 +15,12 @@
  */
 import { Component, Input, OnInit, SimpleChange } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 
-import { Asset, AssetType } from './../model/asset';
+
+import { Asset, AssetType, ImgAsset } from './../model/asset';
 import { AssetService } from './../services/asset.service';
+import { PreviewComponent } from '../preview/preview.component';
 
 @Component({
   selector: 'app-asset',
@@ -28,21 +31,31 @@ export class AssetComponent implements OnInit {
   assetType = AssetType;
   private _asset: Asset;
   @Input()
-  set asset(asset: any) {
+  set asset(asset: Asset) {
     this._asset = asset;
   }
-  get asset(): any {
+  get asset(): Asset {
     return this._asset;
   }
 
   @Input()
   selectedAssetId: number;
 
-  constructor(private router: Router, private dataService: AssetService) {}
+  constructor(private router: Router, private dataService: AssetService, private _previewDialog: MatDialog) {}
 
   ngOnInit(): void {}
 
   openDetails() {
     this.dataService.changeAsset(this.asset);
   }
+
+  openPreview(){
+    if (this._asset.type === AssetType.IMG){
+      let url = (this._asset as ImgAsset).image_url
+    }
+    this._previewDialog.open(PreviewComponent,{data:{
+    }});
+  }
 }
+
+
