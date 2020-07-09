@@ -23,6 +23,7 @@ import app.backend.mutate as mutate
 from app.backend.structure import create_mcc_struct
 from app.backend.service import Service_Class
 from pathlib import Path
+import json
 
 
 asset_to_ag_json_path = Path('app/cache/asset_to_ag.json')
@@ -178,8 +179,8 @@ def _update_asset_struct(client, asset, adgroups):
     asset['adgroups'] = adgroups
     struct.append(asset)
 
-    with open(CONFIG_FILE_PATH, 'w') as f:
-      yaml.dumps(f)
+    with open(asset_to_ag_json_path, 'w') as f:
+      json.dump(struct,f, indent=2)
 
 
 def upload(client,

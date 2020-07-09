@@ -39,13 +39,13 @@ from werkzeug.utils import secure_filename
 import webview
 
 
-server = Flask(__name__, static_url_path="",
-            static_folder="app/asset_browser/frontend/dist/frontend",
-            template_folder="app/asset_browser/frontend/dist/frontend")
+# server = Flask(__name__, static_url_path="",
+#             static_folder="app/asset_browser/frontend/dist/frontend",
+#             template_folder="app/asset_browser/frontend/dist/frontend")
 
-# from flask_cors import CORS
-# server = Flask(__name__)
-# CORS(server)
+from flask_cors import CORS
+server = Flask(__name__)
+CORS(server)
 
 UPLOAD_FOLDER = Path('app/uploads')
 ALLOWED_EXTENSIONS = {'txt','png', 'jpg', 'jpeg', 'zip','gif'}
