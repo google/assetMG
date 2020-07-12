@@ -26,7 +26,7 @@ import { HttpErrorInterceptor } from '../interceptors/http-error.interceptor';
 import { LoaderInterceptor } from '../interceptors/loader.interceptor';
 import { MaterialModule } from './material.module';
 import { LoaderService } from '../services/loader.service';
-import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+// import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { UploadComponent } from './upload/upload.component';
 
 @NgModule({
@@ -36,13 +36,14 @@ import { UploadComponent } from './upload/upload.component';
     CredentialsComponent,
     RefreshCodeComponent,
     UploadComponent,
+    ClientIDPipe,
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
-    RxReactiveFormsModule,
+    // RxReactiveFormsModule,
   ],
   exports: [
     ProgressBtnComponent,
@@ -52,7 +53,7 @@ import { UploadComponent } from './upload/upload.component';
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
-    RxReactiveFormsModule,
+    // RxReactiveFormsModule,
     UploadComponent,
   ],
   providers: [

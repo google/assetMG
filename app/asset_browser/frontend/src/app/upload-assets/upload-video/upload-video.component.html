@@ -1,11 +1,18 @@
 <form [formGroup]="form">
   <mat-form-field>
+  <mat-label>Asset Name</mat-label>
+  <input matInput #videoName
+          formControlName="videoNameCtrl"
+          autocomplete="off"
+          required>
+  </mat-form-field>
+  <mat-form-field>
     <mat-label>YouTube Video Link</mat-label>
     <input matInput #videoAsset
-          [errorStateMatcher]="errorMatcher"
+
           formControlName="videoUrlCtrl"
           autocomplete="off"
-          (keydown.backspace)="onBackspace()"
+          (keydown.backspace)="onBackspace($event)"
           required>
   </mat-form-field>
 </form>

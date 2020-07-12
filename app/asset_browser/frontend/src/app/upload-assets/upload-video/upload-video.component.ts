@@ -15,7 +15,6 @@
  */
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ErrorMatcher } from '../upload-assets.component';
 
 @Component({
   selector: 'app-upload-video',
@@ -24,7 +23,6 @@ import { ErrorMatcher } from '../upload-assets.component';
 })
 export class UploadVideoComponent implements OnInit {
   form: FormGroup;
-  errorMatcher = new ErrorMatcher();
   @Output() isChildFormValid: EventEmitter<boolean> = new EventEmitter<
     boolean
   >();
@@ -33,6 +31,7 @@ export class UploadVideoComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this._formBuilder.group({
+      videoNameCtrl: ['', [Validators.required]],
       videoUrlCtrl: ['', [Validators.required]],
     });
 
@@ -46,7 +45,8 @@ export class UploadVideoComponent implements OnInit {
 
   // Reflect valid/invalid state to parent - "empty space" is bypassed by the
   // event emitter previous
-  onBackspace() {
+  onBackspace(event) {
+    console.log(event);
     // This gets triggered before the actual text os deleted
     // so we want to emit it when there's one character in the textbox
     if (this.form.get('videoUrlCtrl').value.length == 1) {

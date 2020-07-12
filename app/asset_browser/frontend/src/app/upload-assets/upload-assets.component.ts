@@ -41,6 +41,7 @@ import { UploadAssetService } from '../services/upload-asset.service';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { AccountCampaignsComponent } from '../account-campaigns/account-campaigns.component';
 import { AssetType } from '../model/asset';
+import { STATUS } from '../model/response';
 
 /** Error when the parent is invalid */
 export class ErrorMatcher implements ErrorStateMatcher {
@@ -107,8 +108,15 @@ export class UploadAssetsComponent implements OnInit {
     this.uploadDialogRef.updateSize('800px', '520px');
 
     this._uploadService.uploadFinished$.subscribe((response) => {
+      // Stop the progress bar
+      this.uploadInProgress = false;
       if (response) {
-        console.log('Response:', response);
+        if (response.status_code != STATUS.SUCCESS) {
+          this.isErrorMessage = true;
+          this.uploadMessage = response.msg;
+        } else {
+          this.uploadDialogRef.close();
+        }
       }
     });
   }
@@ -186,8 +194,12 @@ export class UploadAssetsComponent implements OnInit {
     }
   }
   onAddAsset() {
+    // Start the spinner
+    this.uploadInProgress = true;
+
     let assetName = '';
     let assetText = '';
+    let url = '';
     let adGroups = this.campaigns.getSelectedAdGroups();
 
     switch (this.uploadAssetType) {
@@ -198,7 +210,8 @@ export class UploadAssetsComponent implements OnInit {
         assetName = this.uploadHtml.upload.fileNames[0];
         break;
       case this.assetTypes.VIDEO:
-        assetName = this.uploadVideo.form.get('videoUrlCtrl').value;
+        assetName = this.uploadVideo.form.get('videoNameCtrl').value;
+        url = this.uploadVideo.form.get('videoUrlCtrl').value;
         break;
       case this.assetTypes.TEXT_DESC:
       case this.assetTypes.TEXT_HEADLINE:
@@ -221,7 +234,8 @@ export class UploadAssetsComponent implements OnInit {
         this.account.id,
         assetName,
         this.uploadAssetType,
-        adGroups
+        adGroups,
+        url
       );
     }
     /** Image */
