@@ -89,7 +89,6 @@ export class UploadAssetsComponent implements OnInit {
   constructor(
     private _uploadService: UploadAssetService,
     public uploadDialogRef: MatDialogRef<UploadAssetsComponent>,
-    private _formBuilder: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public account: Account
   ) {}
 
@@ -118,6 +117,10 @@ export class UploadAssetsComponent implements OnInit {
           this.uploadDialogRef.close();
         }
       }
+    });
+
+    this.uploadDialogRef.beforeClosed().subscribe((result) => {
+      this._uploadService.clearUploads();
     });
   }
 

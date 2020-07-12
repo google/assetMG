@@ -194,4 +194,11 @@ export class UploadAssetService {
         }
       );
   }
+
+  clearUploads() {
+    const endpoint = this.API_SERVER + '/clean-dir/';
+    let subscritpion = this.http.get(endpoint).subscribe((_) => {
+      subscritpion.unsubscribe();
+    });
+  }
 }
