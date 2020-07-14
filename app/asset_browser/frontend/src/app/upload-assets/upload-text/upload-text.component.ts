@@ -30,7 +30,7 @@ import {
   FormGroupDirective,
   NgForm,
 } from '@angular/forms';
-import {ErrorMatcher} from '../upload-assets.component';
+import { ErrorMatcher } from '../upload-assets.component';
 
 @Component({
   selector: 'app-upload-text',
@@ -50,9 +50,6 @@ export class UploadTextComponent implements OnInit, AfterViewInit {
   constructor(private _formBuilder: FormBuilder) {}
 
   ngOnInit() {
-    this.maxLength = 90;
-    this.textAssetType = 'Description';
-
     this.form = this._formBuilder.group({
       textCtrl: [
         '',
