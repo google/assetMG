@@ -17,7 +17,6 @@ import { Component, Input, OnInit, SimpleChange } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
-
 import { Asset, AssetType, ImgAsset, VideoAsset } from './../model/asset';
 import { AssetService } from './../services/asset.service';
 import { PreviewComponent } from '../preview/preview.component';
@@ -41,7 +40,11 @@ export class AssetComponent implements OnInit {
   @Input()
   selectedAssetId: number;
 
-  constructor(private router: Router, private dataService: AssetService, private _previewDialog: MatDialog) {}
+  constructor(
+    private router: Router,
+    private dataService: AssetService,
+    private _previewDialog: MatDialog
+  ) {}
 
   ngOnInit(): void {}
 
@@ -58,11 +61,11 @@ export class AssetComponent implements OnInit {
       let full_url = (this._asset as VideoAsset).link.split("=")
       url = full_url[full_url.length -1]
     }
-    this._previewDialog.open(PreviewComponent,{data:{
-      type: this.asset.type,
-      url: url
-    }});
+    this._previewDialog.open(PreviewComponent, {
+      data: {
+        type: this.asset.type,
+        url: url,
+      },
+    });
   }
 }
-
-

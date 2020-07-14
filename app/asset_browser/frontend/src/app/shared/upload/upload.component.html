@@ -19,8 +19,21 @@
   enctype="multipart/form-data"
   target="hiddenFrame">
   <input #fileInput
+    hidden
     name="file"
     type="file"
     [accept]="acceptsType"
     (change)="onChange($event)"/>
+  <button mat-stroked-button
+    color="primary"
+    (click)="fileInput.click()">
+    <mat-icon >file_upload</mat-icon>Upload
+  </button>
+  <input
+    id="selectedFile"
+    matInput
+    type="text"
+    placeholder="No file chosen"
+    readonly="true"
+    [value]="selectedFileName">
 </form>

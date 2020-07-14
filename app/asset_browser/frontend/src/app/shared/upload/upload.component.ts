@@ -37,6 +37,7 @@ export enum FileType {
 export class UploadComponent implements OnInit {
   uploadAPI: string = 'http://127.0.0.1:5000/upload-files/';
   fileNames: string[] = [];
+  selectedFileName: string = '';
 
   @Input() acceptsType: FileType;
   @ViewChild('form') form: ElementRef;
@@ -57,6 +58,11 @@ export class UploadComponent implements OnInit {
       this.isValid.emit(false);
     }
 
+    if (this.fileNames.length) {
+      this.selectedFileName = this.fileNames[0];
+    } else {
+      this.selectedFileName = '';
+    }
     // To do - check for valid image sizes here
   }
 

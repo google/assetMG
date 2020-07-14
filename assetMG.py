@@ -39,13 +39,10 @@ from werkzeug.utils import secure_filename
 import webview
 
 
-# server = Flask(__name__, static_url_path="",
-#             static_folder="app/asset_browser/frontend/dist/frontend",
-#             template_folder="app/asset_browser/frontend/dist/frontend")
+server = Flask(__name__, static_url_path="",
+            static_folder="app/asset_browser/frontend/dist/frontend",
+            template_folder="app/asset_browser/frontend/dist/frontend")
 
-from flask_cors import CORS
-server = Flask(__name__)
-CORS(server)
 
 UPLOAD_FOLDER = Path('app/uploads')
 ALLOWED_EXTENSIONS = {'txt','png', 'jpg', 'jpeg', 'zip','gif'}
@@ -81,8 +78,6 @@ if config_file['config_valid']:
 @server.route('/')
 def upload_frontend():
   return render_template("index.html")
-  # return 'Hello, World!'
-  # use this route to upload front-end
 
 
 @server.route('/config/', methods=['GET'])
@@ -626,18 +621,12 @@ def open_browser():
   webbrowser.open_new('http://127.0.0.1:5000/')
 
 
-# def start_server():
-#   server.run()
+def start_server():
+  server.run()
 
 if __name__ == '__main__':
-  # Timer(1, open_browser).start()
+  threading.Timer(1, open_browser).start()
   server.run()
-  # t = threading.Thread(target=start_server)
-  # t.daemon = True
-  # t.start()
 
-  # webview.create_window("assetMG", "http://127.0.0.1:5000")
-  # webview.start()
-  # sys.exit()
 
 
