@@ -55,8 +55,8 @@ export class AssetComponent implements OnInit {
       url = (this._asset as ImgAsset).image_url
     }
     else if (this._asset.type === AssetType.VIDEO){
-      url = (this._asset as VideoAsset).link
-
+      let full_url = (this._asset as VideoAsset).link.split("=")
+      url = full_url[full_url.length -1]
     }
     this._previewDialog.open(PreviewComponent,{data:{
       type: this.asset.type,
