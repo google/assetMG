@@ -142,7 +142,7 @@ def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='d
   unsuccesseful_assign = []
 
   if not adgroups:
-    return {'status':-1}
+    return {'asset':asset, 'status':-1}
     
   for ag in adgroups:
     # mutate_ad returns None if it finishes succesfully
@@ -165,6 +165,7 @@ def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='d
   _update_asset_struct(client,asset,successeful_assign)
 
   return {
+      'asset': asset,
       'status': status,
       'successfull': successeful_assign,
       'unsuccessfull': unsuccesseful_assign
