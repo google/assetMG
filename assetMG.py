@@ -542,26 +542,21 @@ def upload_asset():
   Service_Class.reset_cid(client)
   
   if result['status'] == -1:
-    return _build_response(msg=json.dumps('Asset Uploaded'), status=200)
+    return _build_response(msg=json.dumps({'msg':'Asset Uploaded','asset':result['asset']}), status=200)
 
   if result['status'] == 3:
-    return _build_response(msg=json.dumps('could not upload asset'), status=500)
+    return _build_response(msg=json.dumps({'msg':'could not upload asset'}), status=500)
 
   if result['status'] == 0:
     return _build_response(
-        msg=json.dumps('Asset successfully uploaded and assigned to %s' %
-        (', '.join(map(str, result['successfull'])))),
-        status=200)
+        msg=json.dumps(json.dumps(result),
+        status=200))
 
   if result['status'] == 1:
-    return _build_response(
-        msg=json.dumps('Asset successfully uploaded and assigned to %s but could not '
-        'assign to %s' % (', '.join(map(str, result['successfull'])), ', '.join(
-            map(str, result['unsuccessfull'])))),
-        status=206)
+    return _build_response(msg=json.dumps(result),status=206)
 
-  else:
-    return _build_response(msg=json.dumps('could not assign asset'), status=500)
+  elif result['status'] == 2:
+    return _build_response(msg=json.dumps({'msg':'could not assign asset','asset':result['asset']}), status=500)
 
 
 def _build_response(msg='', status=200, mimetype='application/json'):
