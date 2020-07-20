@@ -33,6 +33,7 @@ import {
   nodeType,
   AccountCampaignsComponent,
 } from '../account-campaigns/account-campaigns.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-asset-details',
@@ -59,7 +60,10 @@ export class AssetDetailsComponent implements OnInit {
 
   @ViewChild('campaignsTree') campaignsTree: AccountCampaignsComponent;
 
-  constructor(private dataService: AssetService) {}
+  constructor(
+    private dataService: AssetService,
+    private _snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.dataService.activeAsset$.subscribe((asset) => {
@@ -75,6 +79,13 @@ export class AssetDetailsComponent implements OnInit {
       if (response) {
         this.updateMessage = response.msg;
         this.isErrorMessage = response.status_code !== STATUS.SUCCESS;
+        if (!this.isErrorMessage) {
+          this._snackBar.open('Updated Successfully', '', {
+            duration: 2000,
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+          });
+        }
       }
     });
   }

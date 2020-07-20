@@ -53,3 +53,11 @@ $assetmg-app-theme: mat-light-theme($assetmg-app-primary, $assetmg-app-accent, $
 .mat-dialog-container {
   color: grey;
 }
+
+.mat-snack-bar-container {
+  text-align: center;
+}
+
+.mat-simple-snackbar {
+  display: inline-block !important;
+}

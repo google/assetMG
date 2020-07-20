@@ -23,6 +23,7 @@ import { ConfigService } from '../services/config.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AppSetupComponent } from '../app-setup/app-setup.component';
 import { UploadAssetsComponent } from '../upload-assets/upload-assets.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 const ASSET_TYPES = [
   {
@@ -71,7 +72,8 @@ export class AssetGalleryComponent implements OnInit {
     private _dataService: AssetService,
     private _configService: ConfigService,
     private _setupDialog: MatDialog,
-    private _uploadDialog: MatDialog
+    private _uploadDialog: MatDialog,
+    private _snackBar: MatSnackBar
   ) {}
 
   getConfigService(): ConfigService {
@@ -91,10 +93,12 @@ export class AssetGalleryComponent implements OnInit {
 
         configDialogRef.afterClosed().subscribe((success) => {
           if (success) {
+            this.openSnackBar();
             let subscription = this._dataService
               .loadMccStruct()
               .subscribe(() => {
                 this._configService.configValid = true;
+                this.dismissSnackBar();
                 subscription.unsubscribe();
               });
           }
@@ -187,5 +191,21 @@ export class AssetGalleryComponent implements OnInit {
         // filter assets by type
         (this.filterType === AssetType.ALL || asset.type === this.filterType)
     );
+  }
+
+  private openSnackBar() {
+    this._snackBar.open(
+      'Loading AssetMG. This may take a few mintues... ',
+      '',
+      {
+        duration: undefined,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+      }
+    );
+  }
+
+  private dismissSnackBar() {
+    this._snackBar.dismiss();
   }
 }
