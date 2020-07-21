@@ -243,7 +243,7 @@ export class UploadAssetsComponent implements OnInit {
             subscription.unsubscribe();
           },
           (error) => {
-            this.processUploadResponse(error.status, error.body);
+            this.processUploadResponse(STATUS.FAIL);
           }
         );
     } else {
@@ -264,27 +264,25 @@ export class UploadAssetsComponent implements OnInit {
             subscription.unsubscribe();
           },
           (error) => {
-            this.processUploadResponse(error.status, error.body);
+            this.processUploadResponse(STATUS.FAIL);
           }
         );
     }
   }
 
-  processUploadResponse(status, response: UploadResponse) {
+  processUploadResponse(status, response?: UploadResponse) {
     // Stop the progress bar
-    console.log('Resp', response);
     this.uploadInProgress = false;
-    if (response) {
-      if (status != STATUS.SUCCESS) {
-        this.isErrorMessage = true;
-        this.uploadMessage = response.msg;
-      } else {
-        // Notify the asset service of newly added asset
-        if (response.asset) {
-          this._assetService.addNewAsset(response.asset);
-        }
-        this.uploadDialogRef.close();
+    if (status != STATUS.SUCCESS) {
+      this.isErrorMessage = true;
+      this.uploadMessage = 'Upload Failed';
+    } else if (response?.asset) {
+      console.log('Resp', response);
+      // Notify the asset service of newly added asset
+      if (response.asset) {
+        this._assetService.addNewAsset(response.asset);
       }
+      this.uploadDialogRef.close();
     }
   }
 }
