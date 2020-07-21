@@ -29,6 +29,9 @@ export interface UpdateResponse {
 }
 
 export interface UploadResponse {
-  status_code: STATUS;
-  msg: string;
+  //  status_code: STATUS;
+  asset?: Asset;
+  successfull?: number[];
+  unsuccessfull?: number[];
+  msg?: string;
 }

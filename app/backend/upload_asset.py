@@ -148,7 +148,7 @@ def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='d
 
   if not adgroups:
     return {'asset':asset, 'status':-1}
-    
+
   for ag in adgroups:
     # mutate_ad returns None if it finishes succesfully
     if mutate.mutate_ad(client, account, ag, asset, 'ADD', text_type):

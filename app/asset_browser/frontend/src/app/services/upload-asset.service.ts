@@ -31,73 +31,47 @@ export class UploadAssetService {
 
   constructor(private http: HttpClient) {}
 
-  // uploadImage(account: number, fileName: string, adGroups: number[]) {
+  // /** Used for text assets only */
+  // addTextAsset(
+  //   account: number,
+  //   text: string,
+  //   assetType: AssetType,
+  //   adGroups: number[]
+  // ) {
   //   const endpoint = this.API_SERVER + '/upload-asset/';
 
-  //   let imgAsset = {
-  //     account: 7935681790,
-  //     asset_type: 'IMAGE',
-  //     asset_name: 'onbike.jpeg',
-  //     adgroups: [95186899405, 96689486386],
-  //   };
-  //   // let imgAsset = {
-  //   //   account: account,
-  //   //   asset_type: 'IMAGE',
-  //   //   asset_name: fileName,
-  //   //   adgroups: [95186899405],
-  //   // };
-  //   let subscritpion = this.http
-  //     .post(endpoint, imgAsset, { observe: 'response' })
-  //     .subscribe(
-  //       (response) => {
-  //         subscritpion.unsubscribe();
-  //       },
-  //       (error) => {
-  //         subscritpion.unsubscribe();
-  //       }
-  //     );
-  // }
-
-  // uploadHtml(account: number, fileName: string, adGroups: number[]) {
-  //   const endpoint = this.API_SERVER + '/upload-asset/';
-  //   let htmlAsset = {
-  //     account: 7935681790,
-  //     asset_type: 'MEDIA_BUNDLE',
-  //     asset_name: 'zip_5MB.zip',
-  //     adgroups: [95186899405, 96689486386],
+  //   let textAsset = {
+  //     account: account,
+  //     asset_type: assetType,
+  //     asset_name: '',
+  //     asset_text: text,
+  //     adgroups: adGroups,
   //   };
 
-  //   let subscritpion = this.http
-  //     .post(endpoint, htmlAsset, { observe: 'response' })
+  //   let subscription = this.http
+  //     .post(endpoint, textAsset, { observe: 'response' })
   //     .subscribe(
   //       (response) => {
-  //         subscritpion.unsubscribe();
+  //         console.log('Response: ', response);
+  //         this._uploadFinished$.next({
+  //           status_code: response.status,
+  //           asset:
+  //             response.status === STATUS.SUCCESS
+  //               ? (<UploadResponse>response.body).asset
+  //               : null,
+  //           msg:
+  //             response.status === STATUS.SUCCESS
+  //               ? ''
+  //               : (<UploadResponse>response.body).msg,
+  //         });
+  //         subscription.unsubscribe();
   //       },
   //       (error) => {
-  //         subscritpion.unsubscribe();
-  //       }
-  //     );
-  // }
-
-  // uploadVideo(account: number, videoUrl: string, adGroups: number[]) {
-  //   const endpoint = this.API_SERVER + '/upload-asset/';
-
-  //   let videoAsset = {
-  //     account: 7935681790,
-  //     asset_type: 'YOUTUBE_VIDEO',
-  //     asset_name: 'Awesome vid', //optional
-  //     url: 'https://www.youtube.com/watch?v=UVT3l7dpTRs',
-  //     adgroups: [95186899405, 96689486386],
-  //   };
-
-  //   let subscritpion = this.http
-  //     .post(endpoint, videoAsset, { observe: 'response' })
-  //     .subscribe(
-  //       (response) => {
-  //         subscritpion.unsubscribe();
-  //       },
-  //       (error) => {
-  //         subscritpion.unsubscribe();
+  //         this._uploadFinished$.next({
+  //           status_code: STATUS.FAIL,
+  //           msg: 'Upload failed',
+  //         });
+  //         subscription.unsubscribe();
   //       }
   //     );
   // }
@@ -119,29 +93,64 @@ export class UploadAssetService {
       adgroups: adGroups,
     };
 
-    console.log('Text Asset', textAsset);
-    let subscription = this.http
-      .post(endpoint, textAsset, { observe: 'response' })
-      .subscribe(
-        (response) => {
-          this._uploadFinished$.next({
-            status_code: response.status,
-            msg:
-              response.status === STATUS.SUCCESS
-                ? ''
-                : response.body.toString(),
-          });
-          subscription.unsubscribe();
-        },
-        (error) => {
-          this._uploadFinished$.next({
-            status_code: STATUS.FAIL,
-            msg: 'Upload failed',
-          });
-          subscription.unsubscribe();
-        }
-      );
+    return this.http.post(endpoint, textAsset, { observe: 'response' });
   }
+
+  // /** Used for all non-text assets */
+  // uploadAsset(
+  //   account: number,
+  //   assetName: string,
+  //   assetType: AssetType,
+  //   adGroups: number[],
+  //   url?: string
+  // ) {
+  //   let asset;
+  //   const endpoint = this.API_SERVER + '/upload-asset/';
+
+  //   if (assetType === AssetType.VIDEO) {
+  //     asset = {
+  //       account: account,
+  //       asset_type: assetType,
+  //       asset_name: assetName,
+  //       url: url,
+  //       adgroups: adGroups,
+  //     };
+  //   } else {
+  //     asset = {
+  //       account: account,
+  //       asset_type: assetType,
+  //       asset_name: assetName,
+  //       adgroups: adGroups,
+  //     };
+  //   }
+
+  //   let subscription = this.http
+  //     .post(endpoint, asset, { observe: 'response' })
+  //     .subscribe(
+  //       (response) => {
+  //         console.log('Response: ', response);
+  //         this._uploadFinished$.next({
+  //           status_code: response.status,
+  //           asset:
+  //             response.status === STATUS.SUCCESS
+  //               ? (<UploadResponse>response.body).asset
+  //               : null,
+  //           msg:
+  //             response.status === STATUS.SUCCESS
+  //               ? ''
+  //               : (<UploadResponse>response.body).msg,
+  //         });
+  //         subscription.unsubscribe();
+  //       },
+  //       (error) => {
+  //         this._uploadFinished$.next({
+  //           status_code: STATUS.FAIL,
+  //           msg: 'Upload failed',
+  //         });
+  //         subscription.unsubscribe();
+  //       }
+  //     );
+  // }
 
   /** Used for all non-text assets */
   uploadAsset(
@@ -171,28 +180,7 @@ export class UploadAssetService {
       };
     }
 
-    console.log('Asset', asset);
-    let subscription = this.http
-      .post(endpoint, asset, { observe: 'response' })
-      .subscribe(
-        (response) => {
-          this._uploadFinished$.next({
-            status_code: response.status,
-            msg:
-              response.status === STATUS.SUCCESS
-                ? ''
-                : response.body.toString(),
-          });
-          subscription.unsubscribe();
-        },
-        (error) => {
-          this._uploadFinished$.next({
-            status_code: STATUS.FAIL,
-            msg: 'Upload failed',
-          });
-          subscription.unsubscribe();
-        }
-      );
+    return this.http.post(endpoint, asset, { observe: 'response' });
   }
 
   clearUploads() {

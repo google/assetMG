@@ -41,7 +41,8 @@ import { UploadAssetService } from '../services/upload-asset.service';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { AccountCampaignsComponent } from '../account-campaigns/account-campaigns.component';
 import { AssetType } from '../model/asset';
-import { STATUS } from '../model/response';
+import { STATUS, UploadResponse } from '../model/response';
+import { AssetService } from '../services/asset.service';
 
 /** Error when the parent is invalid */
 export class ErrorMatcher implements ErrorStateMatcher {
@@ -71,6 +72,7 @@ export class UploadAssetsComponent implements OnInit {
   assetTypes = AssetType;
   types: Map<AssetType, string>;
 
+  /** Dialog initialization values */
   canAddAsset: boolean;
   isTextAsset: boolean = true;
   isChildFormValid: boolean = true;
@@ -88,6 +90,7 @@ export class UploadAssetsComponent implements OnInit {
 
   constructor(
     private _uploadService: UploadAssetService,
+    private _assetService: AssetService,
     public uploadDialogRef: MatDialogRef<UploadAssetsComponent>,
     @Inject(MAT_DIALOG_DATA) public account: Account
   ) {}
@@ -106,18 +109,19 @@ export class UploadAssetsComponent implements OnInit {
 
     this.uploadDialogRef.updateSize('800px', '520px');
 
-    this._uploadService.uploadFinished$.subscribe((response) => {
-      // Stop the progress bar
-      this.uploadInProgress = false;
-      if (response) {
-        if (response.status_code != STATUS.SUCCESS) {
-          this.isErrorMessage = true;
-          this.uploadMessage = response.msg;
-        } else {
-          this.uploadDialogRef.close();
-        }
-      }
-    });
+    // this.sub = this._uploadService.uploadFinished$.subscribe((response) => {
+    //   // Stop the progress bar
+    //   this.uploadInProgress = false;
+    //   if (response) {
+    //     if (response.status_code != STATUS.SUCCESS) {
+    //       this.isErrorMessage = true;
+    //       this.uploadMessage = response.msg;
+    //     } else {
+    //       this.uploadDialogRef.close(/*{asset: response.asset}*/);
+    //     }
+    //   }
+    //   this.sub.unsubscribe();
+    // });
 
     this.uploadDialogRef.beforeClosed().subscribe((result) => {
       this._uploadService.clearUploads();
@@ -226,57 +230,59 @@ export class UploadAssetsComponent implements OnInit {
       this.uploadAssetType == this.assetTypes.TEXT_DESC ||
       this.uploadAssetType == this.assetTypes.TEXT_HEADLINE
     ) {
-      this._uploadService.addTextAsset(
-        this.account.id,
-        assetText,
-        this.uploadAssetType,
-        adGroups
-      );
+      let subscription = this._uploadService
+        .addTextAsset(
+          this.account.id,
+          assetText,
+          this.uploadAssetType,
+          adGroups
+        )
+        .subscribe(
+          (response) => {
+            this.processUploadResponse(response.status, response.body);
+            subscription.unsubscribe();
+          },
+          (error) => {
+            this.processUploadResponse(STATUS.FAIL);
+          }
+        );
     } else {
-      this._uploadService.uploadAsset(
-        this.account.id,
-        assetName,
-        this.uploadAssetType,
-        adGroups,
-        url
-      );
+      let subscription = this._uploadService
+        .uploadAsset(
+          this.account.id,
+          assetName,
+          this.uploadAssetType,
+          adGroups,
+          url
+        )
+        .subscribe(
+          (response) => {
+            this.processUploadResponse(
+              response.status,
+              <UploadResponse>response.body
+            );
+            subscription.unsubscribe();
+          },
+          (error) => {
+            this.processUploadResponse(STATUS.FAIL);
+          }
+        );
     }
-    /** Image */
-    // this._uploadService.uploadImage(
-    //   this.account.id,
-    //   this.uploadImg.upload.fileNames[0],
-    //   adGroups
-    // );
+  }
 
-    // /** Html */
-    // this._uploadService.uploadHtml(
-    //   this.account.id,
-    //   this.uploadHtml.upload.fileNames[0],
-    //   adGroups
-    // );
-
-    // /** Video */
-    // this._uploadService.uploadVideo(
-    //   this.account.id,
-    //   this.uploadVideo.form.get('videoUrlCtrl').value,
-    //   adGroups
-    // );
-
-    // /** Description */
-    // this._uploadService.addTextAsset(
-    //   this.account.id,
-    //   this.uploadText.form.get('textCtrl').value,
-    //   adGroups,
-    //   false
-    // );
-
-    // /** Header */
-    // this._uploadService.addTextAsset(
-    //   this.account.id,
-    //   this.uploadText.form.get('textCtrl').value,
-    //   adGroups,
-    //   true
-    // );
-    //this.uploadDialogRef.close();
+  processUploadResponse(status, response?: UploadResponse) {
+    // Stop the progress bar
+    this.uploadInProgress = false;
+    if (status != STATUS.SUCCESS) {
+      this.isErrorMessage = true;
+      this.uploadMessage = 'Upload Failed';
+    } else if (response?.asset) {
+      console.log('Resp', response);
+      // Notify the asset service of newly added asset
+      if (response.asset) {
+        this._assetService.addNewAsset(response.asset);
+      }
+      this.uploadDialogRef.close();
+    }
   }
 }
