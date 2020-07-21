@@ -23,6 +23,7 @@ import app.backend.mutate as mutate
 from app.backend.structure import create_mcc_struct
 from app.backend.service import Service_Class
 from pathlib import Path
+import urllib
 import json
 
 
@@ -63,7 +64,10 @@ def upload_yt_video_asset(client, account, asset_name, url, adgroups):
   """Upload YT video asset and assign to ad groups if given."""
   asset_service = Service_Class.get_asset_service(client)
 
-  video_id = url.split('=')[-1]
+  url_data = urllib.parse.urlparse(url)
+  query = urllib.parse.parse_qs(url_data.query)
+  video_id = query["v"][0]
+  # video_id = url.split('=')[-1]
 
   vid_asset = {
       'xsi_type': 'YouTubeVideoAsset',
@@ -115,7 +119,7 @@ def upload_image_asset(client, account, asset_name, path, adgroups):
         'id': asset['assetId'],
         'name': asset['assetName'],
         'type': 'IMAGE',
-        'imag_url': asset['fullSizeInfo']['imageUrl']
+        'image_url': asset['fullSizeInfo']['imageUrl']
     }
 
     return _assign_new_asset_to_adgroups(client, account, new_asset, adgroups)
