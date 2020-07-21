@@ -27,7 +27,7 @@ import json
 
 
 asset_to_ag_json_path = Path('app/cache/asset_to_ag.json')
-
+yt_thumbnail_url = 'https://img.youtube.com/vi/%s/1.jpg'
 
 def upload_html5_asset(client, account, asset_name, path, adgroups):
   """Upload html5 asset and assign to ad groups if given."""
@@ -76,12 +76,13 @@ def upload_yt_video_asset(client, account, asset_name, url, adgroups):
   asset = asset_service.mutate([operation])['value'][0]
 
   if asset:
-
     new_asset = {
         'id': asset['assetId'],
         'name': asset['assetName'],
         'type': 'YOUTUBE_VIDEO',
-        'video_id': video_id
+        'video_id': video_id,
+        'link': url,
+        'image_url': yt_thumbnail_url%(video_id)
     }
 
     return _assign_new_asset_to_adgroups(client, account, new_asset, adgroups)
@@ -114,6 +115,7 @@ def upload_image_asset(client, account, asset_name, path, adgroups):
         'id': asset['assetId'],
         'name': asset['assetName'],
         'type': 'IMAGE',
+        'imag_url': asset['fullSizeInfo']['imageUrl']
     }
 
     return _assign_new_asset_to_adgroups(client, account, new_asset, adgroups)
