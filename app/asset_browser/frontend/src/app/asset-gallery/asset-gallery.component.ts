@@ -123,9 +123,7 @@ export class AssetGalleryComponent implements OnInit {
       this._dataService.allAssets$.subscribe((assets) => {
         this.assets = assets;
         this.filteredAssets = assets;
-        console.log('Change!');
-        // this._cd.markForCheck();
-        // console.log('Marked');
+        this._cd.detectChanges();
       })
     );
   }

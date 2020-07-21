@@ -29,6 +29,7 @@ import {
 import { UpdateResponse, STATUS } from '../model/response';
 import { Account } from './../model/account';
 import { UploadAssetService } from './upload-asset.service';
+import { CdkPortal } from '@angular/cdk/portal';
 
 @Injectable({
   providedIn: 'root',
@@ -185,7 +186,6 @@ export class AssetService {
     // Update all assets with the newly uploaded asset
     if (asset) {
       this._allAssets$.next(this._allAssets$.getValue().concat(asset));
-      console.log('New All ', this._allAssets$.getValue());
     }
   }
 }

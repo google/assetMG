@@ -109,20 +109,6 @@ export class UploadAssetsComponent implements OnInit {
 
     this.uploadDialogRef.updateSize('800px', '520px');
 
-    // this.sub = this._uploadService.uploadFinished$.subscribe((response) => {
-    //   // Stop the progress bar
-    //   this.uploadInProgress = false;
-    //   if (response) {
-    //     if (response.status_code != STATUS.SUCCESS) {
-    //       this.isErrorMessage = true;
-    //       this.uploadMessage = response.msg;
-    //     } else {
-    //       this.uploadDialogRef.close(/*{asset: response.asset}*/);
-    //     }
-    //   }
-    //   this.sub.unsubscribe();
-    // });
-
     this.uploadDialogRef.beforeClosed().subscribe((result) => {
       this._uploadService.clearUploads();
     });
@@ -130,7 +116,6 @@ export class UploadAssetsComponent implements OnInit {
 
   onClose() {
     this.uploadDialogRef.close();
-    // Alert if in the middl eof uploads
   }
 
   onAssetTypeChange(type) {
@@ -277,7 +262,6 @@ export class UploadAssetsComponent implements OnInit {
       this.isErrorMessage = true;
       this.uploadMessage = 'Upload Failed';
     } else if (response?.asset) {
-      console.log('Resp', response);
       // Notify the asset service of newly added asset
       if (response.asset) {
         this._assetService.addNewAsset(response.asset);
