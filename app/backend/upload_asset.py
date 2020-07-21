@@ -67,7 +67,6 @@ def upload_yt_video_asset(client, account, asset_name, url, adgroups):
   url_data = urllib.parse.urlparse(url)
   query = urllib.parse.parse_qs(url_data.query)
   video_id = query["v"][0]
-  # video_id = url.split('=')[-1]
 
   vid_asset = {
       'xsi_type': 'YouTubeVideoAsset',
