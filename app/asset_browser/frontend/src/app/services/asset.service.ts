@@ -28,6 +28,7 @@ import {
 } from './../model/asset';
 import { UpdateResponse, STATUS } from '../model/response';
 import { Account } from './../model/account';
+import { UploadAssetService } from './upload-asset.service';
 
 @Injectable({
   providedIn: 'root',
@@ -55,7 +56,7 @@ export class AssetService {
   activeAssetAdGroups$ = this._activeAssetAdGroups$.asObservable();
   updateFinished$ = this._updateFinished$.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private _http: HttpClient) {}
 
   private getAllAssets(accountId: number) {
     // Reset the asset observable till the http request is made
@@ -63,7 +64,7 @@ export class AssetService {
     // Call the API and update the asset observable
     const endpoint = this.API_SERVER + '/accounts-assets/';
     //let params = new HttpParams().set('cid', accountId?.toString());
-    let subscription = this.http
+    let subscription = this._http
       .get<Asset[]>(endpoint, { params: { cid: accountId?.toString() } })
       .subscribe((assets) => {
         this._allAssets$.next(assets);
@@ -74,7 +75,7 @@ export class AssetService {
   private getAccountHierarchy(accountId: number) {
     const endpoint = this.API_SERVER + '/structure/';
     //let params = new HttpParams().set('cid', accountId?.toString());
-    let subscription = this.http
+    let subscription = this._http
       .get<Account>(endpoint, { params: { cid: accountId?.toString() } })
       .subscribe((account) => {
         this._activeAccount$.next(account);
@@ -85,7 +86,7 @@ export class AssetService {
   /** Loads all the asset to adgroups mapping */
   private getAssetsToAdGroups() {
     const endpoint = this.API_SERVER + '/assets-to-ag/';
-    let subscritpion = this.http.get<Asset[]>(endpoint).subscribe((assets) => {
+    let subscritpion = this._http.get<Asset[]>(endpoint).subscribe((assets) => {
       this._assetsToAdGroups = assets;
       subscritpion.unsubscribe();
     });
@@ -93,12 +94,12 @@ export class AssetService {
 
   getAccountIds(): Observable<Account[]> {
     const endpoint = this.API_SERVER + '/accounts/';
-    return this.http.get<Account[]>(endpoint);
+    return this._http.get<Account[]>(endpoint);
   }
 
   loadMccStruct(): Observable<any> {
     const endpoint = this.API_SERVER + '/create-struct/';
-    return this.http.get(endpoint);
+    return this._http.get(endpoint);
   }
 
   changeAsset(asset: Asset) {
@@ -139,7 +140,7 @@ export class AssetService {
 
   updateAsset(changedAsset: Asset, updateArray: MutateRecord[]) {
     const endpoint = this.API_SERVER + '/mutate-ad/';
-    let subscritpion = this.http
+    let subscritpion = this._http
       .post(endpoint, updateArray, { observe: 'response' })
       .subscribe(
         (response) => {
@@ -178,5 +179,13 @@ export class AssetService {
           subscritpion.unsubscribe();
         }
       );
+  }
+
+  addNewAsset(asset: Asset) {
+    // Update all assets with the newly uploaded asset
+    if (asset) {
+      this._allAssets$.next(this._allAssets$.getValue().concat(asset));
+      console.log('New All ', this._allAssets$.getValue());
+    }
   }
 }

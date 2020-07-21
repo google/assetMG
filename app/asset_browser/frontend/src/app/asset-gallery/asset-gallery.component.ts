@@ -16,7 +16,13 @@
 import { AssetService } from './../services/asset.service';
 import { Account } from './../model/account';
 import { Asset, TextAsset, AssetType } from './../model/asset';
-import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  HostListener,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatSidenav } from '@angular/material/sidenav';
 import { ConfigService } from '../services/config.service';
@@ -73,7 +79,8 @@ export class AssetGalleryComponent implements OnInit {
     private _configService: ConfigService,
     private _setupDialog: MatDialog,
     private _uploadDialog: MatDialog,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private _cd: ChangeDetectorRef
   ) {}
 
   getConfigService(): ConfigService {
@@ -116,6 +123,9 @@ export class AssetGalleryComponent implements OnInit {
       this._dataService.allAssets$.subscribe((assets) => {
         this.assets = assets;
         this.filteredAssets = assets;
+        console.log('Change!');
+        // this._cd.markForCheck();
+        // console.log('Marked');
       })
     );
   }
