@@ -166,7 +166,6 @@ def init_yt():
     open_browser=True)
   global yt_client
   yt_client = build('youtube', 'v3', credentials = credentials)
-  print(yt_client)
   return _build_response(status=200)
 
 
@@ -537,6 +536,7 @@ def upload_asset():
 
   except Exception as e:
     logging.error(str(e))
+    Service_Class.reset_cid(client)
     return _build_response(msg=json.dumps(str(e)), status=500)
 
   Service_Class.reset_cid(client)

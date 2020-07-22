@@ -173,7 +173,7 @@ def _get_adgroups(client, c_id):
       for ad_group in page['entries']:
         ag['name'] = ad_group['name']
         ag['id'] = ad_group['id']
-        ag['assets'] = _get_assets_from_adgroup(client, ad_group['id'])
+        ag['assets'] = get_assets_from_adgroup(client, ad_group['id'])
         adgroups.append(ag)
         create_asset_struct(ag)
         ag = {}
@@ -186,7 +186,7 @@ def _get_adgroups(client, c_id):
     return adgroups
 
 
-def _get_assets_from_adgroup(client, ag_id):
+def get_assets_from_adgroup(client, ag_id):
   """Get all assets of a given adgroup."""
 
   adgroupad_service = Service_Class.get_ad_group_ad_service(client)

@@ -20,7 +20,7 @@ to a list of adgroups utilaizing the mutate module.
 
 from googleads import adwords
 import app.backend.mutate as mutate
-from app.backend.structure import create_mcc_struct
+from app.backend.structure import create_mcc_struct, get_assets_from_adgroup
 from app.backend.service import Service_Class
 from pathlib import Path
 import urllib
@@ -164,8 +164,15 @@ def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='d
     status = 1
 
   # if successefully assigned to all ad groups
-  elif successeful_assign:
+  if successeful_assign:
     status = 0
+
+  # if text assets aren't assigned to any adgroup they weren't uploaded
+  if asset['type'] == 'TEXT' and status==2:
+    return {'status':3}
+
+  if asset['type'] == 'TEXT' and successeful_assign:
+    asset = _extract_text_asset_info(client,account,asset,successeful_assign[0])
 
   _update_asset_struct(client,asset,successeful_assign)
 
@@ -178,18 +185,27 @@ def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='d
 
 
 def _update_asset_struct(client, asset, adgroups):
-  if asset['type'] == 'TEXT':
-    create_mcc_struct(client)
+  """Update the asset_to_ag file with the new assets and their adgroups"""
+  with open(asset_to_ag_json_path, 'r') as f:
+    struct = json.load(f)
 
-  else:
-    with open(asset_to_ag_json_path, 'r') as f:
-      struct = json.load(f)
+  asset['adgroups'] = adgroups
+  struct.append(asset)
 
-    asset['adgroups'] = adgroups
-    struct.append(asset)
+  with open(asset_to_ag_json_path, 'w') as f:
+    json.dump(struct,f, indent=2)
 
-    with open(asset_to_ag_json_path, 'w') as f:
-      json.dump(struct,f, indent=2)
+
+def _extract_text_asset_info(client,account,thin_asset,adgroup):
+  """Retrive text-assets info from an adgroup it was assigned to"""
+  client.SetClientCustomerId(account)
+  adgroups_assets = get_assets_from_adgroup(client,adgroup)
+
+  for asset in adgroups_assets:
+    if asset['type'] == "TEXT":
+      if asset['asset_text'] == thin_asset['asset_text'] and asset['text_type'] == thin_asset['text_type']:
+        Service_Class.reset_cid(client)
+        return asset
 
 
 def upload(client,
@@ -230,4 +246,7 @@ def upload(client,
     return upload_yt_video_asset(client, account, asset_name, url, adgroups)
 
   if asset_type == 'MEDIA_BUNDLE':
-    print(upload_html5_asset(client, account, asset_name, path, adgroups))
+    return upload_html5_asset(client, account, asset_name, path, adgroups)
+
+
+
