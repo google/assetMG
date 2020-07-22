@@ -43,6 +43,7 @@ import { AccountCampaignsComponent } from '../account-campaigns/account-campaign
 import { AssetType } from '../model/asset';
 import { STATUS, UploadResponse } from '../model/response';
 import { AssetService } from '../services/asset.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 /** Error when the parent is invalid */
 export class ErrorMatcher implements ErrorStateMatcher {
@@ -91,6 +92,7 @@ export class UploadAssetsComponent implements OnInit {
   constructor(
     private _uploadService: UploadAssetService,
     private _assetService: AssetService,
+    private _snackBar: MatSnackBar,
     public uploadDialogRef: MatDialogRef<UploadAssetsComponent>,
     @Inject(MAT_DIALOG_DATA) public account: Account
   ) {}
@@ -147,6 +149,9 @@ export class UploadAssetsComponent implements OnInit {
         default:
           !this.uploadText.form.invalid;
       }
+      // Reset any errors before moving to the next step
+      this.isErrorMessage = false;
+      this.uploadMessage = '';
     }
     stepper.next();
     this.isChildFormValid = this.isCurrentStepValid(stepper);
@@ -265,6 +270,11 @@ export class UploadAssetsComponent implements OnInit {
       // Notify the asset service of newly added asset
       if (response.asset) {
         this._assetService.addNewAsset(response.asset);
+        this._snackBar.open('Uploaded Successfully', '', {
+          duration: 2000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+        });
       }
       this.uploadDialogRef.close();
     }

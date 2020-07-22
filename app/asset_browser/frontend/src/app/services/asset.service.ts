@@ -107,6 +107,8 @@ export class AssetService {
     this._activeAsset$.next(asset);
     if (asset) {
       this._activeAssetAdGroups$.next(this.getActiveAssetAdGroups(asset.id));
+    } else {
+      this._activeAssetAdGroups$.next(null);
     }
   }
 
