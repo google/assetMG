@@ -37,6 +37,7 @@ import os
 import shutil
 from werkzeug.utils import secure_filename
 import webview
+import string
 
 
 server = Flask(__name__, static_url_path="",
@@ -523,16 +524,25 @@ def upload_asset():
   if data.get('account') is None or data.get('asset_type') is None:
     return _build_response(msg='invalid arguments', status=400)
 
+  # uniform file names
+  asset_name = data.get('asset_name')
+  if asset_name and data.get('asset_type') == 'IMAGE':
+    asset_name = asset_name.replace(' ','_')
+    for char in string.punctuation:
+      if char not in ['_','-','.']:
+        asset_name = asset_name.replace(char,'')
+
   try:
     result = upload(
         client,
         data.get('account'),
         data.get('asset_type'),
-        data.get('asset_name'),
+        asset_name,
         asset_text=data.get('asset_text'),
-        path= UPLOAD_FOLDER / data.get('asset_name'),
+        path= UPLOAD_FOLDER / asset_name,
         url=data.get('url'),
         adgroups=data.get('adgroups'))
+
 
   except Exception as e:
     logging.error(str(e))
@@ -548,6 +558,7 @@ def upload_asset():
     return _build_response(msg=json.dumps({'msg':'could not upload asset'}), status=500)
 
   if result['status'] == 0:
+    print(result)
     return _build_response(msg=json.dumps(result),status=200)
 
   if result['status'] == 1:
