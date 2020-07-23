@@ -558,7 +558,6 @@ def upload_asset():
     return _build_response(msg=json.dumps({'msg':'could not upload asset'}), status=500)
 
   if result['status'] == 0:
-    print(result)
     return _build_response(msg=json.dumps(result),status=200)
 
   if result['status'] == 1:
