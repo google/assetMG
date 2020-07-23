@@ -269,6 +269,7 @@ export class UploadAssetsComponent implements OnInit {
     } else if (response?.asset) {
       // Notify the asset service of newly added asset
       if (response.asset) {
+        //console.log(response.asset)
         this._assetService.addNewAsset(response.asset);
         this._snackBar.open('Uploaded Successfully', '', {
           duration: 2000,

@@ -123,7 +123,6 @@ export class AssetGalleryComponent implements OnInit {
       this._dataService.allAssets$.subscribe((assets) => {
         this.assets = assets;
         this.filteredAssets = assets;
-        this._cd.detectChanges();
       })
     );
   }
@@ -215,5 +214,9 @@ export class AssetGalleryComponent implements OnInit {
 
   private dismissSnackBar() {
     this._snackBar.dismiss();
+  }
+
+  assetsChanged() {
+    console.log('Assets Changed:', this.assets);
   }
 }
