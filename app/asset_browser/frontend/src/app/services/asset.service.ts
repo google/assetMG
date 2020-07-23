@@ -192,6 +192,7 @@ export class AssetService {
       if (asset.type == AssetType.IMG) {
         waitTime = 12000;
       }
+      this._assetsToAdGroups.push(asset);
       // This is a workaround to overcome the server not detecting the image
       // type and loading it - so we give it some time.
       setTimeout(() => {
