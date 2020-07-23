@@ -107,6 +107,8 @@ export class AssetService {
     this._activeAsset$.next(asset);
     if (asset) {
       this._activeAssetAdGroups$.next(this.getActiveAssetAdGroups(asset.id));
+    } else {
+      this._activeAssetAdGroups$.next(null);
     }
   }
 
@@ -185,7 +187,16 @@ export class AssetService {
   addNewAsset(asset: Asset) {
     // Update all assets with the newly uploaded asset
     if (asset) {
-      this._allAssets$.next(this._allAssets$.getValue().concat(asset));
+      console.log('Asset: ', asset);
+      let waitTime = 0;
+      if (asset.type == AssetType.IMG) {
+        waitTime = 12000;
+      }
+      // This is a workaround to overcome the server not detecting the image
+      // type and loading it - so we give it some time.
+      setTimeout(() => {
+        this._allAssets$.next(this._allAssets$.getValue().concat(asset));
+      }, waitTime);
     }
   }
 }

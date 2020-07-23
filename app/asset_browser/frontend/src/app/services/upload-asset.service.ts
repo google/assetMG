@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { AssetType } from '../model/asset';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { UploadResponse, STATUS } from '../model/response';
+import { BehaviorSubject } from 'rxjs';
+import { UploadResponse } from '../model/response';
 
 @Injectable({
   providedIn: 'root',
@@ -30,51 +30,6 @@ export class UploadAssetService {
   uploadFinished$ = this._uploadFinished$.asObservable();
 
   constructor(private http: HttpClient) {}
-
-  // /** Used for text assets only */
-  // addTextAsset(
-  //   account: number,
-  //   text: string,
-  //   assetType: AssetType,
-  //   adGroups: number[]
-  // ) {
-  //   const endpoint = this.API_SERVER + '/upload-asset/';
-
-  //   let textAsset = {
-  //     account: account,
-  //     asset_type: assetType,
-  //     asset_name: '',
-  //     asset_text: text,
-  //     adgroups: adGroups,
-  //   };
-
-  //   let subscription = this.http
-  //     .post(endpoint, textAsset, { observe: 'response' })
-  //     .subscribe(
-  //       (response) => {
-  //         console.log('Response: ', response);
-  //         this._uploadFinished$.next({
-  //           status_code: response.status,
-  //           asset:
-  //             response.status === STATUS.SUCCESS
-  //               ? (<UploadResponse>response.body).asset
-  //               : null,
-  //           msg:
-  //             response.status === STATUS.SUCCESS
-  //               ? ''
-  //               : (<UploadResponse>response.body).msg,
-  //         });
-  //         subscription.unsubscribe();
-  //       },
-  //       (error) => {
-  //         this._uploadFinished$.next({
-  //           status_code: STATUS.FAIL,
-  //           msg: 'Upload failed',
-  //         });
-  //         subscription.unsubscribe();
-  //       }
-  //     );
-  // }
 
   /** Used for text assets only */
   addTextAsset(
@@ -96,63 +51,7 @@ export class UploadAssetService {
     return this.http.post(endpoint, textAsset, { observe: 'response' });
   }
 
-  // /** Used for all non-text assets */
-  // uploadAsset(
-  //   account: number,
-  //   assetName: string,
-  //   assetType: AssetType,
-  //   adGroups: number[],
-  //   url?: string
-  // ) {
-  //   let asset;
-  //   const endpoint = this.API_SERVER + '/upload-asset/';
-
-  //   if (assetType === AssetType.VIDEO) {
-  //     asset = {
-  //       account: account,
-  //       asset_type: assetType,
-  //       asset_name: assetName,
-  //       url: url,
-  //       adgroups: adGroups,
-  //     };
-  //   } else {
-  //     asset = {
-  //       account: account,
-  //       asset_type: assetType,
-  //       asset_name: assetName,
-  //       adgroups: adGroups,
-  //     };
-  //   }
-
-  //   let subscription = this.http
-  //     .post(endpoint, asset, { observe: 'response' })
-  //     .subscribe(
-  //       (response) => {
-  //         console.log('Response: ', response);
-  //         this._uploadFinished$.next({
-  //           status_code: response.status,
-  //           asset:
-  //             response.status === STATUS.SUCCESS
-  //               ? (<UploadResponse>response.body).asset
-  //               : null,
-  //           msg:
-  //             response.status === STATUS.SUCCESS
-  //               ? ''
-  //               : (<UploadResponse>response.body).msg,
-  //         });
-  //         subscription.unsubscribe();
-  //       },
-  //       (error) => {
-  //         this._uploadFinished$.next({
-  //           status_code: STATUS.FAIL,
-  //           msg: 'Upload failed',
-  //         });
-  //         subscription.unsubscribe();
-  //       }
-  //     );
-  // }
-
-  /** Used for all non-text assets */
+ /** Used for all non-text assets */
   uploadAsset(
     account: number,
     assetName: string,

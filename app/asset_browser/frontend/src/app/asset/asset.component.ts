@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, Input, OnInit, SimpleChange } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  SimpleChange,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -43,7 +49,8 @@ export class AssetComponent implements OnInit {
   constructor(
     private router: Router,
     private dataService: AssetService,
-    private _previewDialog: MatDialog
+    private _previewDialog: MatDialog,
+    private _cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {}
@@ -52,14 +59,13 @@ export class AssetComponent implements OnInit {
     this.dataService.changeAsset(this.asset);
   }
 
-  openPreview(){
-    let url =''
-    if (this._asset.type === AssetType.IMG){
-      url = (this._asset as ImgAsset).image_url
-    }
-    else if (this._asset.type === AssetType.VIDEO){
-      let full_url = (this._asset as VideoAsset).link.split("=")
-      url = full_url[full_url.length -1]
+  openPreview() {
+    let url = '';
+    if (this._asset.type === AssetType.IMG) {
+      url = (this._asset as ImgAsset).image_url;
+    } else if (this._asset.type === AssetType.VIDEO) {
+      let full_url = (this._asset as VideoAsset).link.split('=');
+      url = full_url[full_url.length - 1];
     }
     this._previewDialog.open(PreviewComponent, {
       data: {
