@@ -145,6 +145,7 @@ def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='d
   # common_typos_disable
   successeful_assign = []
   unsuccesseful_assign = []
+  asset['adgroups'] = []
 
   if not adgroups:
     return {'asset':asset, 'status':-1}
@@ -174,7 +175,8 @@ def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='d
   if asset['type'] == 'TEXT' and successeful_assign:
     asset = _extract_text_asset_info(client,account,asset,successeful_assign[0])
 
-  _update_asset_struct(client,asset,successeful_assign)
+  asset['adgroups'] = successeful_assign
+  _update_asset_struct(client,asset)
 
   return {
       'asset': asset,
@@ -184,12 +186,11 @@ def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='d
   }
 
 
-def _update_asset_struct(client, asset, adgroups):
+def _update_asset_struct(client, asset):
   """Update the asset_to_ag file with the new assets and their adgroups"""
   with open(asset_to_ag_json_path, 'r') as f:
     struct = json.load(f)
 
-  asset['adgroups'] = adgroups
   struct.append(asset)
 
   with open(asset_to_ag_json_path, 'w') as f:
