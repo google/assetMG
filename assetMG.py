@@ -24,6 +24,7 @@ from app.backend.get_all_assets import get_assets, get_accounts_assets
 from app.backend.upload_asset import upload
 from app.backend.service import Service_Class
 from app.backend.yt_upload import initialize_upload
+from app.backend.error_handling import error_mapping
 from googleapiclient.discovery import build
 from pathlib import Path
 import copy
@@ -337,8 +338,8 @@ def mutate():
 
     try:
       mutation = mutate_ad(client, account, adgroup, asset, action)
-    except:
-      failed_assign.append(adgroup)
+    except Exception as e:
+      failed_assign.append({'adgroup':adgroup,'error_massage':error_mapping(str(e)),'err':str(e)})
       mutation = 'failed'
       logging.error("could not execute mutation on adgroup: " + str(adgroup))
 
@@ -365,7 +366,7 @@ def mutate():
     status = 500
 
   logging.info("mutate response: msg={} , status={}".format(asset_handler,index))
-  return _build_response(msg=json.dumps([{'asset':asset_handler,'index':index}]), status=status)
+  return _build_response(msg=json.dumps([{'asset':asset_handler,'index':index, 'failures':failed_assign}]), status=status)
 
 
 def _text_asset_mutate(data, asset_id, asset_struct):
@@ -428,10 +429,10 @@ def _text_asset_mutate(data, asset_id, asset_struct):
       mutation = mutate_ad(client, account, adgroup, asset, action,
                        text_type_to_assign)
 
-    except:
-      failed_assign.append(adgroup)
+    except Exception as e:
+      failed_assign.append({'adgroup':adgroup,'error_massage':error_mapping(str(e)),'err':str(e)})
       mutation = 'failed'
-      logging.error("could not execute mutation on adgroup: " + str(adgroup))
+      logging.error("could not execute mutation on adgroup: " + str(adgroup) + str(e))
 
     if mutation is None:
       for obj in asset_handlers:
@@ -457,7 +458,10 @@ def _text_asset_mutate(data, asset_id, asset_struct):
   else:
     status = 500
 
+  print(failed_assign)
   logging.info("mutate response: msg={} , status={}".format(str(asset_handlers),index))
+  # switch to this return and tell Mariam the changed return type.
+  # return _build_response(msg=json.dumps({'assets':asset_handlers, 'failures':failed_assign}))
   return _build_response(msg=json.dumps(asset_handlers), status=status)
 
 
@@ -547,15 +551,14 @@ def upload_asset():
   except Exception as e:
     logging.error(str(e))
     Service_Class.reset_cid(client)
-    return _build_response(msg=json.dumps(str(e)), status=500)
+    print(str(e))
+    print(error_mapping(str(e)))
+    return _build_response(msg=json.dumps({'msg': 'Could not upload asset', 'error_massage': error_mapping(str(e)), 'err': str(e)}), status=400)
 
   Service_Class.reset_cid(client)
   
   if result['status'] == -1:
     return _build_response(msg=json.dumps({'msg':'Asset Uploaded','asset':result['asset']}), status=200)
-
-  if result['status'] == 3:
-    return _build_response(msg=json.dumps({'msg':'could not upload asset'}), status=500)
 
   if result['status'] == 0:
     return _build_response(msg=json.dumps(result),status=200)
@@ -585,7 +588,6 @@ def init_clients():
 
   global client
   global googleads_client
-
 
   try:
 

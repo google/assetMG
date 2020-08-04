@@ -22,6 +22,7 @@ from googleads import adwords
 import app.backend.mutate as mutate
 from app.backend.structure import create_mcc_struct, get_assets_from_adgroup
 from app.backend.service import Service_Class
+from app.backend.error_handling import error_mapping
 from pathlib import Path
 import urllib
 import json
@@ -152,10 +153,12 @@ def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='d
 
   for ag in adgroups:
     # mutate_ad returns None if it finishes succesfully
-    if mutate.mutate_ad(client, account, ag, asset, 'ADD', text_type):
-      unsuccesseful_assign.append(ag)
-    else:
+    try:
+      mutate.mutate_ad(client, account, ag, asset, 'ADD', text_type)
       successeful_assign.append(ag)
+    except Exception as e:
+      unsuccesseful_assign.append({'adgroup':ag,'error_massage':error_mapping(str(e)),'err':str(e)})
+      print(str(e))
 
   # assignment status: 0 - succesfull, 1 - partialy succesfull, 2 - unsuccesfull, -1 - no adgroups to assign
   status = 2
