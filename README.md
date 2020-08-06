@@ -27,7 +27,7 @@ Easily add, change or remove creative assets across different ad groups and camp
 
 ## Setup
 
-Download the latests zip file under the [release](https://github.com/aylon11/assetMG/releases/tag/beta_1) tab.
+Download the latests zip file under the [release](https://github.com/google/assetMG/releases/tag/beta) tab.
 Create a folder called "assetMG" and extract the zip file to it.
 
 Open Terminal/CMD and navigate to the folder where you extracted the file
