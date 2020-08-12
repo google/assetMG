@@ -47,18 +47,14 @@ def upload_html5_asset(client, account, asset_name, path, adgroups):
 
   asset = asset_service.mutate([operation])['value'][0]
 
-  if asset:
+  new_asset = {
+      'id': asset['assetId'],
+      'name': asset['assetName'],
+      'type': 'MEDIA_BUNDLE',
+  }
 
-    new_asset = {
-        'id': asset['assetId'],
-        'name': asset['assetName'],
-        'type': 'MEDIA_BUNDLE',
-    }
+  return _assign_new_asset_to_adgroups(client, account, new_asset, adgroups)
 
-    return _assign_new_asset_to_adgroups(client, account, new_asset, adgroups)
-
-  else:
-    return {'status': 3}  # status 3 - could not upload
 
 
 def upload_yt_video_asset(client, account, asset_name, url, adgroups):
@@ -79,20 +75,16 @@ def upload_yt_video_asset(client, account, asset_name, url, adgroups):
 
   asset = asset_service.mutate([operation])['value'][0]
 
-  if asset:
-    new_asset = {
-        'id': asset['assetId'],
-        'name': asset['assetName'],
-        'type': 'YOUTUBE_VIDEO',
-        'video_id': video_id,
-        'link': url,
-        'image_url': yt_thumbnail_url%(video_id)
-    }
+  new_asset = {
+      'id': asset['assetId'],
+      'name': asset['assetName'],
+      'type': 'YOUTUBE_VIDEO',
+      'video_id': video_id,
+      'link': url,
+      'image_url': yt_thumbnail_url%(video_id)
+  }
 
-    return _assign_new_asset_to_adgroups(client, account, new_asset, adgroups)
-
-  else:
-    return {'status': 3} # status 3 - could not upload
+  return _assign_new_asset_to_adgroups(client, account, new_asset, adgroups)
 
 
 def upload_image_asset(client, account, asset_name, path, adgroups):
@@ -113,19 +105,14 @@ def upload_image_asset(client, account, asset_name, path, adgroups):
 
   asset = asset_service.mutate([operation])['value'][0]
 
-  if asset:
+  new_asset = {
+      'id': asset['assetId'],
+      'name': asset['assetName'],
+      'type': 'IMAGE',
+      'image_url': asset['fullSizeInfo']['imageUrl']
+  }
 
-    new_asset = {
-        'id': asset['assetId'],
-        'name': asset['assetName'],
-        'type': 'IMAGE',
-        'image_url': asset['fullSizeInfo']['imageUrl']
-    }
-
-    return _assign_new_asset_to_adgroups(client, account, new_asset, adgroups)
-
-  else:
-    return {'status' : 3} # status 3 - could not upload
+  return _assign_new_asset_to_adgroups(client, account, new_asset, adgroups)
 
 
 def upload_text_asset(client, account, text_type, name, text, adgroups):
@@ -158,7 +145,6 @@ def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='d
       successeful_assign.append(ag)
     except Exception as e:
       unsuccesseful_assign.append({'adgroup':ag,'error_massage':error_mapping(str(e)),'err':str(e)})
-      print(str(e))
 
   # assignment status: 0 - succesfull, 1 - partialy succesfull, 2 - unsuccesfull, -1 - no adgroups to assign
   status = 2

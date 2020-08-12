@@ -458,11 +458,10 @@ def _text_asset_mutate(data, asset_id, asset_struct):
   else:
     status = 500
 
-  print(failed_assign)
   logging.info("mutate response: msg={} , status={}".format(str(asset_handlers),index))
   # switch to this return and tell Mariam the changed return type.
-  # return _build_response(msg=json.dumps({'assets':asset_handlers, 'failures':failed_assign}))
-  return _build_response(msg=json.dumps(asset_handlers), status=status)
+  return _build_response(msg=json.dumps({'assets':asset_handlers, 'failures':failed_assign}))
+  # return _build_response(msg=json.dumps(asset_handlers), status=status)
 
 
 def _asset_ag_update(asset,adgroup,action):
@@ -551,23 +550,32 @@ def upload_asset():
   except Exception as e:
     logging.error(str(e))
     Service_Class.reset_cid(client)
-    print(str(e))
-    print(error_mapping(str(e)))
+    # Asset not uploaded
     return _build_response(msg=json.dumps({'msg': 'Could not upload asset', 'error_massage': error_mapping(str(e)), 'err': str(e)}), status=400)
 
   Service_Class.reset_cid(client)
   
+  # No adgroup assignment was requested, asset uploaded successfully
   if result['status'] == -1:
     return _build_response(msg=json.dumps({'msg':'Asset Uploaded','asset':result['asset']}), status=200)
 
+  # successfully uploaded and assigend to all ad groups
   if result['status'] == 0:
     return _build_response(msg=json.dumps(result),status=200)
 
+  # successfully assigend only to some ad groups
   if result['status'] == 1:
     return _build_response(msg=json.dumps(result),status=206)
 
+  # text asset couldn't assign to any ad group - therefore also not uploaded
+  if result['status'] == 3:
+    return _build_response(msg=json.dumps({'msg':'Text asset could not be assigned to any adgroup','failures':result['unsuccessfull']}))
+
+  # asset uploaded but didn't assign to any ad groups
   elif result['status'] == 2:
     return _build_response(msg=json.dumps({'msg':'could not assign asset','asset':result['asset']}), status=500)
+
+
 
 
 def _build_response(msg='', status=200, mimetype='application/json'):
