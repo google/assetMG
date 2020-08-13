@@ -41,9 +41,13 @@ import webview
 import string
 
 
-server = Flask(__name__, static_url_path="",
-            static_folder="app/asset_browser/frontend/dist/frontend",
-            template_folder="app/asset_browser/frontend/dist/frontend")
+from flask_cors import CORS
+server = Flask(__name__)
+CORS(server)
+
+# server = Flask(__name__, static_url_path="",
+#             static_folder="app/asset_browser/frontend/dist/frontend",
+#             template_folder="app/asset_browser/frontend/dist/frontend")
 
 
 UPLOAD_FOLDER = Path('app/uploads')
@@ -558,7 +562,7 @@ def upload_asset():
     return _build_response(msg=json.dumps({'msg': 'Could not upload asset', 'error_massage': error_mapping(str(e)), 'err': str(e)}), status=400)
 
   Service_Class.reset_cid(client)
-  
+
   # No adgroup assignment was requested, asset uploaded successfully
   if result['status'] == -1:
     return _build_response(msg=json.dumps({'msg':'Asset Uploaded','asset':result['asset']}), status=200)
@@ -642,7 +646,7 @@ def start_server():
   server.run()
 
 if __name__ == '__main__':
-  threading.Timer(1, open_browser).start()
+  # threading.Timer(1, open_browser).start()
   server.run()
 
 
