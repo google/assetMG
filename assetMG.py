@@ -19,7 +19,7 @@ from googleads import adwords
 from google.ads.google_ads.client import GoogleAdsClient
 import app.backend.setup as setup
 from app.backend.mutate import mutate_ad
-from app.backend.structure import create_mcc_struct, get_accounts, get_struct
+from app.backend.structure import create_mcc_struct, get_accounts
 from app.backend.get_all_assets import get_assets, get_accounts_assets
 from app.backend.upload_asset import upload
 from app.backend.service import Service_Class
@@ -74,7 +74,11 @@ if config_file['config_valid']:
   setup.set_api_configs()
   client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH / 'googleads.yaml')
   googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH / 'google-ads.yaml')
-  create_mcc_struct(client)
+  try:
+    create_mcc_struct(client)
+  except Exception as e:
+    logging.exception("error when trying to create struct")
+    Service_Class.reset_cid(client)
 
 
 @server.route('/')
@@ -460,8 +464,8 @@ def _text_asset_mutate(data, asset_id, asset_struct):
 
   logging.info("mutate response: msg={} , status={}".format(str(asset_handlers),index))
   # switch to this return and tell Mariam the changed return type.
-  return _build_response(msg=json.dumps({'assets':asset_handlers, 'failures':failed_assign}))
-  # return _build_response(msg=json.dumps(asset_handlers), status=status)
+  # return _build_response(msg=json.dumps({'assets':asset_handlers, 'failures':failed_assign}))
+  return _build_response(msg=json.dumps(asset_handlers), status=status)
 
 
 def _asset_ag_update(asset,adgroup,action):

@@ -26,6 +26,18 @@ import json
 from googleads import adwords
 from app.backend.service import Service_Class
 from pathlib import Path
+import logging
+
+LOGS_PATH = Path('app/logs/structure.log')
+logging.basicConfig(filename=LOGS_PATH ,level=logging.DEBUG, format='%(asctime)s:%(levelname)s:%(message)s')
+
+
+logger = logging.getLogger('__name__')
+formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
+file_handler = logging.FileHandler(LOGS_PATH)
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
 
 ASSET_TYPE_MAP = {
     'TextAsset': 'TEXT',
@@ -55,6 +67,7 @@ def create_mcc_struct(client):
 
 
 def create_account_struct(client,account):
+  """Creates the structure of a single account down to the asset level."""
   _revert_json()
   return get_campaigns(client,account)
 
@@ -76,6 +89,7 @@ def get_accounts(client):
   mcc_accounts = []
   acc = {}
 
+  logger.info("Getting all accounts under MCC")
   while more_pages:
     page = managed_customer_service.get(selector)
     if 'entries' in page and page['entries']:
@@ -83,6 +97,7 @@ def get_accounts(client):
         acc['name'] = account['name']
         acc['id'] = account['customerId']
         accounts.append(acc)
+        logger.info('Got account: ' + str(acc))
         acc = {}
 
     if 'links' in page and page['links']:
@@ -96,6 +111,9 @@ def get_accounts(client):
   # Remove MCC accounts from account list
   for mcc in set(mcc_accounts):
     for account in accounts:
+      ########### TEST ONLY ###########
+      if account['id'] == 7935681790:
+        accounts.remove(account)
       if mcc == account['id']:
         accounts.remove(account)
 
@@ -112,6 +130,13 @@ def get_campaigns(client, account):
   offset = 0
   selector = {
       'fields': ['Id', 'Name', 'Status', 'Settings'],
+      'predicates': [
+        {
+          'field':'AdvertisingChannelType',
+          'operator':'EQUALS',
+          'values': ['MULTI_CHANNEL']
+        }
+      ],
       'paging': {
           'startIndex': str(offset),
           'numberResults': str(PAGE_SIZE)
@@ -125,13 +150,11 @@ def get_campaigns(client, account):
     # Display results.
     if 'entries' in page:
       for campaign in page['entries']:
-        if campaign['settings'][1][
-            'Setting.Type'] == 'UniversalAppCampaignSetting':
-          camp['campaign_name'] = campaign['name']
-          camp['id'] = campaign['id']
-          camp['adgroups'] = _get_adgroups(client, campaign['id'])
-          campaigns.append(camp)
-          camp = {}
+        camp['campaign_name'] = campaign['name']
+        camp['id'] = campaign['id']
+        camp['adgroups'] = _get_adgroups(client, campaign['id'])
+        campaigns.append(camp)
+        camp = {}
 
     else:
       print('No campaigns were found.')
@@ -287,24 +310,24 @@ def create_asset_struct(ag):
 
 
 # Central func to create both structure json. both account and asset.
-def get_struct(client, account=0):
-  """ This function creates a json with 2 structures - account strcut and asset-to-ag struct.
-  if an accounts id is given, the account-struct is for that account only.
-  if not, its for the whole configured MCC.
-  """
-  _revert_json()
-  total_structure = []
-  if account:
-    struct = create_account_struct(client,account)
-  else:
-    struct = create_mcc_struct(client)
+# def get_struct(client, account=0):
+#   """ This function creates a json with 2 structures - account strcut and asset-to-ag struct.
+#   if an accounts id is given, the account-struct is for that account only.
+#   if not, its for the whole configured MCC.
+#   """
+#   _revert_json()
+#   total_structure = []
+#   if account:
+#     struct = create_account_struct(client,account)
+#   else:
+#     struct = create_mcc_struct(client)
 
-  with open(asset_to_ag_json_path, 'r') as f:
-    asset_struct = json.load(f)
+#   with open(asset_to_ag_json_path, 'r') as f:
+#     asset_struct = json.load(f)
 
-  structure = {'account_structure': struct, 'asset_structure': asset_struct}
-  Service_Class.reset_cid(client)
-  return structure
+#   structure = {'account_structure': struct, 'asset_structure': asset_struct}
+#   Service_Class.reset_cid(client)
+#   return structure
 
 
 def _revert_json():
