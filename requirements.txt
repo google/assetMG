@@ -3,3 +3,4 @@ google-ads
 flask
 google-api-python-client
 pywebview
+pylint
