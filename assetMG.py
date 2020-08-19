@@ -67,8 +67,11 @@ googleads_client=''
 
 
 # check if config is valid. if yes, init clients and create struct
-with open(CONFIG_FILE_PATH, 'r') as f:
-  config_file = yaml.load(f, Loader=yaml.FullLoader)
+try:
+  with open(CONFIG_FILE_PATH, 'r') as f:
+    config_file = yaml.load(f, Loader=yaml.FullLoader)
+except FileNotFoundError:
+  config_file = {'config_valid': 0}
 
 if config_file['config_valid']:
   setup.set_api_configs()
@@ -89,8 +92,18 @@ def upload_frontend():
 @server.route('/config/', methods=['GET'])
 def get_configs():
   """return all config parameters"""
-  with open(CONFIG_FILE_PATH, 'r') as f:
-    config = yaml.load(f, Loader=yaml.FullLoader)
+  try:
+    with open(CONFIG_FILE_PATH, 'r') as f:
+      config = yaml.load(f, Loader=yaml.FullLoader)
+  except FileNotFoundError:
+    config = {
+        'client_customer_id': '',
+        'client_id': '',
+        'client_secret': '',
+        'developer_token': '',
+        'refresh_token': '',
+        'config_valid': 0,
+    }
 
   return _build_response(json.dumps(config))
 
