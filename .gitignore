@@ -4,4 +4,7 @@
 *.log
 *.swp
 .venv
+config.yaml
+app/cache/*
+app/config/*
 
