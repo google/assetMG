@@ -50,10 +50,35 @@ class StructureBuilder(object):
 class AccountStructureBuilder(StructureBuilder):
   """Account structure builder class."""
 
+  _CAMPAIGN_FILTER = '''
+      campaign.advertising_channel_sub_type IN(
+        'APP_CAMPAIGN',
+        'APP_CAMPAIGN_FOR_ENGAGEMENT',
+        'SEARCH_MOBILE_APP',
+        'DISPLAY_MOBILE_APP'
+      )
+  '''
+
   def __init__(self, service, enums, customer_id, name):
     super().__init__(service, customer_id)
     self._enums = enums
     self._name = name
+
+  def _get_names(self, entity):
+    names = {}
+    rows = self._get_rows(f'''
+        SELECT
+          {entity}.id,
+          {entity}.name
+        FROM
+          {entity}
+        WHERE
+          {self._CAMPAIGN_FILTER}
+    ''')
+    for row in rows:
+      entity_object = getattr(row, entity)
+      names[entity_object.id.value] = entity_object.name.value
+    return names
 
   def _find_or_create_campaing(self, campaign_id):
     try:
@@ -61,6 +86,7 @@ class AccountStructureBuilder(StructureBuilder):
     except StopIteration:
       campaign = {
           'id': campaign_id,
+          'campaign_name': self._campaing_names[campaign_id],
           'adgroups': [],
       }
       self._campaigns.append(campaign)
@@ -74,6 +100,7 @@ class AccountStructureBuilder(StructureBuilder):
     except StopIteration:
       ad_group = {
           'id': ad_group_id,
+          'name': self._ad_group_names[ad_group_id],
           'assets': [],
       }
       campaign['adgroups'].append(ad_group)
@@ -105,7 +132,9 @@ class AccountStructureBuilder(StructureBuilder):
         'name': self._name,
     }
     self._campaigns = []
-    rows = self._get_rows('''
+    self._campaing_names = self._get_names('campaign')
+    self._ad_group_names = self._get_names('ad_group')
+    rows = self._get_rows(f'''
         SELECT
           campaign.id,
           ad_group.id,
@@ -119,12 +148,7 @@ class AccountStructureBuilder(StructureBuilder):
         FROM
           ad_group_ad_asset_view
         WHERE
-          campaign.advertising_channel_sub_type IN(
-            'APP_CAMPAIGN',
-            'APP_CAMPAIGN_FOR_ENGAGEMENT',
-            'SEARCH_MOBILE_APP',
-            'DISPLAY_MOBILE_APP'
-          )
+          {self._CAMPAIGN_FILTER}
     ''')
     for row in rows:
       asset = self._build_asset(row)
