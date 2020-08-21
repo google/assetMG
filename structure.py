@@ -35,16 +35,62 @@ class RowsIterator(object):
 class StructureBuilder(object):
   """Abstract structure builder class."""
 
-  def __init__(self, service, customer_id):
-    self._service = service
+  def __init__(self, client, customer_id):
+    self._service = client.get_service('GoogleAdsService', version='v4')
     self._customer_id = str(customer_id)
+    self._enums = {
+        'type': client.get_type('AssetTypeEnum').AssetType,
+        'field_type': client.get_type('AssetFieldTypeEnum').AssetFieldType,
+    }
 
   def _get_rows(self, query):
     response = self._service.search_stream(self._customer_id, query)
     return RowsIterator(response)
 
+  def _build_asset(self, row):
+    asset_type = self._enums['type'].Name(row.asset.type)
+    asset = {
+        'id': row.asset.id.value,
+        'name': row.asset.name.value,
+        'type': asset_type,
+    }
+    if asset_type == 'IMAGE':
+      asset['image_url'] = row.asset.image_asset.full_size.url.value
+    elif asset_type == 'TEXT':
+      text_type = self._enums['field_type'].Name(
+          row.ad_group_ad_asset_view.field_type)
+      asset['text_type'] = text_type.lower() + 's'
+      asset['asset_text'] = row.asset.text_asset.text.value
+    elif asset_type == 'YOUTUBE_VIDEO':
+      video_id = row.asset.youtube_video_asset.youtube_video_id.value
+      asset['video_id'] = video_id
+      asset['link'] = f'https://www.youtube.com/watch?v={video_id}'
+      asset['image_url'] = f'https://img.youtube.com/vi/{video_id}/1.jpg'
+    return asset
+
   def build(self):
     return None
+
+
+class AdGroupAssetsStructureBuilder(StructureBuilder):
+  """Ad group assets structure builder class."""
+
+  def build(self, ad_group_id):
+    rows = self._get_rows(f'''
+        SELECT
+          asset.id,
+          asset.name,
+          asset.type,
+          asset.image_asset.full_size.url,
+          ad_group_ad_asset_view.field_type,
+          asset.text_asset.text,
+          asset.youtube_video_asset.youtube_video_id
+        FROM
+          ad_group_ad_asset_view
+        WHERE
+          ad_group.id = {ad_group_id}
+    ''')
+    return [self._build_asset(row) for row in rows]
 
 
 class AccountStructureBuilder(StructureBuilder):
@@ -59,84 +105,60 @@ class AccountStructureBuilder(StructureBuilder):
       )
   '''
 
-  def __init__(self, service, enums, customer_id, name):
-    super().__init__(service, customer_id)
-    self._enums = enums
+  def __init__(self, client, customer_id, name):
+    super().__init__(client, customer_id)
     self._name = name
 
-  def _get_names(self, entity):
-    names = {}
+  def _populate_campaigns_and_ad_groups(self):
+    self._campaigns = []
+    self._ad_groups = {}
+    campaigns = {}
+
     rows = self._get_rows(f'''
         SELECT
-          {entity}.id,
-          {entity}.name
+          campaign.id,
+          campaign.name
         FROM
-          {entity}
+          campaign
         WHERE
           {self._CAMPAIGN_FILTER}
     ''')
     for row in rows:
-      entity_object = getattr(row, entity)
-      names[entity_object.id.value] = entity_object.name.value
-    return names
-
-  def _find_or_create_campaing(self, campaign_id):
-    try:
-      campaign = next(c for c in self._campaigns if c['id'] == campaign_id)
-    except StopIteration:
       campaign = {
-          'id': campaign_id,
-          'campaign_name': self._campaing_names[campaign_id],
+          'id': row.campaign.id.value,
+          'campaign_name': row.campaign.name.value,
           'adgroups': [],
       }
       self._campaigns.append(campaign)
-    return campaign
+      campaigns[campaign['id']] = campaign
 
-  def _find_or_create_ad_group(self, campaign_id, ad_group_id):
-    campaign = self._find_or_create_campaing(campaign_id)
-    try:
-      ad_group = next(ag for ag in campaign['adgroups']
-                      if ag['id'] == ad_group_id)
-    except StopIteration:
-      ad_group = {
-          'id': ad_group_id,
-          'name': self._ad_group_names[ad_group_id],
-          'assets': [],
-      }
-      campaign['adgroups'].append(ad_group)
-    return ad_group
-
-  def _build_asset(self, row):
-    asset_type = self._enums['type'].Name(row.asset.type)
-    asset = {
-        'id': row.asset.id.value,
-        'name': row.asset.name.value,
-        'type': asset_type,
-    }
-    if asset_type == 'IMAGE':
-      asset['image_url'] = row.asset.image_asset.full_size.url.value
-    elif asset_type == 'TEXT':
-      asset['text_type'] = self._enums['field_type'].Name(
-          row.ad_group_ad_asset_view.field_type)
-      asset['asset_text'] = row.asset.text_asset.text.value
-    elif asset_type == 'YOUTUBE_VIDEO':
-      video_id = row.asset.youtube_video_asset.youtube_video_id.value
-      asset['video_id'] = video_id
-      asset['link'] = f'https://www.youtube.com/watch?v={video_id}'
-      asset['image_url'] = f'https://img.youtube.com/vi/{video_id}/1.jpg'
-    return asset
-
-  def build(self):
-    self.structure = {
-        'id': self._customer_id,
-        'name': self._name,
-    }
-    self._campaigns = []
-    self._campaing_names = self._get_names('campaign')
-    self._ad_group_names = self._get_names('ad_group')
     rows = self._get_rows(f'''
         SELECT
           campaign.id,
+          ad_group.id,
+          ad_group.name
+        FROM
+          ad_group
+        WHERE
+          {self._CAMPAIGN_FILTER}
+    ''')
+    for row in rows:
+      ad_group = {
+          'id': row.ad_group.id.value,
+          'name': row.ad_group.name.value,
+          'assets': [],
+      }
+      campaigns[row.campaign.id.value]['adgroups'].append(ad_group)
+      self._ad_groups[ad_group['id']] = ad_group
+
+  def build(self):
+    structure = {
+        'id': self._customer_id,
+        'name': self._name,
+    }
+    self._populate_campaigns_and_ad_groups()
+    rows = self._get_rows(f'''
+        SELECT
           ad_group.id,
           asset.id,
           asset.name,
@@ -152,26 +174,20 @@ class AccountStructureBuilder(StructureBuilder):
     ''')
     for row in rows:
       asset = self._build_asset(row)
-      ad_group = self._find_or_create_ad_group(row.campaign.id.value,
-                                               row.ad_group.id.value)
-      ad_group['assets'].append(asset)
-    self.structure['campaigns'] = self._campaigns
-    return self.structure
+      self._ad_groups[row.ad_group.id.value]['assets'].append(asset)
+    structure['campaigns'] = self._campaigns
+    return structure
 
 
 class MCCStructureBuilder(StructureBuilder):
   """MCC structure builder class."""
 
   def __init__(self, client):
-    super().__init__(client.get_service('GoogleAdsService', version='v4'),
-                     client.login_customer_id)
-    self._enums = {
-        'type': client.get_type('AssetTypeEnum').AssetType,
-        'field_type': client.get_type('AssetFieldTypeEnum').AssetFieldType,
-    }
+    super().__init__(client, client.login_customer_id)
+    self._client = client
 
-  def build(self):
-    self.structure = []
+  def get_accounts(self):
+    accounts = []
     rows = self._get_rows('''
         SELECT
           customer_client.descriptive_name,
@@ -182,20 +198,55 @@ class MCCStructureBuilder(StructureBuilder):
           customer_client.manager = False
     ''')
     for row in rows:
-      name = row.customer_client.descriptive_name.value
-      customer_id = row.customer_client.id.value
-      builder = AccountStructureBuilder(self._service, self._enums,
-                                        customer_id, name)
-      self.structure.append(builder.build())
-    return self.structure
+      accounts.append({
+          'id': row.customer_client.id.value,
+          'name': row.customer_client.descriptive_name.value,
+      })
+    return accounts
+
+  def build(self):
+    structure = []
+    accounts = self.get_accounts()
+    for account in accounts:
+      builder = AccountStructureBuilder(
+          self._client, account['id'], account['name'])
+      structure.append(builder.build())
+    return structure
 
 
-def create_mcc_struct(client):
+def create_mcc_struct(client, mcc_struct_file, assets_file):
   builder = MCCStructureBuilder(client)
   structure = builder.build()
-  print(json.dumps(structure, indent=2))
+  with open(mcc_struct_file, 'w') as f:
+    json.dump(structure, f, indent=2)
+  assets = {}
+  for account in structure:
+    for campaign in account['campaigns']:
+      for ad_group in campaign['adgroups']:
+        for asset in ad_group['assets']:
+          try:
+            assets[asset['id']]['adgroups'].append(ad_group['id'])
+          except KeyError:
+            assets[asset['id']] = asset
+            assets[asset['id']]['adgroups'] = [ad_group['id']]
+  with open(assets_file, 'w') as f:
+    json.dump(list(assets.values()), f, indent=2)
+
+
+def get_accounts(client):
+  builder = MCCStructureBuilder(client)
+  return builder.get_accounts()
+
+
+def get_assets_from_adgroup(client, customer_id, ad_group_id):
+  builder = AdGroupAssetsStructureBuilder(client, customer_id)
+  return builder.build(ad_group_id)
+
 
 if __name__ == '__main__':
   googleads_client = GoogleAdsClient.load_from_storage(
       CONFIG_PATH / 'google-ads.yaml')
-  create_mcc_struct(googleads_client)
+  create_mcc_struct(googleads_client,
+                    'app/cache/account_struct_2.json',
+                    'app/cache/asset_to_ag_2.json')
+
