@@ -78,7 +78,8 @@ if config_file['config_valid']:
   client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH / 'googleads.yaml')
   googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH / 'google-ads.yaml')
   try:
-    create_mcc_struct(client)
+    create_mcc_struct(
+        googleads_client, account_struct_json_path, asset_to_ag_json_path)
   except Exception as e:
     logging.exception("error when trying to create struct")
     Service_Class.reset_cid(client)
@@ -221,7 +222,8 @@ def upload_to_yt():
 @server.route('/create-struct/', methods=['GET'])
 def create_struct():
   try:
-    create_mcc_struct(client)
+    create_mcc_struct(
+        googleads_client, account_struct_json_path, asset_to_ag_json_path)
     status=200
   except Exception as e:
     status=500
@@ -234,7 +236,7 @@ def create_struct():
 def get_all_accounts():
   """gets all accounts under the configured MCC. name and id"""
   try:
-    accounts = get_accounts(client)
+    accounts = get_accounts(googleads_client)
     return _build_response(msg=json.dumps(accounts), status=200)
   except:
     return _build_response(msg="Couldn't get accoutns", status=500)
@@ -555,6 +557,7 @@ def upload_asset():
   try:
     result = upload(
         client,
+        googleads_client,
         data.get('account'),
         data.get('asset_type'),
         asset_name,
@@ -562,8 +565,6 @@ def upload_asset():
         path= UPLOAD_FOLDER / asset_name,
         url=data.get('url'),
         adgroups=data.get('adgroups'))
-
-
   except Exception as e:
     logging.error(str(e))
     Service_Class.reset_cid(client)
