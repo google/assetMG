@@ -132,8 +132,11 @@ export class AssetGalleryComponent implements OnInit {
       this._dataService.allAssets$.subscribe((assets) => {
         this.assets = assets;
         this.filteredAssets = assets;
-        this.dataSource.data = this.filteredAssets;
-        this.dataSource.paginator = this.paginator;
+        if (this.filteredAssets && this.assets){
+          this.dataSource.data = this.filteredAssets;
+          this.dataSource.paginator = this.paginator;
+        }
+
       })
     );
   }
@@ -141,6 +144,9 @@ export class AssetGalleryComponent implements OnInit {
   ngOnDestroy() {
     for (let sub of this._subscriptions) {
       sub.unsubscribe();
+    }
+    if (this.dataSource){
+      this.dataSource.disconnect();
     }
   }
 
