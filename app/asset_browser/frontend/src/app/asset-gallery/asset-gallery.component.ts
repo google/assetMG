@@ -116,7 +116,12 @@ export class AssetGalleryComponent implements OnInit {
                 this._configService.configValid = true;
                 this.dismissSnackBar();
                 subscription.unsubscribe();
-              });
+              },
+              (error) => {
+                this.dismissSnackBar();
+                this.openSnackBarStructFail();
+                subscription.unsubscribe();
+              },);
           }
         });
       }
@@ -222,6 +227,18 @@ export class AssetGalleryComponent implements OnInit {
   private openSnackBar() {
     this._snackBar.open(
       'Loading AssetMG. This may take a few mintues... ',
+      '',
+      {
+        duration: undefined,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+      }
+    );
+  }
+
+  private openSnackBarStructFail() {
+    this._snackBar.open(
+      'Failed Loading AssetMG',
       '',
       {
         duration: undefined,
