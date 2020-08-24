@@ -71,15 +71,19 @@ googleads_client=''
 
 
 # check if config is valid. if yes, init clients and create struct
-with open(CONFIG_FILE_PATH, 'r') as f:
-  config_file = yaml.load(f, Loader=yaml.FullLoader)
+try:
+  with open(CONFIG_FILE_PATH, 'r') as f:
+    config_file = yaml.load(f, Loader=yaml.FullLoader)
+except FileNotFoundError:
+  config_file = {'config_valid': 0}
 
 if config_file['config_valid']:
   setup.set_api_configs()
   client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH / 'googleads.yaml')
   googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH / 'google-ads.yaml')
   try:
-    create_mcc_struct(client)
+    create_mcc_struct(
+        googleads_client, account_struct_json_path, asset_to_ag_json_path)
   except Exception as e:
     logging.exception("error when trying to create struct")
     Service_Class.reset_cid(client)
@@ -93,8 +97,18 @@ def upload_frontend():
 @server.route('/config/', methods=['GET'])
 def get_configs():
   """return all config parameters"""
-  with open(CONFIG_FILE_PATH, 'r') as f:
-    config = yaml.load(f, Loader=yaml.FullLoader)
+  try:
+    with open(CONFIG_FILE_PATH, 'r') as f:
+      config = yaml.load(f, Loader=yaml.FullLoader)
+  except FileNotFoundError:
+    config = {
+        'client_customer_id': '',
+        'client_id': '',
+        'client_secret': '',
+        'developer_token': '',
+        'refresh_token': '',
+        'config_valid': 0,
+    }
 
   return _build_response(json.dumps(config))
 
@@ -212,7 +226,8 @@ def upload_to_yt():
 @server.route('/create-struct/', methods=['GET'])
 def create_struct():
   try:
-    create_mcc_struct(client)
+    create_mcc_struct(
+        googleads_client, account_struct_json_path, asset_to_ag_json_path)
     status=200
   except Exception as e:
     status=500
@@ -225,7 +240,7 @@ def create_struct():
 def get_all_accounts():
   """gets all accounts under the configured MCC. name and id"""
   try:
-    accounts = get_accounts(client)
+    accounts = get_accounts(googleads_client)
     return _build_response(msg=json.dumps(accounts), status=200)
   except:
     return _build_response(msg="Couldn't get accoutns", status=500)
@@ -507,14 +522,16 @@ def clean_dir():
   status=200
   folder = UPLOAD_FOLDER
   for filename in os.listdir(folder):
-      file_path = os.path.join(folder, filename)
-      try:
-          if os.path.isfile(file_path) or os.path.islink(file_path):
-              os.unlink(file_path)
-          elif os.path.isdir(file_path):
-              shutil.rmtree(file_path)
-      except Exception as e:
-          logging.error('Failed to delete %s. Reason: %s' % (file_path, e))
+    if filename == '.gitkeep':
+      continue
+    file_path = os.path.join(folder, filename)
+    try:
+      if os.path.isfile(file_path) or os.path.islink(file_path):
+        os.unlink(file_path)
+      elif os.path.isdir(file_path):
+        shutil.rmtree(file_path)
+    except Exception as e:
+      logging.error('Failed to delete %s. Reason: %s' % (file_path, e))
 
   if len(os.listdir(folder)) != 0:
     status=500
@@ -546,6 +563,7 @@ def upload_asset():
   try:
     result = upload(
         client,
+        googleads_client,
         data.get('account'),
         data.get('asset_type'),
         asset_name,
@@ -553,8 +571,6 @@ def upload_asset():
         path= UPLOAD_FOLDER / asset_name,
         url=data.get('url'),
         adgroups=data.get('adgroups'))
-
-
   except Exception as e:
     logging.error(str(e))
     Service_Class.reset_cid(client)

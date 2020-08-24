@@ -2,3 +2,9 @@
 *.pyc
 /__pycache__
 *.log
+*.swp
+.venv
+config.yaml
+app/cache/*
+app/config/*
+

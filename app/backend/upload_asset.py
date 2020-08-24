@@ -18,9 +18,8 @@ This module allows uploading assets threw the assetMG tool, and assigning them
 to a list of adgroups utilaizing the mutate module.
 """
 
-from googleads import adwords
 import app.backend.mutate as mutate
-from app.backend.structure import create_mcc_struct, get_assets_from_adgroup
+from app.backend.structure import get_assets_from_adgroup
 from app.backend.service import Service_Class
 from app.backend.error_handling import error_mapping
 from pathlib import Path
@@ -31,7 +30,9 @@ import json
 asset_to_ag_json_path = Path('app/cache/asset_to_ag.json')
 yt_thumbnail_url = 'https://img.youtube.com/vi/%s/1.jpg'
 
-def upload_html5_asset(client, account, asset_name, path, adgroups):
+
+def upload_html5_asset(
+    client, googleads_client, account, asset_name, path, adgroups):
   """Upload html5 asset and assign to ad groups if given."""
   asset_service = Service_Class.get_asset_service(client)
 
@@ -53,17 +54,18 @@ def upload_html5_asset(client, account, asset_name, path, adgroups):
       'type': 'MEDIA_BUNDLE',
   }
 
-  return _assign_new_asset_to_adgroups(client, account, new_asset, adgroups)
+  return _assign_new_asset_to_adgroups(
+      client, googleads_client, account, new_asset, adgroups)
 
 
-
-def upload_yt_video_asset(client, account, asset_name, url, adgroups):
+def upload_yt_video_asset(
+    client, googleads_client, account, asset_name, url, adgroups):
   """Upload YT video asset and assign to ad groups if given."""
   asset_service = Service_Class.get_asset_service(client)
 
   url_data = urllib.parse.urlparse(url)
   query = urllib.parse.parse_qs(url_data.query)
-  video_id = query["v"][0]
+  video_id = query['v'][0]
 
   vid_asset = {
       'xsi_type': 'YouTubeVideoAsset',
@@ -84,10 +86,12 @@ def upload_yt_video_asset(client, account, asset_name, url, adgroups):
       'image_url': yt_thumbnail_url%(video_id)
   }
 
-  return _assign_new_asset_to_adgroups(client, account, new_asset, adgroups)
+  return _assign_new_asset_to_adgroups(
+      client, googleads_client, account, new_asset, adgroups)
 
 
-def upload_image_asset(client, account, asset_name, path, adgroups):
+def upload_image_asset(
+    client, googleads_client, account, asset_name, path, adgroups):
   """Upload image asset and assign to ad groups if given."""
   asset_service = Service_Class.get_asset_service(client)
 
@@ -112,10 +116,12 @@ def upload_image_asset(client, account, asset_name, path, adgroups):
       'image_url': asset['fullSizeInfo']['imageUrl']
   }
 
-  return _assign_new_asset_to_adgroups(client, account, new_asset, adgroups)
+  return _assign_new_asset_to_adgroups(
+      client, googleads_client, account, new_asset, adgroups)
 
 
-def upload_text_asset(client, account, text_type, name, text, adgroups):
+def upload_text_asset(
+    client, googleads_client, account, text_type, name, text, adgroups):
   """Upload text asset and assign to ad groups."""
   asset = {
       'id': None,
@@ -125,18 +131,21 @@ def upload_text_asset(client, account, text_type, name, text, adgroups):
       'asset_text': text
   }
 
-  return _assign_new_asset_to_adgroups(client, account, asset,adgroups, text_type)
+  return _assign_new_asset_to_adgroups(
+      client, googleads_client, account, asset, adgroups, text_type)
 
 
-def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='descriptions'):
-  """Assigns the new asset uploaded to the given adgroups, using the mutate module. """
+def _assign_new_asset_to_adgroups(client, googleads_client, account, asset,
+                                  adgroups, text_type='descriptions'):
+  """Assigns the new asset uploaded to the given ad groups, using the mutate
+  module."""
   # common_typos_disable
   successeful_assign = []
   unsuccesseful_assign = []
   asset['adgroups'] = []
 
   if not adgroups:
-    return {'asset':asset, 'status':-1}
+    return {'asset': asset, 'status': -1}
 
   for ag in adgroups:
     # mutate_ad returns None if it finishes succesfully
@@ -144,9 +153,15 @@ def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='d
       mutate.mutate_ad(client, account, ag, asset, 'ADD', text_type)
       successeful_assign.append(ag)
     except Exception as e:
-      unsuccesseful_assign.append({'adgroup':ag,'error_massage':error_mapping(str(e)),'err':str(e)})
-
-  # assignment status: 0 - succesfull, 1 - partialy succesfull, 2 - unsuccesfull, -1 - no adgroups to assign
+      unsuccesseful_assign.append({
+          'adgroup': ag,
+          'error_massage': error_mapping(str(e)), 'err': str(e)
+      })
+  # assignment status:
+  #   0 - succesfull,
+  #   1 - partialy succesfull,
+  #   2 - unsuccesfull,
+  #  -1 - no adgroups to assign
   status = 2
 
   # if successfully assigend only to some ad groups
@@ -158,14 +173,18 @@ def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='d
     status = 0
 
   # if text assets aren't assigned to any adgroup they weren't uploaded
-  if asset['type'] == 'TEXT' and status==2:
-    return {'status':3}
+  if asset['type'] == 'TEXT' and status == 2:
+    return {
+        'status': 3,
+        'unsuccessfull': unsuccesseful_assign
+    }
 
   if asset['type'] == 'TEXT' and successeful_assign:
-    asset = _extract_text_asset_info(client,account,asset,successeful_assign[0])
+    asset = _extract_text_asset_info(
+        googleads_client, account, asset, successeful_assign[0])
 
   asset['adgroups'] = successeful_assign
-  _update_asset_struct(client,asset)
+  _update_asset_struct(asset)
 
   return {
       'asset': asset,
@@ -175,7 +194,7 @@ def _assign_new_asset_to_adgroups(client,account, asset, adgroups, text_type ='d
   }
 
 
-def _update_asset_struct(client, asset):
+def _update_asset_struct(asset):
   """Update the asset_to_ag file with the new assets and their adgroups"""
   with open(asset_to_ag_json_path, 'r') as f:
     struct = json.load(f)
@@ -183,22 +202,22 @@ def _update_asset_struct(client, asset):
   struct.append(asset)
 
   with open(asset_to_ag_json_path, 'w') as f:
-    json.dump(struct,f, indent=2)
+    json.dump(struct, f, indent=2)
 
 
-def _extract_text_asset_info(client,account,thin_asset,adgroup):
+def _extract_text_asset_info(googleads_client, account, thin_asset, adgroup):
   """Retrive text-assets info from an adgroup it was assigned to"""
-  client.SetClientCustomerId(account)
-  adgroups_assets = get_assets_from_adgroup(client,adgroup)
+  adgroups_assets = get_assets_from_adgroup(googleads_client, account, adgroup)
 
   for asset in adgroups_assets:
-    if asset['type'] == "TEXT":
-      if asset['asset_text'] == thin_asset['asset_text'] and asset['text_type'] == thin_asset['text_type']:
-        Service_Class.reset_cid(client)
+    if asset['type'] == 'TEXT':
+      if (asset['asset_text'] == thin_asset['asset_text']
+          and asset['text_type'] == thin_asset['text_type']):
         return asset
 
 
 def upload(client,
+           googleads_client,
            account,
            asset_type,
            asset_name,
@@ -226,17 +245,18 @@ def upload(client,
   client.SetClientCustomerId(account)
 
   if asset_type == 'IMAGE':
-    return upload_image_asset(client, account, asset_name, path, adgroups)
+    return upload_image_asset(
+        client, googleads_client, account, asset_name, path, adgroups)
 
   if asset_type in ['descriptions', 'headlines']:
-    return upload_text_asset(client, account, asset_type, asset_name,
-                             asset_text, adgroups)
+    return upload_text_asset(client, googleads_client, account, asset_type,
+                             asset_name, asset_text, adgroups)
 
   if asset_type == 'YOUTUBE_VIDEO':
-    return upload_yt_video_asset(client, account, asset_name, url, adgroups)
+    return upload_yt_video_asset(
+        client, googleads_client, account, asset_name, url, adgroups)
 
   if asset_type == 'MEDIA_BUNDLE':
-    return upload_html5_asset(client, account, asset_name, path, adgroups)
-
-
+    return upload_html5_asset(
+        client, googleads_client, account, asset_name, path, adgroups)
 

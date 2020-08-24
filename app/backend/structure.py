@@ -12,329 +12,255 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""This module is a part of the UAC AssetMG tool.
-
-there are two ways to use this module:
-1. "get_struct" function creates a json with two 'structure' objects,
-the first one is the top MCC account structure down to the asset level, and the
-second one is a mapping from each asset to its adgroups.
-2. "create_mcc_struct" function returns an account structure down to assets, and
-creates an asset-to-adgroup mapping json, to be used later.
-"""
+"""Module for fetching account structure using Google Ads reporting API."""
 
 import json
-from googleads import adwords
-from app.backend.service import Service_Class
-from pathlib import Path
-import logging
-
-LOGS_PATH = Path('app/logs/structure.log')
-logging.basicConfig(filename=LOGS_PATH ,level=logging.DEBUG, format='%(asctime)s:%(levelname)s:%(message)s')
+from google.ads.google_ads.client import GoogleAdsClient
 
 
-logger = logging.getLogger('__name__')
-formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
-file_handler = logging.FileHandler(LOGS_PATH)
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
+class RowsIterator(object):
+  """Streamed report results iterator."""
+
+  def __init__(self, response):
+    self._response = response
+    self._results = None
+
+  def _next_batch(self):
+    self._batch = next(self._response)
+    self._results = iter(self._batch.results)
+
+  def __iter__(self):
+    return self
+
+  def __next__(self):
+    if self._results is None:
+      self._next_batch()
+    try:
+      return next(self._results)
+    except StopIteration:
+      self._next_batch()
+      return next(self._results)
 
 
-ASSET_TYPE_MAP = {
-    'TextAsset': 'TEXT',
-    'ImageAsset': 'IMAGE',
-    'YoutubeVideoAsset': 'YOUTUBE_VIDEO',
-    'MediaBundleAsset': 'MEDIA_BUNDLE'
-}
+class StructureBuilder(object):
+  """Abstract structure builder class."""
 
-PAGE_SIZE = 500
-PATH = Path('./')
-asset_to_ag_json_path = Path('app/cache/asset_to_ag.json')
-account_struct_json_path = Path('app/cache/account_struct.json')
+  def __init__(self, client, customer_id):
+    self._service = client.get_service('GoogleAdsService', version='v4')
+    self._customer_id = customer_id
+    self._enums = {
+        'type': client.get_type('AssetTypeEnum').AssetType,
+        'field_type': client.get_type('AssetFieldTypeEnum').AssetFieldType,
+    }
 
-def create_mcc_struct(client):
-  """create the full structure of an mcc account down to asset level."""
-  accounts = get_accounts(client)
-  _revert_json()
+  def _get_rows(self, query):
+    response = self._service.search_stream(str(self._customer_id), query)
+    return RowsIterator(response)
 
-  for account in accounts:
-    account['campaigns'] = get_campaigns(client, account['id'])
+  def _build_asset(self, row):
+    asset_type = self._enums['type'].Name(row.asset.type)
+    asset = {
+        'id': row.asset.id.value,
+        'name': row.asset.name.value,
+        'type': asset_type,
+    }
+    if asset_type == 'IMAGE':
+      asset['image_url'] = row.asset.image_asset.full_size.url.value
+    elif asset_type == 'TEXT':
+      text_type = self._enums['field_type'].Name(
+          row.ad_group_ad_asset_view.field_type)
+      asset['text_type'] = text_type.lower() + 's'
+      asset['asset_text'] = row.asset.text_asset.text.value
+    elif asset_type == 'YOUTUBE_VIDEO':
+      video_id = row.asset.youtube_video_asset.youtube_video_id.value
+      asset['video_id'] = video_id
+      asset['link'] = f'https://www.youtube.com/watch?v={video_id}'
+      asset['image_url'] = f'https://img.youtube.com/vi/{video_id}/1.jpg'
+    return asset
 
-  with open(account_struct_json_path, 'w') as f:
-    json.dump(accounts, f,indent=2)
-
-  Service_Class.reset_cid(client)
-  return accounts
+  def build(self):
+    return None
 
 
-def create_account_struct(client,account):
-  """Creates the structure of a single account down to the asset level."""
-  _revert_json()
-  return get_campaigns(client,account)
+class AdGroupAssetsStructureBuilder(StructureBuilder):
+  """Ad group assets structure builder class."""
+
+  def build(self, ad_group_id):
+    rows = self._get_rows(f'''
+        SELECT
+          ad_group.id,
+          asset.id,
+          asset.name,
+          asset.type,
+          asset.image_asset.full_size.url,
+          ad_group_ad_asset_view.field_type,
+          asset.text_asset.text,
+          asset.youtube_video_asset.youtube_video_id
+        FROM
+          ad_group_ad_asset_view
+        WHERE
+          ad_group.id = {ad_group_id}
+    ''')
+    return [self._build_asset(row) for row in rows]
+
+
+class AccountStructureBuilder(StructureBuilder):
+  """Account structure builder class."""
+
+  _CAMPAIGN_FILTER = '''
+      campaign.advertising_channel_sub_type IN(
+        'APP_CAMPAIGN',
+        'APP_CAMPAIGN_FOR_ENGAGEMENT',
+        'SEARCH_MOBILE_APP',
+        'DISPLAY_MOBILE_APP'
+      )
+  '''
+
+  def __init__(self, client, customer_id, name):
+    super().__init__(client, customer_id)
+    self._name = name
+
+  def _populate_campaigns_and_ad_groups(self):
+    self._campaigns = []
+    self._ad_groups = {}
+    campaigns = {}
+
+    rows = self._get_rows(f'''
+        SELECT
+          campaign.id,
+          campaign.name
+        FROM
+          campaign
+        WHERE
+          {self._CAMPAIGN_FILTER}
+    ''')
+    for row in rows:
+      campaign = {
+          'id': row.campaign.id.value,
+          'campaign_name': row.campaign.name.value,
+          'adgroups': [],
+      }
+      self._campaigns.append(campaign)
+      campaigns[campaign['id']] = campaign
+
+    rows = self._get_rows(f'''
+        SELECT
+          campaign.id,
+          ad_group.id,
+          ad_group.name
+        FROM
+          ad_group
+        WHERE
+          {self._CAMPAIGN_FILTER}
+    ''')
+    for row in rows:
+      ad_group = {
+          'id': row.ad_group.id.value,
+          'name': row.ad_group.name.value,
+          'assets': [],
+      }
+      campaigns[row.campaign.id.value]['adgroups'].append(ad_group)
+      self._ad_groups[ad_group['id']] = ad_group
+
+  def build(self):
+    structure = {
+        'id': self._customer_id,
+        'name': self._name,
+    }
+    self._populate_campaigns_and_ad_groups()
+    rows = self._get_rows(f'''
+        SELECT
+          ad_group.id,
+          asset.id,
+          asset.name,
+          asset.type,
+          asset.image_asset.full_size.url,
+          ad_group_ad_asset_view.field_type,
+          asset.text_asset.text,
+          asset.youtube_video_asset.youtube_video_id
+        FROM
+          ad_group_ad_asset_view
+        WHERE
+          {self._CAMPAIGN_FILTER}
+    ''')
+    for row in rows:
+      asset = self._build_asset(row)
+      self._ad_groups[row.ad_group.id.value]['assets'].append(asset)
+    structure['campaigns'] = self._campaigns
+    return structure
+
+
+class MCCStructureBuilder(StructureBuilder):
+  """MCC structure builder class."""
+
+  def __init__(self, client):
+    super().__init__(client, client.login_customer_id)
+    self._client = client
+
+  def get_accounts(self):
+    accounts = []
+    rows = self._get_rows('''
+        SELECT
+          customer_client.descriptive_name,
+          customer_client.id
+        FROM
+          customer_client
+        WHERE
+          customer_client.manager = False
+    ''')
+    for row in rows:
+      accounts.append({
+          'id': row.customer_client.id.value,
+          'name': row.customer_client.descriptive_name.value,
+      })
+    return accounts
+
+  def build(self):
+    structure = []
+    accounts = self.get_accounts()
+    for account in accounts:
+      builder = AccountStructureBuilder(
+          self._client, account['id'], account['name'])
+      structure.append(builder.build())
+    return structure
+
+
+def create_mcc_struct(client, mcc_struct_file, assets_file):
+  builder = MCCStructureBuilder(client)
+  structure = builder.build()
+  with open(mcc_struct_file, 'w') as f:
+    json.dump(structure, f, indent=2)
+  assets = {}
+  for account in structure:
+    for campaign in account['campaigns']:
+      for ad_group in campaign['adgroups']:
+        for asset in ad_group['assets']:
+          try:
+            assets[asset['id']]['adgroups'].append(ad_group['id'])
+          except KeyError:
+            assets[asset['id']] = asset
+            assets[asset['id']]['adgroups'] = [ad_group['id']]
+  with open(assets_file, 'w') as f:
+    json.dump(list(assets.values()), f, indent=2)
 
 
 def get_accounts(client):
-  """get all non-mcc accounts."""
-  managed_customer_service = Service_Class.get_managed_customer_service(client)
-
-  offset = 0
-  selector = {
-      'fields': ['CustomerId', 'Name'],
-      'paging': {
-          'startIndex': str(offset),
-          'numberResults': str(PAGE_SIZE)
-      }
-  }
-  more_pages = True
-  accounts = []
-  mcc_accounts = []
-  acc = {}
-
-  logger.info("Getting all accounts under MCC")
-  while more_pages:
-    page = managed_customer_service.get(selector)
-    if 'entries' in page and page['entries']:
-      for account in page['entries']:
-        acc['name'] = account['name']
-        acc['id'] = account['customerId']
-        accounts.append(acc)
-        logger.info('Got account: ' + str(acc))
-        acc = {}
-
-    if 'links' in page and page['links']:
-      for account in page['links']:
-        mcc_accounts.append(account['managerCustomerId'])
-
-    offset += PAGE_SIZE
-    selector['paging']['startIndex'] = str(offset)
-    more_pages = offset < int(page['totalNumEntries'])
-
-  # Remove MCC accounts from account list
-  for mcc in set(mcc_accounts):
-    for account in accounts:
-      ########### TEST ONLY ###########
-      if account['id'] == 7935681790:
-        accounts.remove(account)
-      if mcc == account['id']:
-        accounts.remove(account)
-
-  return accounts
+  builder = MCCStructureBuilder(client)
+  return builder.get_accounts()
 
 
-def get_campaigns(client, account):
-  """Create campaign structure down to asset level."""
-  campaign_service = Service_Class.get_campaign_service(client)
-  client.SetClientCustomerId(account)
-  campaigns = []
-  camp = {}
-  # Construct selector and get all campaigns.
-  offset = 0
-  selector = {
-      'fields': ['Id', 'Name', 'Status', 'Settings'],
-      'predicates': [
-        {
-          'field':'AdvertisingChannelType',
-          'operator':'EQUALS',
-          'values': ['MULTI_CHANNEL']
-        }
-      ],
-      'paging': {
-          'startIndex': str(offset),
-          'numberResults': str(PAGE_SIZE)
-      }
-  }
-
-  more_pages = True
-  while more_pages:
-    page = campaign_service.get(selector)
-
-    # Display results.
-    if 'entries' in page:
-      for campaign in page['entries']:
-        camp['campaign_name'] = campaign['name']
-        camp['id'] = campaign['id']
-        camp['adgroups'] = _get_adgroups(client, campaign['id'])
-        campaigns.append(camp)
-        camp = {}
-
-    else:
-      print('No campaigns were found.')
-    offset += PAGE_SIZE
-    selector['paging']['startIndex'] = str(offset)
-    more_pages = offset < int(page['totalNumEntries'])
-
-  return campaigns
+def get_assets_from_adgroup(client, customer_id, ad_group_id):
+  builder = AdGroupAssetsStructureBuilder(client, customer_id)
+  return builder.build(ad_group_id)
 
 
-def _get_adgroups(client, c_id):
-  """Create adgroups structure down to asset level."""
-  ad_group_service = Service_Class.get_ad_group_service(client)
-
-  adgroups = []
-  ag = {}
-  # Construct selector and get all ad groups.
-  offset = 0
-  selector = {
-      'fields': ['Id', 'Name', 'Status'],
-      'predicates': [
-          {
-              'field': 'CampaignId',
-              'operator': 'EQUALS',
-              'values': c_id
-          }
-      ],
-      'paging': {
-          'startIndex': str(offset),
-          'numberResults': str(PAGE_SIZE)
-      }
-  }
-
-  more_pages = True
-  while more_pages:
-    page = ad_group_service.get(selector)
-
-    if 'entries' in page:
-      for ad_group in page['entries']:
-        ag['name'] = ad_group['name']
-        ag['id'] = ad_group['id']
-        ag['assets'] = get_assets_from_adgroup(client, ad_group['id'])
-        adgroups.append(ag)
-        create_asset_struct(ag)
-        ag = {}
-    else:
-      print('No ad groups were found.')
-    offset += PAGE_SIZE
-    selector['paging']['startIndex'] = str(offset)
-    more_pages = offset < int(page['totalNumEntries'])
-
-    return adgroups
-
-
-def get_assets_from_adgroup(client, ag_id):
-  """Get all assets of a given adgroup."""
-
-  adgroupad_service = Service_Class.get_ad_group_ad_service(client)
-
-  ag_assets = []
-
-  offset = 0
-  selector = {
-      'fields': [
-          'UniversalAppAdImages', 'UniversalAppAdHeadlines',
-          'UniversalAppAdDescriptions', 'UniversalAppAdYouTubeVideos',
-          'UniversalAppAdHtml5MediaBundles'
-      ],
-      'predicates': [{
-          'field': 'AdGroupId',
-          'operator': 'EQUALS',
-          'values': [ag_id]
-      }],
-      'paging': {
-          'startIndex': str(offset),
-          'numberResults': str(PAGE_SIZE)
-      }
-  }
-
-  more_pages = True
-  while more_pages:
-    page = adgroupad_service.get(selector)
-    for i in page['entries']:
-      ag_assets.extend(_extract_assets_data(i['ad']))
-
-    offset += PAGE_SIZE
-    selector['paging']['startIndex'] = str(offset)
-    more_pages = offset < int(page['totalNumEntries'])
-
-  return ag_assets
-
-
-def _extract_assets_data(ad):
-  """Constract the asset object with relative fields."""
-  ag_assets = []
-  asset = {}
-  ASSET_TYPES = [
-      'headlines', 'descriptions', 'images', 'videos', 'html5MediaBundles'
-  ]
-  ASSET_TYPS_TEXT = ['headlines', 'descriptions']
-  yt_url_prefix = 'https://www.youtube.com/watch?v='
-  yt_thumbnail_url = 'https://img.youtube.com/vi/%s/1.jpg'
-
-  for entry in ad:
-    if entry in ASSET_TYPES and len(ad[entry]):
-      # Get all asset propererties by asset type
-      for item in ad[entry]:
-        asset['id'] = item['asset']['assetId']
-        asset['name'] = item['asset']['assetName']
-        asset['type'] = ASSET_TYPE_MAP[item['asset']['Asset.Type']]
-        if entry in ASSET_TYPS_TEXT:
-          asset['text_type'] = entry
-          asset['asset_text'] = item['asset']['assetText']
-        if entry == 'images':
-          asset['image_url'] = item['asset']['fullSizeInfo']['imageUrl']
-        if entry == 'videos':
-          asset['video_id'] = item['asset']['youTubeVideoId']
-          asset['link'] = yt_url_prefix + asset['video_id']
-          asset['image_url'] = yt_thumbnail_url%(asset['video_id'])
-
-        ag_assets.append(asset)
-        asset = {}
-
-  return ag_assets
-
-
-def create_asset_struct(ag):
-  """Build the asset-to-adgroup structure in a json file, one adgroup at a time."""
-
-  ag_id = ag['id']
-  assets = ag['assets']
-
-  with open(asset_to_ag_json_path, 'r') as f:
-    data = json.load(f)
-
-  for asset in assets:
-    add_entry = True
-    for entry in data:
-      if entry['id'] == asset['id'] and entry.get('text_type') == asset.get(
-          'text_type'):
-        add_entry = False
-        if ag_id not in entry['adgroups']:
-          entry['adgroups'].append(ag_id)
-
-    if add_entry:
-      new_entry = asset
-      new_entry['adgroups'] = [ag_id]
-      data.append(new_entry)
-      new_entry = {}
-
-  with open(asset_to_ag_json_path, 'w') as f:
-    json.dump(data, f, indent=2)
-
-
-# Central func to create both structure json. both account and asset.
-# def get_struct(client, account=0):
-#   """ This function creates a json with 2 structures - account strcut and asset-to-ag struct.
-#   if an accounts id is given, the account-struct is for that account only.
-#   if not, its for the whole configured MCC.
-#   """
-#   _revert_json()
-#   total_structure = []
-#   if account:
-#     struct = create_account_struct(client,account)
-#   else:
-#     struct = create_mcc_struct(client)
-
-#   with open(asset_to_ag_json_path, 'r') as f:
-#     asset_struct = json.load(f)
-
-#   structure = {'account_structure': struct, 'asset_structure': asset_struct}
-#   Service_Class.reset_cid(client)
-#   return structure
-
-
-def _revert_json():
-  """utility function to revert the json file in each run."""
-  clean = []
-  with open(asset_to_ag_json_path, 'w') as f:
-    json.dump(clean, f, indent=2)
-
-  with open(account_struct_json_path, 'w') as f:
-    json.dump(clean, f, indent=2)
+if __name__ == '__main__':
+  googleads_client = GoogleAdsClient.load_from_storage(
+      'app/config/google-ads.yaml')
+  create_mcc_struct(googleads_client,
+                    'app/cache/account_struct.json',
+                    'app/cache/asset_to_ag.json')
+  print(json.dumps(get_accounts(googleads_client), indent=2))
+  print(json.dumps(
+      get_assets_from_adgroup(googleads_client, 8791307154, 79845268520),
+      indent=2))
