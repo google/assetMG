@@ -27,12 +27,13 @@
           <p>Add Assets</p>
         </div>
         <app-asset class = "grid-item"
-        *ngFor="let asset of filteredAssets"
+        *ngFor="let asset of assetsPerPage$ | async"
         [asset] = "asset"
         [selectedAssetId] = "activeAssetId"
         (click)="selectAsset(asset.id)">
         </app-asset>
       </div>
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
     </mat-sidenav-content>
   </mat-sidenav-container>
   <!-- <app-setup *ngIf="!this.getConfigService().configValid" ></app-setup> -->

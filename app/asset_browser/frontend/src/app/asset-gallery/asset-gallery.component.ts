@@ -23,13 +23,15 @@ import {
   HostListener,
   ChangeDetectorRef,
 } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { MatSidenav } from '@angular/material/sidenav';
 import { ConfigService } from '../services/config.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AppSetupComponent } from '../app-setup/app-setup.component';
 import { UploadAssetsComponent } from '../upload-assets/upload-assets.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 
 const ASSET_TYPES = [
   {
@@ -73,6 +75,11 @@ export class AssetGalleryComponent implements OnInit {
   filterType: AssetType = AssetType.ALL;
 
   @ViewChild('sideNav') sideNav: MatSidenav;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  assetsPerPage$: Observable<any>;
+  dataSource: MatTableDataSource<Asset> = new MatTableDataSource<Asset>(
+    this.filteredAssets
+  );
 
   constructor(
     private _dataService: AssetService,
@@ -88,7 +95,9 @@ export class AssetGalleryComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    //this._cd.detectChanges();
     this._configService.loadConfigSettings();
+    this.assetsPerPage$ = this.dataSource.connect();
 
     this._configService.configLoaded$.subscribe((loaded) => {
       let config = this._configService.getConfigSettings();
@@ -123,6 +132,8 @@ export class AssetGalleryComponent implements OnInit {
       this._dataService.allAssets$.subscribe((assets) => {
         this.assets = assets;
         this.filteredAssets = assets;
+        this.dataSource.data = this.filteredAssets;
+        this.dataSource.paginator = this.paginator;
       })
     );
   }
@@ -169,11 +180,13 @@ export class AssetGalleryComponent implements OnInit {
   filterByStr(searchStr) {
     this.filterStr = searchStr;
     this.filteredAssets = this.applyFilter();
+    this.dataSource.data = this.filteredAssets;
   }
 
   filterByType(filterAssetType) {
     this.filterType = <AssetType>filterAssetType;
     this.filteredAssets = this.applyFilter();
+    this.dataSource.data = this.filteredAssets;
   }
 
   /** Resturns assets with the search string their name or
