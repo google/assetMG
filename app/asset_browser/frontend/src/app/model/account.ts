@@ -13,20 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-interface AdGroups {
+
+// Represents an a single ad group (as part of the account structure)
+// i.e. It usually is part of a campaign struct and contains a list of Assets in it.
+interface AdGroupStruct {
   id: number;
   name: string;
   assets?: any[];
 }
 
-interface Campaigns {
+interface CampaignStruct {
   id: number;
   campaign_name: string;
-  adgroups?: AdGroups[];
+  adgroups?: AdGroupStruct[];
 }
 
 export interface Account {
   id: number;
   name: string;
-  campaigns?: Campaigns[];
+  campaigns?: CampaignStruct[];
+}
+
+// Represents an adgroup and its status
+export interface AdGroup {
+  id: number;
+  name: string;
+  status: string;
+  campaign_name: string;
+  campaign_id: number;
+  campaign_status: string;
+}
+
+// Used to represent all the adgroups in an account and their status
+export interface AccountAGs {
+  id: number;
+  adgroups: AdGroup[];
 }

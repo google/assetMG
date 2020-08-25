@@ -22,14 +22,12 @@ import {
   Asset,
   TextAsset,
   AssetAdGroups,
-  AssetConn,
+  AssetConnType,
   AssetType,
   MutateRecord,
 } from './../model/asset';
 import { UpdateResponse, STATUS } from '../model/response';
-import { Account } from './../model/account';
-import { UploadAssetService } from './upload-asset.service';
-import { CdkPortal } from '@angular/cdk/portal';
+import { Account, AccountAGs } from './../model/account';
 
 @Injectable({
   providedIn: 'root',
@@ -40,6 +38,7 @@ export class AssetService {
   /** Gets updated when the account changes */
   private _activeAccountId$ = new BehaviorSubject<number>(null);
   private _activeAccount$ = new BehaviorSubject<Account>(null);
+  private _accountAGs$ = new BehaviorSubject<AccountAGs>(null);
   private _allAssets$ = new BehaviorSubject<Asset[]>(null);
   private _assetsToAdGroups: Asset[] = [];
 
@@ -53,6 +52,7 @@ export class AssetService {
   allAssets$ = this._allAssets$.asObservable();
   activeAccount$ = this._activeAccount$.asObservable();
   activeAccountId$ = this._activeAccountId$.asObservable();
+  accountAGs$ = this._accountAGs$.asObservable();
   activeAsset$ = this._activeAsset$.asObservable();
   activeAssetAdGroups$ = this._activeAssetAdGroups$.asObservable();
   updateFinished$ = this._updateFinished$.asObservable();
@@ -80,6 +80,16 @@ export class AssetService {
       .get<Account>(endpoint, { params: { cid: accountId?.toString() } })
       .subscribe((account) => {
         this._activeAccount$.next(account);
+        subscription.unsubscribe();
+      });
+  }
+
+  private getAccountAdGroups(accountId: number) {
+    const endpoint = this.API_SERVER + '/account-ag-struct';
+    let subscription = this._http
+      .get<AccountAGs>(endpoint, { params: { cid: accountId?.toString() } })
+      .subscribe((accountAGs) => {
+        this._accountAGs$.next(accountAGs);
         subscription.unsubscribe();
       });
   }
@@ -119,7 +129,8 @@ export class AssetService {
   changeAccount(accountId: number) {
     this._activeAccountId$.next(accountId);
     this.getAllAssets(accountId);
-    this.getAccountHierarchy(accountId);
+    //this.getAccountHierarchy(accountId);
+    this.getAccountAdGroups(accountId);
     this.getAssetsToAdGroups();
     this.changeAsset(null);
   }
@@ -128,14 +139,14 @@ export class AssetService {
     let assetAdGroups: AssetAdGroups = new Map();
     this._assetsToAdGroups.filter(function (asset) {
       if (asset.id == assetId) {
-        let assetConnection = AssetConn.ADGROUP;
+        let AssetConnection = AssetConnType.ADGROUP;
         if (asset.type == AssetType.TEXT) {
           (asset as TextAsset).text_type.toLowerCase() ==
-          AssetConn.HEADLINES.toLowerCase()
-            ? (assetConnection = AssetConn.HEADLINES)
-            : (assetConnection = AssetConn.DESC);
+          AssetConnType.HEADLINE.toLowerCase()
+            ? (AssetConnection = AssetConnType.HEADLINE)
+            : (AssetConnection = AssetConnType.DESC);
         }
-        assetAdGroups.set(assetConnection, asset.adgroups);
+        assetAdGroups.set(AssetConnection, asset.adgroups);
       }
     });
     return assetAdGroups;
@@ -147,7 +158,7 @@ export class AssetService {
       .post(endpoint, updateArray, { observe: 'response' })
       .subscribe(
         (response) => {
-          // updated the asset to adgroup cache
+          // update the asset to adgroup cache
           let updatedAssets: Asset[] = [];
           for (let update of <any[]>response.body) {
             updatedAssets.push(update.asset);

@@ -50,13 +50,13 @@
       </mat-step>
       <mat-step>
         <ng-template matStepLabel>Add</ng-template>
-        <app-account-campaigns
-          #accountCampaigns
+        <app-account-struct
+          #accountAdGroups
           [account]="account"
-          [showTextNodes]=false
-          [notifyOnSelection]="isTextAsset"
+          [uploadMode]=true
           (selectionMade)="updateCanAddAsset($event)">
-        </app-account-campaigns>
+        </app-account-struct>
+
       </mat-step>
     </mat-horizontal-stepper>
   </div>

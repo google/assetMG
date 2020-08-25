@@ -26,9 +26,9 @@ export enum AssetType {
 }
 
 /** Different kind of adgroups connections to assets */
-export enum AssetConn {
+export enum AssetConnType {
   ADGROUP = 'AdGroup',
-  HEADLINES = 'Headlines',
+  HEADLINE = 'Headlines',
   DESC = 'Descriptions',
 }
 
@@ -37,7 +37,7 @@ export enum MutateAction {
   REMOVE = 'REMOVE',
 }
 
-export type AssetAdGroups = Map<AssetConn, number[]>;
+export type AssetAdGroups = Map<AssetConnType, number[]>;
 
 interface AssetBase {
   id: number;

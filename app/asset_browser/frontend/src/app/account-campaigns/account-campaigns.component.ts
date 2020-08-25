@@ -29,7 +29,12 @@ import {
 import { SelectionModel } from '@angular/cdk/collections';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Account } from './../model/account';
-import { AssetAdGroups, AssetConn, Asset, TextAsset } from './../model/asset';
+import {
+  AssetAdGroups,
+  AssetConnType,
+  Asset,
+  TextAsset,
+} from './../model/asset';
 import { AssetService } from './../services/asset.service';
 import { STATUS } from '../model/response';
 
@@ -201,12 +206,17 @@ export class AccountCampaignsComponent implements OnChanges {
         for (let ag of campaign.adgroups) {
           let textNodes = [
             new TreeNode(
-              AssetConn.HEADLINES,
+              AssetConnType.HEADLINE,
               ag.id,
               [],
               nodeType.textPropertyNode
             ),
-            new TreeNode(AssetConn.DESC, ag.id, [], nodeType.textPropertyNode),
+            new TreeNode(
+              AssetConnType.DESC,
+              ag.id,
+              [],
+              nodeType.textPropertyNode
+            ),
           ];
           var adGroupNode = new TreeNode(
             ag.name,
@@ -241,7 +251,7 @@ export class AccountCampaignsComponent implements OnChanges {
           // Disable headlines node if the text is too long
           if (this._isTextAsset) {
             let hNode = agNode.children.value.find(
-              (node) => node.getName() == AssetConn.HEADLINES
+              (node) => node.getName() == AssetConnType.HEADLINE
             );
             (<TextAsset>this._asset).asset_text.length > MAX_HEADLINES_LEN
               ? (hNode.disabled = true)
@@ -254,16 +264,16 @@ export class AccountCampaignsComponent implements OnChanges {
             hasAdGroupConn = false;
           if (this._isTextAsset) {
             hasHeadlineConn = this.hasAdGroupConnection(
-              AssetConn.HEADLINES,
+              AssetConnType.HEADLINE,
               agNode.getId()
             );
             hasDescConn = this.hasAdGroupConnection(
-              AssetConn.DESC,
+              AssetConnType.DESC,
               agNode.getId()
             );
           } else {
             hasAdGroupConn = this.hasAdGroupConnection(
-              AssetConn.ADGROUP,
+              AssetConnType.ADGROUP,
               agNode.getId()
             );
           }
@@ -281,14 +291,14 @@ export class AccountCampaignsComponent implements OnChanges {
             if (hasHeadlineConn) {
               selAdGroups.push(
                 agNode.children.value.find(
-                  (node) => node.getName() == AssetConn.HEADLINES
+                  (node) => node.getName() == AssetConnType.HEADLINE
                 )
               );
             }
             if (hasDescConn) {
               selAdGroups.push(
                 agNode.children.value.find(
-                  (node) => node.getName() == AssetConn.DESC
+                  (node) => node.getName() == AssetConnType.DESC
                 )
               );
             }
@@ -312,7 +322,7 @@ export class AccountCampaignsComponent implements OnChanges {
   }
 
   /** Helper function to look for adGroup in adGroupMapping */
-  hasAdGroupConnection(connection: AssetConn, adGroupId: number) {
+  hasAdGroupConnection(connection: AssetConnType, adGroupId: number) {
     let adGroups = this._selAdGroups.get(connection);
     if (adGroups !== undefined && adGroups.find((id) => id == adGroupId)) {
       return true;

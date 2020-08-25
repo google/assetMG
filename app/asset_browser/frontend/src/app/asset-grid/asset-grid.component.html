@@ -1,0 +1,26 @@
+<app-search-bar *ngIf="filteredAssets"
+  searchPlaceholderTxt="Search your assets"
+  [filterOptions]="filterOptions"
+  (searchCriteria)="filterByStr($event)"
+  (filterCriteria)="filterByType($event)">
+</app-search-bar>
+<div class = "grid-layout">
+  <div *ngIf="filteredAssets" class="placeholder-card">
+    <button mat-mini-fab color="accent"
+      aria-label="Add Asset"
+      (click)="uploadAsset()">
+      <mat-icon>add</mat-icon>
+    </button>
+    <p>Add Assets</p>
+  </div>
+  <app-asset
+    *ngFor="let asset of assetsPerPage$ | async"
+    [asset] = "asset"
+    [selectedAssetId] = "activeAssetId"
+    (click)="selectAsset(asset.id)"
+    >
+  </app-asset>
+</div>
+<mat-paginator
+  [pageSizeOptions]="[25, 50, 100]"
+  [showFirstLastButtons]=true></mat-paginator>

@@ -14,47 +14,16 @@
  * limitations under the License.
  */
 import { AssetService } from './../services/asset.service';
-import { Account } from './../model/account';
-import { Asset, TextAsset, AssetType } from './../model/asset';
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  HostListener,
-  ChangeDetectorRef,
-} from '@angular/core';
+import { AccountAGs } from './../model/account';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription, Observable } from 'rxjs';
 import { MatSidenav } from '@angular/material/sidenav';
 import { ConfigService } from '../services/config.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AppSetupComponent } from '../app-setup/app-setup.component';
-import { UploadAssetsComponent } from '../upload-assets/upload-assets.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
-
-const ASSET_TYPES = [
-  {
-    label: 'All Assets',
-    value: AssetType.ALL,
-  },
-  {
-    label: 'Image',
-    value: AssetType.IMG,
-  },
-  {
-    label: 'Text',
-    value: AssetType.TEXT,
-  },
-  {
-    label: 'Video',
-    value: AssetType.VIDEO,
-  },
-  {
-    label: 'HTML',
-    value: AssetType.HTML,
-  },
-];
+import { AssetDetailsComponent } from '../asset-details/asset-details.component';
 
 @Component({
   selector: 'app-asset-gallery',
@@ -64,30 +33,18 @@ const ASSET_TYPES = [
 export class AssetGalleryComponent implements OnInit {
   private _subscriptions: Subscription[] = [];
 
-  account: Account;
-  assets: Asset[];
-  filteredAssets: Asset[];
-  activeAssetId: number;
+  account: AccountAGs;
   openSideNav: boolean = false;
 
-  filterOptions = ASSET_TYPES;
-  filterStr: string = '';
-  filterType: AssetType = AssetType.ALL;
-
   @ViewChild('sideNav') sideNav: MatSidenav;
+  @ViewChild('assetDetails') assetDetails: AssetDetailsComponent;
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  assetsPerPage$: Observable<any>;
-  dataSource: MatTableDataSource<Asset> = new MatTableDataSource<Asset>(
-    this.filteredAssets
-  );
 
   constructor(
     private _dataService: AssetService,
     private _configService: ConfigService,
     private _setupDialog: MatDialog,
-    private _uploadDialog: MatDialog,
-    private _snackBar: MatSnackBar,
-    private _cd: ChangeDetectorRef
+    private _snackBar: MatSnackBar
   ) {}
 
   getConfigService(): ConfigService {
@@ -95,10 +52,7 @@ export class AssetGalleryComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    //this._cd.detectChanges();
     this._configService.loadConfigSettings();
-    this.assetsPerPage$ = this.dataSource.connect();
-
     this._configService.configLoaded$.subscribe((loaded) => {
       let config = this._configService.getConfigSettings();
       if (!loaded && config) {
@@ -110,9 +64,8 @@ export class AssetGalleryComponent implements OnInit {
         configDialogRef.afterClosed().subscribe((success) => {
           if (success) {
             this.openSnackBar();
-            let subscription = this._dataService
-              .loadMccStruct()
-              .subscribe(() => {
+            let subscription = this._dataService.loadMccStruct().subscribe(
+              () => {
                 this._configService.configValid = true;
                 this.dismissSnackBar();
                 subscription.unsubscribe();
@@ -121,27 +74,16 @@ export class AssetGalleryComponent implements OnInit {
                 this.dismissSnackBar();
                 this.openSnackBarStructFail();
                 subscription.unsubscribe();
-              },);
+              }
+            );
           }
         });
       }
     });
     this._subscriptions.push(
-      this._dataService.activeAccount$.subscribe((account) => {
+      this._dataService.accountAGs$.subscribe((account) => {
         this.account = account;
         this.sideNav?.close();
-      })
-    );
-
-    this._subscriptions.push(
-      this._dataService.allAssets$.subscribe((assets) => {
-        this.assets = assets;
-        this.filteredAssets = assets;
-        if (this.filteredAssets && this.assets){
-          this.dataSource.data = this.filteredAssets;
-          this.dataSource.paginator = this.paginator;
-        }
-
       })
     );
   }
@@ -150,79 +92,43 @@ export class AssetGalleryComponent implements OnInit {
     for (let sub of this._subscriptions) {
       sub.unsubscribe();
     }
-    if (this.dataSource){
-      this.dataSource.disconnect();
-    }
   }
 
-  selectAsset(id) {
-    this.activeAssetId = id;
+  /** Binder functions to enable calling from child */
+  get openAssetDetailsFunc() {
+    return this.openAssetDetails.bind(this);
+  }
+
+  get closeAssetDetailsFunc() {
+    return this.closeAssetDetails.bind(this);
+  }
+
+  /** Functions that may need to be called from a child component */
+  openAssetDetails() {
     this.openSideNav = true;
     if (!this.sideNav.opened) {
+      this.assetDetails.loadAdGroups();
       this.sideNav.open();
     }
   }
 
-  uploadAsset() {
-    // Make sure to unselect any assets to avoid loading the campaign selection
-    // of any previously selected assets
-    this.unselectAsset();
-
-    const uploadDialogRef = this._uploadDialog.open(UploadAssetsComponent, {
-      disableClose: true,
-      data: this.account,
-    });
-
-    uploadDialogRef.afterClosed().subscribe(() => {});
-  }
-  /** Close side nav when escape is pressed */
-  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(
-    event: KeyboardEvent
-  ) {
-    this.unselectAsset();
-  }
-
-  unselectAsset() {
+  closeAssetDetails() {
     this.sideNav.close();
-    this.activeAssetId = null;
     this._dataService.unselectAsset();
   }
 
-  filterByStr(searchStr) {
-    this.filterStr = searchStr;
-    this.filteredAssets = this.applyFilter();
-    this.dataSource.data = this.filteredAssets;
-  }
+  // uploadAsset() {
+  //   // Make sure to unselect any assets to avoid loading the campaign selection
+  //   // of any previously selected assets
+  //   this.unselectAsset();
 
-  filterByType(filterAssetType) {
-    this.filterType = <AssetType>filterAssetType;
-    this.filteredAssets = this.applyFilter();
-    this.dataSource.data = this.filteredAssets;
-  }
+  //   const uploadDialogRef = this._uploadDialog.open(UploadAssetsComponent, {
+  //     disableClose: true,
+  //     data: this.account,
+  //   });
 
-  /** Resturns assets with the search string their name or
-   * in their text (for text assets) */
-  private applyFilter(): Asset[] {
-    // Nothing to filter - return full set of assets
-    if (!this.filterStr.length && this.filterType == AssetType.ALL) {
-      return this.assets;
-    }
-
-    // Filter by name and/or type
-    let searchStr = this.filterStr.toLocaleLowerCase();
-    return this.assets.filter(
-      (asset: Asset) =>
-        // Filter assets by string
-        (!searchStr.length ||
-          asset.name.toLocaleLowerCase().indexOf(searchStr) != -1 ||
-          (asset.type === AssetType.TEXT &&
-            (asset as TextAsset).asset_text
-              .toLocaleLowerCase()
-              .indexOf(searchStr) != -1)) &&
-        // filter assets by type
-        (this.filterType === AssetType.ALL || asset.type === this.filterType)
-    );
-  }
+  //   uploadDialogRef.afterClosed().subscribe(() => {});
+  // }
 
   private openSnackBar() {
     this._snackBar.open(
@@ -237,22 +143,14 @@ export class AssetGalleryComponent implements OnInit {
   }
 
   private openSnackBarStructFail() {
-    this._snackBar.open(
-      'Failed Loading AssetMG',
-      '',
-      {
-        duration: undefined,
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-      }
-    );
+    this._snackBar.open('Failed Loading AssetMG', '', {
+      duration: undefined,
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+    });
   }
 
   private dismissSnackBar() {
     this._snackBar.dismiss();
-  }
-
-  assetsChanged() {
-    console.log('Assets Changed:', this.assets);
   }
 }

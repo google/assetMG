@@ -1,0 +1,33 @@
+
+.grid-layout {
+  display: grid;
+  grid-gap: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  padding-bottom: 40px;
+}
+
+.placeholder-card {
+  border-radius: 8px;
+  height: 8rem;
+  width: auto;
+
+  color: grey;
+  display: flex;
+  flex-direction: column;
+  border: 1px dashed lightgray;
+  justify-content: center;
+  align-items: center;
+
+  /* Add this padding to make uo for material card padding in the grid*/
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.placeholder-card p {
+  margin: revert;
+}
+
+mat-paginator {
+  background-color: #f1f1f1;
+  border: 1px solid #d2d2d2;
+}

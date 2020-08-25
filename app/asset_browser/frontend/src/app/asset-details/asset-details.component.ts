@@ -19,7 +19,7 @@ import {
   Asset,
   MutateRecord,
   MutateAction,
-  AssetConn,
+  AssetConnType,
   MutateAsset,
   AssetType,
   TextAsset,
@@ -28,12 +28,13 @@ import {
 import { Account } from '../model/account';
 import { AssetService } from './../services/asset.service';
 import { STATUS } from '../model/response';
-import {
-  TreeNode,
-  nodeType,
-  AccountCampaignsComponent,
-} from '../account-campaigns/account-campaigns.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  AccountStructComponent,
+  AdGroupRow,
+  AssetConn,
+} from '../account-struct/account-struct.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-asset-details',
@@ -41,13 +42,20 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./asset-details.component.css'],
 })
 export class AssetDetailsComponent implements OnInit {
+  private _subscriptions: Subscription[] = [];
+
   private _account: Account;
-  activeAsset: Asset;
+  private _activeAsset: Asset;
+  assetType = AssetType;
 
   /** Update button params */
   updateInProgress: boolean = false;
   updateMessage: string = '';
   isErrorMessage: boolean = false;
+
+  get asset(): any {
+    return this._activeAsset;
+  }
 
   @Input()
   set account(account: Account) {
@@ -58,7 +66,8 @@ export class AssetDetailsComponent implements OnInit {
     return this._account;
   }
 
-  @ViewChild('campaignsTree') campaignsTree: AccountCampaignsComponent;
+  @Input() closeAssetDetails: Function;
+  @ViewChild('accountAdGroups') accountAdGroups: AccountStructComponent;
 
   constructor(
     private dataService: AssetService,
@@ -66,86 +75,112 @@ export class AssetDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.dataService.activeAsset$.subscribe((asset) => {
-      this.activeAsset = asset;
-    });
+    this._subscriptions.push(
+      this.dataService.activeAsset$.subscribe((asset) => {
+        this._activeAsset = asset;
+      })
+    );
 
-    this.dataService.activeAssetAdGroups$.subscribe((adGroups) => {
-      this.updateMessage = '';
-      this.isErrorMessage = false;
-    });
-    this.dataService.updateFinished$.subscribe((response) => {
-      this.updateInProgress = false;
-      if (response) {
-        this.updateMessage = response.msg;
-        this.isErrorMessage = response.status_code !== STATUS.SUCCESS;
-        if (!this.isErrorMessage) {
-          this._snackBar.open('Updated Successfully', '', {
-            duration: 2000,
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom',
-          });
+    this._subscriptions.push(
+      this.dataService.activeAssetAdGroups$.subscribe((adGroups) => {
+        this.updateMessage = '';
+        this.isErrorMessage = false;
+      })
+    );
+
+    this._subscriptions.push(
+      this.dataService.updateFinished$.subscribe((response) => {
+        this.updateInProgress = false;
+        if (response) {
+          this.updateMessage = response.msg;
+          this.isErrorMessage = response.status_code !== STATUS.SUCCESS;
+          if (!this.isErrorMessage) {
+            // Update succeeded - reset the checkboxes edit state
+            this.accountAdGroups.resetEditedRows();
+            this._snackBar.open('Updated Successfully', '', {
+              duration: 2000,
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+            });
+          }
         }
-      }
-    });
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    for (let sub of this._subscriptions) {
+      sub.unsubscribe();
+    }
+  }
+
+  onClose() {
+    this.closeAssetDetails();
   }
 
   updateAsset() {
     let mutateRecords: MutateRecord[] = [];
-    for (let campNode of this.campaignsTree.dataSource.data) {
-      for (let agNode of campNode.children.value) {
-        if (this.campaignsTree.isTextAsset()) {
-          for (let node of agNode.children.value) {
-            if (node.isEdited) {
-              mutateRecords.push(this.createMutateRecord(node));
-            }
-          }
-        } else if (agNode.isEdited) {
-          mutateRecords.push(this.createMutateRecord(agNode));
-        }
-      }
-    }
+    this.accountAdGroups.getUpdatedRows().forEach((row) => {
+      mutateRecords.push(this.createMutateRecord(row));
+    });
+
+    // console.log('Updates: ', this.accountAdGroups.getUpdatedRows());
+    // console.log('Mutate: ', mutateRecords);
 
     if (mutateRecords.length) {
       this.updateInProgress = true;
-      this.dataService.updateAsset(this.campaignsTree.asset(), mutateRecords);
+      this.dataService.updateAsset(this.asset, mutateRecords);
     }
   }
 
-  /** Creates mutate records for a mutate map */
-  private createMutateRecord(node: TreeNode): MutateRecord {
-    if (!node.isEdited) return;
+  loadAdGroups() {
+    this.accountAdGroups.sortBySelection();
+    this.accountAdGroups.resetEditedRows();
+  }
 
-    let action = this.campaignsTree.checklistSelection.isSelected(node)
+  private createMutateRecord(row: AdGroupRow): MutateRecord {
+    // Assume it's a non-text asset unless it is text
+    let connection = AssetConnType.ADGROUP;
+    let selArray = this.accountAdGroups.adgroup_sel;
+
+    if (this.asset.type == this.assetType.TEXT) {
+      if (row.isEdited[AssetConn.HEADLINE]) {
+        connection = AssetConnType.HEADLINE;
+        selArray = this.accountAdGroups.headline_sel;
+      } else if (row.isEdited[AssetConn.DESC]) {
+        connection = AssetConnType.DESC;
+        selArray = this.accountAdGroups.description_sel;
+      }
+    }
+
+    // Check if its added or removed
+    let action = selArray.isSelected(row)
       ? MutateAction.ADD
       : MutateAction.REMOVE;
-    let connection =
-      node.type === nodeType.textPropertyNode
-        ? <AssetConn>node.getName()
-        : AssetConn.ADGROUP;
+
     let assetObj = this.createMutateAssetObj(connection);
     let mutateObj: MutateRecord = {
       account: this._account.id,
-      adgroup: node.getId(),
+      adgroup: row.id,
       action: action,
       asset: assetObj,
     };
+
     return mutateObj;
   }
-
   /** Helper function that creates the appropriate asset object */
-  private createMutateAssetObj(connection: AssetConn) {
+  private createMutateAssetObj(connection: AssetConnType) {
     let assetObj: MutateAsset = {
-      id: this.campaignsTree.asset().id,
-      type: <AssetType>this.campaignsTree.asset().type,
+      id: this._activeAsset.id,
+      type: <AssetType>this._activeAsset.type,
     };
-    switch (this.campaignsTree.asset().type) {
+    switch (this._activeAsset.type) {
       case AssetType.TEXT:
-        assetObj.asset_text = (this.campaignsTree.asset() as TextAsset).asset_text;
+        assetObj.asset_text = (this._activeAsset as TextAsset).asset_text;
         assetObj.text_type_to_assign = connection.toLowerCase();
         break;
       case AssetType.VIDEO:
-        assetObj.video_id = (this.campaignsTree.asset() as VideoAsset).video_id;
+        assetObj.video_id = (this._activeAsset as VideoAsset).video_id;
         break;
     }
     return assetObj;

@@ -35,6 +35,8 @@ import { UploadHtmlComponent } from './upload-assets/upload-html/upload-html.com
 import { SharedModule } from './shared/shared.module';
 import { PreviewComponent } from './preview/preview.component';
 import { YouTubePlayerModule } from '@angular/youtube-player';
+import { AccountStructComponent } from './account-struct//account-struct.component';
+import { AssetGridComponent } from './asset-grid/asset-grid.component';
 
 @NgModule({
   declarations: [
@@ -53,6 +55,8 @@ import { YouTubePlayerModule } from '@angular/youtube-player';
     UploadVideoComponent,
     UploadHtmlComponent,
     PreviewComponent,
+    AccountStructComponent,
+    AssetGridComponent,
   ],
   imports: [
     BrowserModule,

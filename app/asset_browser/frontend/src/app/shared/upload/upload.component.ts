@@ -37,7 +37,6 @@ export enum FileType {
   styleUrls: ['./upload.component.css'],
 })
 export class UploadComponent implements OnInit {
-  // uploadAPI: string = 'http://127.0.0.1:5000/upload-files/';
   fileNames: string[] = [];
   selectedFileName: string = '';
   invalidDimensionsMsg: string ='';
@@ -92,9 +91,6 @@ export class UploadComponent implements OnInit {
         };
       };
       fileReader.readAsDataURL(file);
-
-
-
 
     if (this.fileNames.length) {
       this.selectedFileName = this.fileNames[0];
