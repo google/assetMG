@@ -1,3 +1,17 @@
+:host {
+  height: 8rem;
+  width: auto;
+
+  display: flex;
+  align-items: center;
+
+  /* Add this padding to make uo for material card padding in the grid*/
+  padding-top: 16px;
+  padding-bottom: 16px;
+  margin-top: 2px;
+  margin-left: 2px;
+}
+
 mat-card {
   width: 100%;
   height: 100%;
@@ -24,7 +38,6 @@ mat-card img {
   object-fit:scale-down ; /*this makes the image in src fit to the size specified below*/
   height: 100%;
   width: 100%;
-  border-radius: 8px;
   margin: auto;
 }
 

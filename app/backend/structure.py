@@ -297,9 +297,9 @@ class AccountAdGroupStructureBuilder(StructureBuilder):
         FROM
           ad_group
         WHERE
-          {self._campaign_filter}
+          {self._CAMPAIGN_FILTER}
         AND
-          {self._ad_group_filter}
+          {self._AD_GROUP_FILTER}
     ''')
 
     for row in rows:

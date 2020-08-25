@@ -1,3 +1,33 @@
 :host {
   padding-bottom: 40px;
 }
+
+h1 {
+  background-color: white;
+  margin: unset;
+  text-align: left;
+}
+
+.close-button{
+  float: right;
+}
+
+.close-icon {
+  height: 32px;
+}
+
+.asset-details {
+  display: grid;
+  grid-gap: 30px;
+  grid-template-columns: max-content auto;
+  padding-bottom: 0px;
+}
+
+.asset-info p{
+  float: left;
+  padding: 5px;
+}
+
+.mat-card-image:first-child {
+  margin-top: unset !important;
+}

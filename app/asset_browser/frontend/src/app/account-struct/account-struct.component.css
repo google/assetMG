@@ -1,0 +1,72 @@
+table {
+  width: 100%;
+}
+
+#accountFilter {
+  width: 50%;
+  max-width: 500px;
+}
+
+.mat-column-campaign {
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 auto !important;
+  width: auto !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.mat-column-adgroup {
+  flex: 0 0 40% !important;
+  width: 40% !important;
+}
+
+.mat-column-adgroup-sel,
+.mat-column-headline-sel,
+.mat-column-desc-sel {
+  flex: 0 0 60px !important;
+  width: 60px !important;
+}
+
+/* .mat-column-headline-sel,
+.mat-column-desc-sel {
+  flex: 0 0 95px !important;
+  width: 95px !important;
+} */
+
+.mat-cell,
+th.mat-header-cell {
+  text-align: left;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.mat-header-cell .mat-checkbox {
+  background-color: white !important;
+  /* height: 16px !important; */
+}
+
+th.mat-header-cell:first-of-type,
+td.mat-cell:first-of-type {
+  padding-left: 5px!important;
+}
+
+#accountFilter {
+  float: left;
+}
+
+td.mat-cell i {
+  color: gold;
+  float: left !important;
+  line-height: 20px;
+}
+
+td.mat-cell mat-checkbox{
+  float: right !important;
+  margin-right: 24px !important;
+}
+
+.header-checkmark{
+  margin-left: 20px !important;
+}
+

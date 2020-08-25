@@ -13,18 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  AfterViewInit,
-  Inject,
-} from '@angular/core';
+import { Component, OnInit, ViewChild, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
   FormGroup,
-  FormBuilder,
-  Validators,
   FormControl,
   FormGroupDirective,
   NgForm,
@@ -39,11 +31,11 @@ import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { UploadAssetService } from '../services/upload-asset.service';
 
 import { ErrorStateMatcher } from '@angular/material/core';
-import { AccountCampaignsComponent } from '../account-campaigns/account-campaigns.component';
 import { AssetType } from '../model/asset';
 import { STATUS, UploadResponse } from '../model/response';
 import { AssetService } from '../services/asset.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AccountStructComponent } from '../account-struct/account-struct.component';
 
 /** Error when the parent is invalid */
 export class ErrorMatcher implements ErrorStateMatcher {
@@ -87,7 +79,7 @@ export class UploadAssetsComponent implements OnInit {
   @ViewChild('uploadImg') uploadImg: UploadImgComponent;
   @ViewChild('uploadVideo') uploadVideo: UploadVideoComponent;
   @ViewChild('uploadHtml') uploadHtml: UploadHtmlComponent;
-  @ViewChild('accountCampaigns') campaigns: AccountCampaignsComponent;
+  @ViewChild('accountAdGroups') adGroups: AccountStructComponent;
 
   constructor(
     private _uploadService: UploadAssetService,
@@ -197,7 +189,7 @@ export class UploadAssetsComponent implements OnInit {
     let assetName = '';
     let assetText = '';
     let url = '';
-    let adGroups = this.campaigns.getSelectedAdGroups();
+    let adGroups = this.adGroups.getSelectedAdGroupIDs();
 
     switch (this.uploadAssetType) {
       case this.assetTypes.IMG:
@@ -277,7 +269,7 @@ export class UploadAssetsComponent implements OnInit {
           verticalPosition: 'bottom',
         });
       }
-      this.uploadDialogRef.close();
+      this.uploadDialogRef.close({ successful: status == STATUS.SUCCESS });
     }
   }
 }

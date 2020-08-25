@@ -1,3 +1,18 @@
+/**
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 @import '~@angular/material/theming';
 // Plus imports for other components in your app.
 
@@ -24,16 +39,16 @@ $assetmg-app-theme: mat-light-theme($assetmg-app-primary, $assetmg-app-accent, $
 @include angular-material-theme($assetmg-app-theme);
 
 .primary-color {
-  color: mat-color($assetmg-app-primary);
+  color: mat-color($assetmg-app-primary) !important;
 }
 
 .accent-color {
-  color: mat-color($assetmg-app-accent);
+  color: mat-color($assetmg-app-accent) !important;
 }
 
 .accent-border {
   border: solid;
-  border-color: mat-color($assetmg-app-accent);
+  border-color: mat-color($assetmg-app-accent) !important;
 }
 .warning-msg {
   color: mat-color($assetmg-app-warn) !important;
@@ -47,7 +62,7 @@ $assetmg-app-theme: mat-light-theme($assetmg-app-primary, $assetmg-app-accent, $
 }
 
 .mat-step-header .mat-step-label.mat-step-label-active {
-  color:mat-color($assetmg-app-primary);
+  color: mat-color($assetmg-app-primary);
 }
 
 .mat-dialog-container {
@@ -60,4 +75,32 @@ $assetmg-app-theme: mat-light-theme($assetmg-app-primary, $assetmg-app-accent, $
 
 .mat-simple-snackbar {
   display: inline-block !important;
+}
+
+.mat-divider {
+  margin-bottom: 15px !important;
+}
+
+/** Mat Tabel styling */
+.mat-header-cell {
+  background-color: mat-color($assetmg-app-primary);
+  color: white;
+  font-size: 14px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.mat-sort-header-arrow {
+  color: white;
+}
+tr.mat-row, tr.mat-footer-row {
+  height: 30px !important;
+}
+
+tr.mat-header-row {
+  height: 35px !important;
+}
+
+.mat-checkbox-inner-container {
+  height: 17px !important;
 }

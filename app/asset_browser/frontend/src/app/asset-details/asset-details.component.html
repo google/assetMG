@@ -1,10 +1,24 @@
 
-<!-- <div *ngIf="activeAsset">{{activeAsset.name}}</div> -->
-<app-account-campaigns
-  #campaignsTree
-  [account]="account"
-  buttonLabel='Update'>
-</app-account-campaigns>
+<h1 class="primary-color">Asset Details
+  <button mat-icon-button class="close-button" (click)="onClose()">
+    <mat-icon class="close-icon">close</mat-icon>
+  </button>
+</h1>
+<mat-divider></mat-divider>
+<div class="asset-details">
+  <div class="asset-info">
+    <app-asset
+      [asset] = "asset">
+    </app-asset>
+    <!-- <p>{{asset?.id}}</p>
+    <p>{{asset?.name}}</p> -->
+  </div>
+  <app-account-struct
+    #accountAdGroups
+    [account]="account">
+  </app-account-struct>
+  {{this.asset?.type}}
+</div>
 <app-progress-btn
   btnLabel='Update'
   [btnUpdateMsg]="updateMessage"
@@ -12,3 +26,4 @@
   [inProgress]="updateInProgress"
   (btnClick)="updateAsset()">
 </app-progress-btn>
+

@@ -25,10 +25,6 @@ import { UploadResponse } from '../model/response';
 export class UploadAssetService {
   private API_SERVER = 'http://127.0.0.1:5000';
 
-  /** Gets updated when the update Asset is called */
-  private _uploadFinished$ = new BehaviorSubject<UploadResponse>(null);
-  uploadFinished$ = this._uploadFinished$.asObservable();
-
   constructor(private http: HttpClient) {}
 
   /** Used for text assets only */
@@ -51,7 +47,7 @@ export class UploadAssetService {
     return this.http.post(endpoint, textAsset, { observe: 'response' });
   }
 
- /** Used for all non-text assets */
+  /** Used for all non-text assets */
   uploadAsset(
     account: number,
     assetName: string,

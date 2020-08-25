@@ -5,35 +5,17 @@
     <mat-sidenav #sideNav
       class="asset-details-container mat-elevation-z8"
       position="end"
-      mode="side"
+      mode="over"
       closed>
-      <app-asset-details [account]="account"></app-asset-details>
+      <app-asset-details #assetDetails
+        [account]="account"
+        [closeAssetDetails]="closeAssetDetailsFunc">
+      </app-asset-details>
     </mat-sidenav>
-    <mat-sidenav-content
-      [ngClass]="{'left-align-content' : sideNav?.opened}">
-      <app-search-bar *ngIf="filteredAssets"
-        searchPlaceholderTxt="Search your assets"
-        [filterOptions]="filterOptions"
-        (searchCriteria)="filterByStr($event)"
-        (filterCriteria)="filterByType($event)">
-      </app-search-bar>
-      <div class = "grid-layout">
-        <div *ngIf="filteredAssets" class="grid-item placeholder-card">
-          <button mat-mini-fab color="accent"
-            aria-label="Add Asset"
-            (click)="uploadAsset()">
-            <mat-icon>add</mat-icon>
-          </button>
-          <p>Add Assets</p>
-        </div>
-        <app-asset class = "grid-item"
-        *ngFor="let asset of assetsPerPage$ | async"
-        [asset] = "asset"
-        [selectedAssetId] = "activeAssetId"
-        (click)="selectAsset(asset.id)">
-        </app-asset>
-      </div>
-      <mat-paginator [pageSizeOptions]="[25, 50, 100]"></mat-paginator>
+    <mat-sidenav-content>
+      <app-asset-grid [account]="account"
+        [openAssetDetails]="openAssetDetailsFunc"
+        [closeAssetDetails]="closeAssetDetailsFunc">
+      </app-asset-grid>
     </mat-sidenav-content>
   </mat-sidenav-container>
-  <!-- <app-setup *ngIf="!this.getConfigService().configValid" ></app-setup> -->

@@ -1,4 +1,4 @@
-<div class="asset-card" [ngSwitch]="asset.type">
+<div class="asset-card" [ngSwitch]="asset?.type">
   <mat-card *ngSwitchCase="assetType.IMG"
             [ngClass]="{'accent-border': selectedAssetId === asset.id }"
             (click)="openDetails()">
