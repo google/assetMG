@@ -53,8 +53,13 @@ class StructureBuilder(object):
         'field_type': client.get_type('AssetFieldTypeEnum').AssetFieldType,
     }
 
-  def _get_rows(self, query):
-    response = self._service.search_stream(str(self._customer_id), query)
+  def _get_rows(self, query, account=None):
+    if account:
+      cid = account
+    else:
+      cid = str((self._customer_id))
+
+    response = self._service.search_stream(cid, query)
     return RowsIterator(response)
 
   def _build_asset(self, row):
@@ -66,6 +71,9 @@ class StructureBuilder(object):
     }
     if asset_type == 'IMAGE':
       asset['image_url'] = row.asset.image_asset.full_size.url.value
+      asset['file_size'] = row.asset.image_asset.file_size.value
+      asset['image_height'] = row.asset.image_asset.full_size.height_pixels.value
+      asset['image_width'] = row.asset.image_asset.full_size.width_pixels.value
     elif asset_type == 'TEXT':
       text_type = self._enums['field_type'].Name(
           row.ad_group_ad_asset_view.field_type)
@@ -85,7 +93,7 @@ class StructureBuilder(object):
 class AdGroupAssetsStructureBuilder(StructureBuilder):
   """Ad group assets structure builder class."""
 
-  def build(self, ad_group_id):
+  def build(self, ad_group_id, account):
     rows = self._get_rows(f'''
         SELECT
           ad_group.id,
@@ -101,6 +109,27 @@ class AdGroupAssetsStructureBuilder(StructureBuilder):
         WHERE
           ad_group.id = {ad_group_id}
     ''')
+    return [self._build_asset(row) for row in rows]
+
+
+class AccountAssetsBuilder(StructureBuilder):
+  """All assets under an account structure builder."""
+
+  def build(self,account):
+    rows = self._get_rows(f'''
+    SELECT 
+      asset.name,
+      asset.id,
+      asset.image_asset.file_size, 
+      asset.image_asset.full_size.url, 
+      asset.text_asset.text, 
+      asset.image_asset.full_size.height_pixels,
+      asset.image_asset.full_size.width_pixels,
+      asset.youtube_video_asset.youtube_video_id,
+      asset.type
+    FROM
+      asset
+      ''', account)
     return [self._build_asset(row) for row in rows]
 
 
@@ -175,6 +204,9 @@ class AccountStructureBuilder(StructureBuilder):
           asset.name,
           asset.type,
           asset.image_asset.full_size.url,
+          asset.image_asset.file_size,
+          asset.image_asset.full_size.height_pixels,
+          asset.image_asset.full_size.width_pixels,
           ad_group_ad_asset_view.field_type,
           asset.text_asset.text,
           asset.youtube_video_asset.youtube_video_id
@@ -254,13 +286,28 @@ def get_assets_from_adgroup(client, customer_id, ad_group_id):
   return builder.build(ad_group_id)
 
 
+def get_accounts_assets(client, customer_id):
+  builder = AccountAssetsBuilder(client, customer_id)
+  return builder.build(customer_id)
+
+
+def get_all_accounts_assets(client):
+  accounts = get_accounts(client)
+  for account in accounts:
+    account['assets'] = get_accounts_assets(client,str(account['id']))
+  return accounts
+
+
 if __name__ == '__main__':
   googleads_client = GoogleAdsClient.load_from_storage(
       'app/config/google-ads.yaml')
-  create_mcc_struct(googleads_client,
-                    'app/cache/account_struct.json',
-                    'app/cache/asset_to_ag.json')
-  print(json.dumps(get_accounts(googleads_client), indent=2))
-  print(json.dumps(
-      get_assets_from_adgroup(googleads_client, 8791307154, 79845268520),
-      indent=2))
+  # create_mcc_struct(googleads_client,
+  #                   'app/cache/account_struct.json',
+  #                   'app/cache/asset_to_ag.json')
+  # print(json.dumps(get_accounts(googleads_client), indent=2))
+  # print(json.dumps(
+  #     get_assets_from_adgroup(googleads_client, 8791307154, 79845268520),
+  #     indent=2))
+
+  # print(json.dumps(get_accounts_assets(googleads_client,'9489090398')))
+  get_assets(googleads_client)

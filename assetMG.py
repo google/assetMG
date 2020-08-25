@@ -19,8 +19,7 @@ from googleads import adwords
 from google.ads.google_ads.client import GoogleAdsClient
 import app.backend.setup as setup
 from app.backend.mutate import mutate_ad
-from app.backend.structure import create_mcc_struct, get_accounts
-from app.backend.get_all_assets import get_assets, get_accounts_assets
+from app.backend.structure import create_mcc_struct, get_accounts, get_all_accounts_assets, get_accounts_assets
 from app.backend.upload_asset import upload
 from app.backend.service import Service_Class
 from app.backend.yt_upload import initialize_upload
@@ -45,9 +44,9 @@ from flask_cors import CORS
 server = Flask(__name__)
 CORS(server)
 
-# server = Flask(__name__, static_url_path="",
-#             static_folder="app/asset_browser/frontend/dist/frontend",
-#             template_folder="app/asset_browser/frontend/dist/frontend")
+# server = Flask(__name__, static_url_path='',
+#             static_folder='app/asset_browser/frontend/dist/frontend',
+#             template_folder='app/asset_browser/frontend/dist/frontend')
 
 
 UPLOAD_FOLDER = Path('app/uploads')
@@ -64,7 +63,9 @@ YT_CLIENT_SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
 asset_to_ag_json_path = Path('app/cache/asset_to_ag.json')
 account_struct_json_path = Path('app/cache/account_struct.json')
 
-logging.basicConfig(filename=LOGS_PATH ,level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
+logging.basicConfig(filename=LOGS_PATH,
+                    level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
 
 client=''
 googleads_client=''
@@ -79,27 +80,29 @@ except FileNotFoundError:
 
 if config_file['config_valid']:
   setup.set_api_configs()
-  client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH / 'googleads.yaml')
-  googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH / 'google-ads.yaml')
+  client = adwords.AdWordsClient.LoadFromStorage(
+    CONFIG_PATH / 'googleads.yaml')
+  googleads_client = GoogleAdsClient.load_from_storage(
+    CONFIG_PATH / 'google-ads.yaml')
   try:
     create_mcc_struct(
         googleads_client, account_struct_json_path, asset_to_ag_json_path)
   except Exception as e:
-    logging.exception("error when trying to create struct")
+    logging.exception('error when trying to create struct')
     Service_Class.reset_cid(client)
 
 
 @server.route('/')
 def upload_frontend():
-  return render_template("index.html")
+  return render_template('index.html')
 
 
 @server.route('/config/', methods=['GET'])
 def get_configs():
   """return all config parameters"""
   try:
-    with open(CONFIG_FILE_PATH, 'r') as f:
-      config = yaml.load(f, Loader=yaml.FullLoader)
+    with open(CONFIG_FILE_PATH, 'r') as fi:
+      config = yaml.load(fi, Loader=yaml.FullLoader)
   except FileNotFoundError:
     config = {
         'client_customer_id': '',
@@ -120,7 +123,7 @@ def set_secret():
   global flow
   data = request.get_json(force=True)
 
-  # determines if its a reset to previous valid config or trying to setup new config
+  # determines if a reset to prev valid config or trying to setup new config
   is_reset = True
 
   if not data.get('config_valid'):
@@ -128,12 +131,13 @@ def set_secret():
     data['config_valid'] = 0
     is_reset = False
 
-  with open(CONFIG_FILE_PATH, 'w') as f:
-    yaml.dump(data, f)
+  with open(CONFIG_FILE_PATH, 'w') as fi:
+    yaml.dump(data, fi)
 
   # If its just a reset - no need to generate a url
   if is_reset:
-    return _build_response(msg=json.dumps('successfully restored previous configs'), status=200)
+    return _build_response(msg=json.dumps(
+      'successfully restored previous configs'), status=200)
 
   try:
     client_config = {
@@ -168,12 +172,13 @@ def set_refresh_token():
   set_status, refresh_token = setup.set_refresh(code,flow)
   if set_status:
     # meaning that set_refresh failed
-    return _build_response(msg=json.dumps("could not update refresh token"), status=500)
+    return _build_response(msg=json.dumps(
+      'could not update refresh token'), status=500)
 
   init_status = init_clients()
 
   if init_status:
-    return _build_response(msg=json.dumps("config invalid"), status=500)
+    return _build_response(msg=json.dumps('config invalid'), status=500)
   else:
     return _build_response(msg=json.dumps(refresh_token),status=200)
 
@@ -182,7 +187,8 @@ def set_refresh_token():
 def init_yt():
   """opens a browser with the login window. """
   setup.set_yt_config()
-  yt_flow = InstalledAppFlow.from_client_secrets_file(YT_CONFIG_FILE_PATH , YT_CLIENT_SCOPES)
+  yt_flow = InstalledAppFlow.from_client_secrets_file(
+    YT_CONFIG_FILE_PATH , YT_CLIENT_SCOPES)
   credentials = yt_flow.run_local_server(host='localhost',
     port=8080,
     authorization_prompt_message='Please visit this URL: {url}',
@@ -201,7 +207,8 @@ def upload_to_yt():
   file - str, path to the file to upload
   title - str,
   description - str, video description
-  category - str representing a number. https://developers.google.com/youtube/v3/docs/videoCategories/list',
+  category - str representing a number.
+  https://developers.google.com/youtube/v3/docs/videoCategories/list',
   keywords - list,
   privacyStatus - str, private/public/unlisted
 
@@ -210,11 +217,12 @@ def upload_to_yt():
   """
   data = request.get_json(force=True)
   if data.get('file') is None:
-    return _build_response(msg=json.loads("File not specified", status=404))
+    return _build_response(msg=json.loads('File not specified', status=404))
   try:
-    id = initialize_upload(yt_client,**{k: v for k, v in data.items() if v is not None})
+    id = initialize_upload(
+      yt_client,**{k: v for k, v in data.items() if v is not None})
     status=200
-    msg = {"vid_id" : id}
+    msg = {'vid_id' : id}
   except Exception as e:
     msg = str(e)
     logging.error(str(e))
@@ -243,18 +251,19 @@ def get_all_accounts():
     accounts = get_accounts(googleads_client)
     return _build_response(msg=json.dumps(accounts), status=200)
   except:
-    return _build_response(msg="Couldn't get accoutns", status=500)
+    return _build_response(msg='Couldn\'t get accoutns', status=500)
 
 
 
 @server.route('/accounts-assets/', methods=['GET'])
 def get_all_accounts_assets():
-  """if cid is specified, gets all its assets. if not - gets all accounts and their assets."""
+  """if cid gets all its assets. else gets all accounts and their assets."""
   cid = request.args.get('cid')
   if cid:
     return get_specific_accounts_assets(cid)
   else:
-    return _build_response(json.dumps(get_assets(googleads_client, client), indent=2))
+    return _build_response(
+      json.dumps(get_all_accounts_assets(googleads_client, client), indent=2))
 
 
 def get_specific_accounts_assets(cid):
@@ -265,14 +274,12 @@ def get_specific_accounts_assets(cid):
         'Invalid Customer Id', status=400, mimetype='text/plain')
 
   else:
-    res = get_accounts_assets(googleads_client, cid)
-    execution = res[0]
-    res_data = json.dumps(res[1])
-    # check function execution
-    if execution:
-      return _build_response(status=404)
-    else:
-      return _build_response(msg=res_data)
+    try:
+      res = get_accounts_assets(googleads_client, cid)
+      return _build_response(msg=json.dumps(res),status=200)
+    except Exception as e:
+      logging.error('Failed getting assets for ' + cid + str(e))
+      return _build_response(status=500)
 
 
 @server.route('/structure/', methods=['GET'])
@@ -287,13 +294,13 @@ def get_structure():
         if account['id'] == cid:
           return _build_response(msg=json.dumps(account, indent=2))
 
-      return _build_response(msg="cid not found", status=500)
+      return _build_response(msg='cid not found', status=500)
 
     else:
       return _build_response(msg=json.dumps(accounts_struct, indent=2))
 
   except:
-    return _build_response(msg="could not get data", status=500)
+    return _build_response(msg='could not get data', status=500)
 
 
 @server.route('/assets-to-ag/', methods=['GET'])
@@ -322,12 +329,13 @@ def mutate():
   preforms all of the actions one by one.
 
   returns a list withthe new asset objects with the changed adgroups list.
-  if its a text asset, returns a list with both 'headlines' and 'descriptions' entries.
+  if its a text asset, returns a list with
+  both 'headlines' and 'descriptions' entries.
   also changes the asset_to_ag.json file.
   """
 
   data = request.get_json(force=True)
-  logging.info("Recived mutate request: " + str(data))
+  logging.info('Recived mutate request: ' + str(data))
   asset_id = data[0]['asset']['id']
   asset_type = data[0]['asset']['type']
 
@@ -362,9 +370,10 @@ def mutate():
     try:
       mutation = mutate_ad(client, account, adgroup, asset, action)
     except Exception as e:
-      failed_assign.append({'adgroup':adgroup,'error_massage':error_mapping(str(e)),'err':str(e)})
+      failed_assign.append(
+        {'adgroup':adgroup,'error_massage':error_mapping(str(e)),'err':str(e)})
       mutation = 'failed'
-      logging.error("could not execute mutation on adgroup: " + str(adgroup))
+      logging.error('could not execute mutation on adgroup: ' + str(adgroup))
 
 
     if mutation is None:
@@ -388,8 +397,11 @@ def mutate():
   else:
     status = 500
 
-  logging.info("mutate response: msg={} , status={}".format(asset_handler,index))
-  return _build_response(msg=json.dumps([{'asset':asset_handler,'index':index, 'failures':failed_assign}]), status=status)
+  logging.info(
+    'mutate response: msg={} , status={}'.format(asset_handler,index))
+  return _build_response(msg=json.dumps(
+    [{'asset':asset_handler,'index':index, 'failures':failed_assign}])
+    , status=status)
 
 
 def _text_asset_mutate(data, asset_id, asset_struct):
@@ -403,7 +415,8 @@ def _text_asset_mutate(data, asset_id, asset_struct):
     index += 1
 
 
-  # if only one of headlines/descriptions entries exists in asset_struct, create the second one
+  # if only one of headlines/descriptions entries
+  # exists in asset_struct, create the second one.
   # if the asset isn't assigned to any adgroup, create both entries
   # create headline entry only if text's len <= 30
   if len(asset_handlers) < 2:
@@ -415,9 +428,9 @@ def _text_asset_mutate(data, asset_id, asset_struct):
     }
     append = False
     if len(data[0]['asset']['asset_text']) <= 30:
-       headline_len = True
+      headline_len = True
     else:
-       headline_len = False
+      headline_len = False
 
     if len(asset_handlers) == 1:
       existing_type = asset_handlers[0]['asset']['text_type']
@@ -453,9 +466,11 @@ def _text_asset_mutate(data, asset_id, asset_struct):
                        text_type_to_assign)
 
     except Exception as e:
-      failed_assign.append({'adgroup':adgroup,'error_massage':error_mapping(str(e)),'err':str(e)})
+      failed_assign.append(
+        {'adgroup':adgroup,'error_massage':error_mapping(str(e)),'err':str(e)})
       mutation = 'failed'
-      logging.error("could not execute mutation on adgroup: " + str(adgroup) + str(e))
+      logging.error(
+        'could not execute mutation on adgroup: ' + str(adgroup) + str(e))
 
     if mutation is None:
       for obj in asset_handlers:
@@ -481,27 +496,29 @@ def _text_asset_mutate(data, asset_id, asset_struct):
   else:
     status = 500
 
-  logging.info("mutate response: msg={} , status={}".format(str(asset_handlers),index))
+  logging.info(
+    'mutate response: msg={} , status={}'.format(str(asset_handlers),index))
   # switch to this return and tell Mariam the changed return type.
-  # return _build_response(msg=json.dumps({'assets':asset_handlers, 'failures':failed_assign}))
+  # return _build_response(
+  # msg=json.dumps({'assets':asset_handlers, 'failures':failed_assign}))
   return _build_response(msg=json.dumps(asset_handlers), status=status)
 
 
 def _asset_ag_update(asset,adgroup,action):
   """remove or add the adgroup to the asset entry"""
 
-  if action == "ADD":
+  if action == 'ADD':
     asset['adgroups'].append(adgroup)
 
-  if action == "REMOVE":
+  if action == 'REMOVE':
     asset['adgroups'].remove(adgroup)
 
   return asset
 
 
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+  return '.' in filename and \
+        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @server.route('/upload-files/', methods=['POST'])
 def upload_files():
@@ -575,13 +592,18 @@ def upload_asset():
     logging.error(str(e))
     Service_Class.reset_cid(client)
     # Asset not uploaded
-    return _build_response(msg=json.dumps({'msg': 'Could not upload asset', 'error_massage': error_mapping(str(e)), 'err': str(e)}), status=400)
+    return _build_response(msg=json.dumps(
+      {'msg': 'Could not upload asset',
+       'error_massage': error_mapping(str(e)),
+       'err': str(e)})
+      , status=400)
 
   Service_Class.reset_cid(client)
 
   # No adgroup assignment was requested, asset uploaded successfully
   if result['status'] == -1:
-    return _build_response(msg=json.dumps({'msg':'Asset Uploaded','asset':result['asset']}), status=200)
+    return _build_response(msg=json.dumps(
+      {'msg':'Asset Uploaded','asset':result['asset']}), status=200)
 
   # successfully uploaded and assigend to all ad groups
   if result['status'] == 0:
@@ -593,11 +615,14 @@ def upload_asset():
 
   # text asset couldn't assign to any ad group - therefore also not uploaded
   if result['status'] == 3:
-    return _build_response(msg=json.dumps({'msg':'Text asset could not be assigned to any adgroup','failures':result['unsuccessfull']}))
+    return _build_response(msg=json.dumps(
+      {'msg':'Text asset could not be assigned to any adgroup',
+      'failures':result['unsuccessfull']}))
 
   # asset uploaded but didn't assign to any ad groups
   elif result['status'] == 2:
-    return _build_response(msg=json.dumps({'msg':'could not assign asset','asset':result['asset']}), status=500)
+    return _build_response(msg=json.dumps(
+      {'msg':'could not assign asset','asset':result['asset']}), status=500)
 
 
 
@@ -623,8 +648,10 @@ def init_clients():
 
   try:
 
-    client = adwords.AdWordsClient.LoadFromStorage(CONFIG_PATH / 'googleads.yaml')
-    googleads_client = GoogleAdsClient.load_from_storage(CONFIG_PATH / 'google-ads.yaml')
+    client = adwords.AdWordsClient.LoadFromStorage(
+      CONFIG_PATH / 'googleads.yaml')
+    googleads_client = GoogleAdsClient.load_from_storage(
+      CONFIG_PATH / 'google-ads.yaml')
 
     with open(CONFIG_FILE_PATH, 'r') as f:
       config = yaml.load(f, Loader=yaml.FullLoader)
@@ -642,10 +669,10 @@ def init_clients():
 
 
 def shutdown_server():
-    func = request.environ.get('werkzeug.server.shutdown')
-    if func is None:
-        raise RuntimeError('Not running with the Werkzeug Server')
-    func()
+  func = request.environ.get('werkzeug.server.shutdown')
+  if func is None:
+    raise RuntimeError('Not running with the Werkzeug Server')
+  func()
 
 
 @server.route('/shutdown', methods=['GET'])
@@ -664,6 +691,3 @@ def start_server():
 if __name__ == '__main__':
   # threading.Timer(1, open_browser).start()
   server.run()
-
-
-
