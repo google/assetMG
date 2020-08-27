@@ -172,11 +172,20 @@ class AccountStructureBuilder(StructureBuilder):
         'SEARCH_MOBILE_APP',
         'DISPLAY_MOBILE_APP'
       )
+      AND campaign.status NOT IN('REMOVED')
+  '''
+
+  _AD_GROUP_FILTER = '''
+  ad_group.status NOT IN ('REMOVED')
   '''
 
   def __init__(self, client, customer_id, name):
     super().__init__(client, customer_id)
     self._name = name
+    self._status_enums = {
+      "adgroup_status": client.get_type('AdGroupStatusEnum').AdGroupStatus,
+      "campaign_status" : client.get_type('CampaignStatusEnum').CampaignStatus,
+    }
 
   def _populate_campaigns_and_ad_groups(self):
     self._campaigns = []
@@ -186,16 +195,19 @@ class AccountStructureBuilder(StructureBuilder):
     rows = self._get_rows(f'''
         SELECT
           campaign.id,
-          campaign.name
+          campaign.name,
+          campaign.status
         FROM
           campaign
         WHERE
           {self._CAMPAIGN_FILTER}
     ''')
     for row in rows:
+      campaign_status = self._status_enums['campaign_status'].Name(row.campaign.status)
       campaign = {
           'id': row.campaign.id.value,
           'campaign_name': row.campaign.name.value,
+          'status': campaign_status,
           'adgroups': [],
       }
       self._campaigns.append(campaign)
@@ -205,16 +217,21 @@ class AccountStructureBuilder(StructureBuilder):
         SELECT
           campaign.id,
           ad_group.id,
-          ad_group.name
+          ad_group.name,
+          ad_group.status
         FROM
           ad_group
         WHERE
           {self._CAMPAIGN_FILTER}
+        AND
+          {self._AD_GROUP_FILTER}
     ''')
     for row in rows:
+      adgroup_status = self._status_enums['adgroup_status'].Name(row.ad_group.status)
       ad_group = {
           'id': row.ad_group.id.value,
           'name': row.ad_group.name.value,
+          'status': adgroup_status,
           'assets': [],
       }
       campaigns[row.campaign.id.value]['adgroups'].append(ad_group)
@@ -247,6 +264,8 @@ class AccountStructureBuilder(StructureBuilder):
           ad_group_ad_asset_view
         WHERE
           {self._CAMPAIGN_FILTER}
+        AND
+          {self._AD_GROUP_FILTER}
     ''')
     for row in rows:
       asset = self._build_asset(row)
