@@ -68,6 +68,12 @@ class StructureBuilder(object):
         'id': row.asset.id.value,
         'name': row.asset.name.value,
         'type': asset_type,
+        'stats':{
+          'clicks': row.metrics.clicks.value,
+          'all_conversions' : row.metrics.all_conversions.value,
+          'impressions': row.metrics.impressions.value,
+          'cost':row.metrics.cost_micros.value / 1000000
+        }
     }
     if asset_type == 'IMAGE':
       asset['image_url'] = row.asset.image_asset.full_size.url.value
@@ -115,7 +121,7 @@ class AdGroupAssetsStructureBuilder(StructureBuilder):
 class AccountAssetsBuilder(StructureBuilder):
   """All assets under an account structure builder."""
 
-  def build(self,account):
+  def build(self,account, mcc_struct_file):
     rows = self._get_rows(f'''
     SELECT 
       asset.name,
@@ -130,7 +136,30 @@ class AccountAssetsBuilder(StructureBuilder):
     FROM
       asset
       ''', account)
-    return [self._build_asset(row) for row in rows]
+
+    account_assets = {}
+    for row in rows:
+      asset = self._build_asset(row)
+      account_assets[str(asset['id'])] = asset
+      
+
+    with open(mcc_struct_file, 'r') as f:
+      struc = json.load(f)
+
+    for acc in struc:
+      if acc['id'] == int(account):
+        account_campaigns_handler = acc['campaigns']
+        break
+
+    if account_campaigns_handler:
+      for campaign in account_campaigns_handler:
+        for adgroup in campaign['adgroups']:
+          for asset in adgroup['assets']:
+            asset_id = asset['id']
+            for k in asset['stats']:
+              account_assets[str(asset_id)]['stats'][k] += asset['stats'][k]
+            
+    return list(account_assets.values())
 
 
 class AccountStructureBuilder(StructureBuilder):
@@ -209,7 +238,11 @@ class AccountStructureBuilder(StructureBuilder):
           asset.image_asset.full_size.width_pixels,
           ad_group_ad_asset_view.field_type,
           asset.text_asset.text,
-          asset.youtube_video_asset.youtube_video_id
+          asset.youtube_video_asset.youtube_video_id,
+          metrics.all_conversions,
+          metrics.impressions,
+          metrics.clicks,
+          metrics.cost_micros
         FROM
           ad_group_ad_asset_view
         WHERE
@@ -286,15 +319,15 @@ def get_assets_from_adgroup(client, customer_id, ad_group_id):
   return builder.build(ad_group_id)
 
 
-def get_accounts_assets(client, customer_id):
+def get_accounts_assets(client, customer_id, mcc_struct_file):
   builder = AccountAssetsBuilder(client, customer_id)
-  return builder.build(customer_id)
+  return builder.build(customer_id,mcc_struct_file)
 
 
-def get_all_accounts_assets(client):
+def get_all_accounts_assets(client, mcc_struct_file):
   accounts = get_accounts(client)
   for account in accounts:
-    account['assets'] = get_accounts_assets(client,str(account['id']))
+    account['assets'] = get_accounts_assets(client,str(account['id']),mcc_struct_file)
   return accounts
 
 
@@ -310,4 +343,4 @@ if __name__ == '__main__':
   #     indent=2))
 
   # print(json.dumps(get_accounts_assets(googleads_client,'9489090398')))
-  get_assets(googleads_client)
+  print(get_accounts_assets(googleads_client,'9489090398','app/cache/account_struct.json'))

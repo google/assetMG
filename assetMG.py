@@ -275,10 +275,10 @@ def get_specific_accounts_assets(cid):
 
   else:
     try:
-      res = get_accounts_assets(googleads_client, cid)
+      res = get_accounts_assets(googleads_client, cid, account_struct_json_path)
       return _build_response(msg=json.dumps(res),status=200)
     except Exception as e:
-      logging.error('Failed getting assets for ' + cid + str(e))
+      logging.exception('Failed getting assets for: ' + cid + ' ' + str(e))
       return _build_response(status=500)
 
 
