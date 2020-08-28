@@ -15,6 +15,7 @@
 """Module for fetching account structure using Google Ads reporting API."""
 
 import json
+from concurrent import futures
 from google.ads.google_ads.client import GoogleAdsClient
 
 
@@ -344,13 +345,13 @@ class MCCStructureBuilder(StructureBuilder):
     return accounts
 
   def build(self):
-    structure = []
     accounts = self.get_accounts()
-    for account in accounts:
-      builder = AccountStructureBuilder(
-          self._client, account['id'], account['name'])
-      structure.append(builder.build())
-    return structure
+    with futures.ThreadPoolExecutor() as executor:
+      account_structures = executor.map(
+          lambda account: AccountStructureBuilder(
+              self._client, account['id'], account['name']).build(),
+          accounts)
+    return list(account_structures)
 
 
 def create_mcc_struct(client, mcc_struct_file, assets_file):
