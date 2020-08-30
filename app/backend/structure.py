@@ -45,22 +45,34 @@ class RowsIterator(object):
 class StructureBuilder(object):
   """Abstract structure builder class."""
 
+  _CAMPAIGN_FILTER = '''
+      campaign.advertising_channel_sub_type IN(
+        'APP_CAMPAIGN',
+        'APP_CAMPAIGN_FOR_ENGAGEMENT',
+        'SEARCH_MOBILE_APP',
+        'DISPLAY_MOBILE_APP'
+      )
+      AND 
+        campaign.status NOT IN('REMOVED')
+  '''
+  _AD_GROUP_FILTER = 'ad_group.status NOT IN ("REMOVED")'
+
+
   def __init__(self, client, customer_id):
     self._service = client.get_service('GoogleAdsService', version='v4')
     self._customer_id = customer_id
     self._enums = {
         'type': client.get_type('AssetTypeEnum').AssetType,
         'field_type': client.get_type('AssetFieldTypeEnum').AssetFieldType,
+        'adgroup_status': client.get_type('AdGroupStatusEnum').AdGroupStatus,
+        'campaign_status': client.get_type('CampaignStatusEnum').CampaignStatus,
     }
 
-  def _get_rows(self, query, account=None):
-    if account:
-      cid = account
-    else:
-      cid = str((self._customer_id))
 
-    response = self._service.search_stream(cid, query)
+  def _get_rows(self, query):
+    response = self._service.search_stream(str(self._customer_id), query)
     return RowsIterator(response)
+
 
   def _build_asset(self, row):
     asset_type = self._enums['type'].Name(row.asset.type)
@@ -78,7 +90,8 @@ class StructureBuilder(object):
     if asset_type == 'IMAGE':
       asset['image_url'] = row.asset.image_asset.full_size.url.value
       asset['file_size'] = row.asset.image_asset.file_size.value
-      asset['image_height'] = row.asset.image_asset.full_size.height_pixels.value
+      asset['image_height'] = \
+        row.asset.image_asset.full_size.height_pixels.value
       asset['image_width'] = row.asset.image_asset.full_size.width_pixels.value
     elif asset_type == 'TEXT':
       text_type = self._enums['field_type'].Name(
@@ -99,7 +112,7 @@ class StructureBuilder(object):
 class AdGroupAssetsStructureBuilder(StructureBuilder):
   """Ad group assets structure builder class."""
 
-  def build(self, ad_group_id, account):
+  def build(self, ad_group_id):
     rows = self._get_rows(f'''
         SELECT
           ad_group.id,
@@ -121,71 +134,60 @@ class AdGroupAssetsStructureBuilder(StructureBuilder):
 class AccountAssetsBuilder(StructureBuilder):
   """All assets under an account structure builder."""
 
-  def build(self,account, mcc_struct_file):
-    rows = self._get_rows(f'''
-    SELECT 
-      asset.name,
-      asset.id,
-      asset.image_asset.file_size, 
-      asset.image_asset.full_size.url, 
-      asset.text_asset.text, 
-      asset.image_asset.full_size.height_pixels,
-      asset.image_asset.full_size.width_pixels,
-      asset.youtube_video_asset.youtube_video_id,
-      asset.type
-    FROM
-      asset
-      ''', account)
+  def build(self):
+    rows = self._get_rows('''
+        SELECT 
+          asset.name,
+          asset.id,
+          asset.image_asset.file_size, 
+          asset.image_asset.full_size.url, 
+          asset.text_asset.text, 
+          asset.image_asset.full_size.height_pixels,
+          asset.image_asset.full_size.width_pixels,
+          asset.youtube_video_asset.youtube_video_id,
+          asset.type
+        FROM
+          asset
+    ''')
 
     account_assets = {}
     for row in rows:
       asset = self._build_asset(row)
-      account_assets[str(asset['id'])] = asset
-      
+      account_assets[asset['id']] = asset
 
-    with open(mcc_struct_file, 'r') as f:
-      struc = json.load(f)
+    source_assets = []
+    source_rows = self._get_rows(f'''
+        SELECT
+          asset.id,
+          asset.type,
+          metrics.all_conversions,
+          metrics.impressions,
+          metrics.clicks,
+          metrics.cost_micros
+        FROM
+          ad_group_ad_asset_view
+        WHERE
+          {self._CAMPAIGN_FILTER}
+        AND
+          {self._AD_GROUP_FILTER}
+    ''')
 
-    for acc in struc:
-      if acc['id'] == int(account):
-        account_campaigns_handler = acc['campaigns']
-        break
+    for row in source_rows:
+      source_assets.append(self._build_asset(row))
 
-    if account_campaigns_handler:
-      for campaign in account_campaigns_handler:
-        for adgroup in campaign['adgroups']:
-          for asset in adgroup['assets']:
-            asset_id = asset['id']
-            for k in asset['stats']:
-              account_assets[str(asset_id)]['stats'][k] += asset['stats'][k]
-            
+    for asset in source_assets:
+      for k in asset['stats']:
+        account_assets[asset['id']]['stats'][k] += asset['stats'][k]
+
     return list(account_assets.values())
 
 
 class AccountStructureBuilder(StructureBuilder):
   """Account structure builder class."""
 
-  _CAMPAIGN_FILTER = '''
-      campaign.advertising_channel_sub_type IN(
-        'APP_CAMPAIGN',
-        'APP_CAMPAIGN_FOR_ENGAGEMENT',
-        'SEARCH_MOBILE_APP',
-        'DISPLAY_MOBILE_APP'
-      )
-      AND campaign.status NOT IN('REMOVED')
-  '''
-
-  _AD_GROUP_FILTER = '''
-  ad_group.status NOT IN ('REMOVED')
-  '''
-
   def __init__(self, client, customer_id, name):
     super().__init__(client, customer_id)
     self._name = name
-    self._status_enums = {
-      "adgroup_status": client.get_type('AdGroupStatusEnum').AdGroupStatus,
-      "campaign_status" : client.get_type('CampaignStatusEnum').CampaignStatus,
-    }
 
   def _populate_campaigns_and_ad_groups(self):
     self._campaigns = []
@@ -203,7 +205,7 @@ class AccountStructureBuilder(StructureBuilder):
           {self._CAMPAIGN_FILTER}
     ''')
     for row in rows:
-      campaign_status = self._status_enums['campaign_status'].Name(row.campaign.status)
+      campaign_status = self._enums['campaign_status'].Name(row.campaign.status)
       campaign = {
           'id': row.campaign.id.value,
           'campaign_name': row.campaign.name.value,
@@ -227,7 +229,7 @@ class AccountStructureBuilder(StructureBuilder):
           {self._AD_GROUP_FILTER}
     ''')
     for row in rows:
-      adgroup_status = self._status_enums['adgroup_status'].Name(row.ad_group.status)
+      adgroup_status = self._enums['adgroup_status'].Name(row.ad_group.status)
       ad_group = {
           'id': row.ad_group.id.value,
           'name': row.ad_group.name.value,
@@ -338,28 +340,27 @@ def get_assets_from_adgroup(client, customer_id, ad_group_id):
   return builder.build(ad_group_id)
 
 
-def get_accounts_assets(client, customer_id, mcc_struct_file):
+def get_accounts_assets(client, customer_id):
   builder = AccountAssetsBuilder(client, customer_id)
-  return builder.build(customer_id,mcc_struct_file)
+  return builder.build()
 
 
-def get_all_accounts_assets(client, mcc_struct_file):
+def get_all_accounts_assets(client):
   accounts = get_accounts(client)
   for account in accounts:
-    account['assets'] = get_accounts_assets(client,str(account['id']),mcc_struct_file)
+    account['assets'] = get_accounts_assets(client, str(account['id']))
   return accounts
 
 
 if __name__ == '__main__':
   googleads_client = GoogleAdsClient.load_from_storage(
       'app/config/google-ads.yaml')
-  # create_mcc_struct(googleads_client,
-  #                   'app/cache/account_struct.json',
-  #                   'app/cache/asset_to_ag.json')
-  # print(json.dumps(get_accounts(googleads_client), indent=2))
-  # print(json.dumps(
-  #     get_assets_from_adgroup(googleads_client, 8791307154, 79845268520),
-  #     indent=2))
+  create_mcc_struct(googleads_client,
+                    'app/cache/account_struct.json',
+                    'app/cache/asset_to_ag.json')
+  print(json.dumps(get_accounts(googleads_client), indent=2))
+  print(json.dumps(
+      get_assets_from_adgroup(googleads_client, 8791307154, 79845268520),
+      indent=2))
 
-  # print(json.dumps(get_accounts_assets(googleads_client,'9489090398')))
-  print(get_accounts_assets(googleads_client,'9489090398','app/cache/account_struct.json'))
+  print(json.dumps(get_accounts_assets(googleads_client,'9489090398')))
