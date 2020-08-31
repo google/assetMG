@@ -19,7 +19,7 @@ from googleads import adwords
 from google.ads.google_ads.client import GoogleAdsClient
 import app.backend.setup as setup
 from app.backend.mutate import mutate_ad
-from app.backend.structure import create_mcc_struct, get_accounts, get_all_accounts_assets, get_accounts_assets
+from app.backend import structure
 from app.backend.upload_asset import upload
 from app.backend.service import Service_Class
 from app.backend.yt_upload import initialize_upload
@@ -40,13 +40,13 @@ import webview
 import string
 
 
-from flask_cors import CORS
-server = Flask(__name__)
-CORS(server)
+# from flask_cors import CORS
+# server = Flask(__name__)
+# CORS(server)
 
-# server = Flask(__name__, static_url_path='',
-#             static_folder='app/asset_browser/frontend/dist/frontend',
-#             template_folder='app/asset_browser/frontend/dist/frontend')
+server = Flask(__name__, static_url_path='',
+            static_folder='app/asset_browser/frontend/dist/frontend',
+            template_folder='app/asset_browser/frontend/dist/frontend')
 
 
 UPLOAD_FOLDER = Path('app/uploads')
@@ -85,7 +85,7 @@ if config_file['config_valid']:
   googleads_client = GoogleAdsClient.load_from_storage(
     CONFIG_PATH / 'google-ads.yaml')
   try:
-    create_mcc_struct(
+    structure.create_mcc_struct(
         googleads_client, account_struct_json_path, asset_to_ag_json_path)
   except Exception as e:
     logging.exception('error when trying to create struct')
@@ -234,7 +234,7 @@ def upload_to_yt():
 @server.route('/create-struct/', methods=['GET'])
 def create_struct():
   try:
-    create_mcc_struct(
+    structure.create_mcc_struct(
         googleads_client, account_struct_json_path, asset_to_ag_json_path)
     status=200
   except Exception as e:
@@ -248,22 +248,36 @@ def create_struct():
 def get_all_accounts():
   """gets all accounts under the configured MCC. name and id"""
   try:
-    accounts = get_accounts(googleads_client)
+    accounts = structure.get_accounts(googleads_client)
     return _build_response(msg=json.dumps(accounts), status=200)
   except:
     return _build_response(msg='Couldn\'t get accoutns', status=500)
 
 
+@server.route('/account-ag-struct', methods=['GET'])
+def get_account_ag_struct():
+  """Get account's adgroups structure."""
+  cid = request.args.get('cid')
+  try:
+    msg = json.dumps(structure.get_account_adgroup_structure(googleads_client,cid))
+    status = 200
+  except Exception as e:
+    logging.exception('could not get adgroup structure for ' + cid)
+    msg = json.dumps('Could not get adgroup structure for' + cid + str(e))
+    status = 500
+
+  return _build_response(msg=msg, status=status)
+
 
 @server.route('/accounts-assets/', methods=['GET'])
-def get_all_accounts_assets():
+def accounts_assets():
   """if cid gets all its assets. else gets all accounts and their assets."""
   cid = request.args.get('cid')
   if cid:
     return get_specific_accounts_assets(cid)
   else:
     return _build_response(
-      json.dumps(get_all_accounts_assets(googleads_client, client), indent=2))
+      json.dumps(structure.get_all_accounts_assets(googleads_client), indent=2))
 
 
 def get_specific_accounts_assets(cid):
@@ -275,7 +289,7 @@ def get_specific_accounts_assets(cid):
 
   else:
     try:
-      res = get_accounts_assets(googleads_client, cid, account_struct_json_path)
+      res = structure.get_accounts_assets(googleads_client, cid)
       return _build_response(msg=json.dumps(res),status=200)
     except Exception as e:
       logging.exception('Failed getting assets for: ' + cid + ' ' + str(e))
@@ -689,5 +703,5 @@ def start_server():
   server.run()
 
 if __name__ == '__main__':
-  # threading.Timer(1, open_browser).start()
+  threading.Timer(1, open_browser).start()
   server.run()

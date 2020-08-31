@@ -80,11 +80,11 @@ class StructureBuilder(object):
         'id': row.asset.id.value,
         'name': row.asset.name.value,
         'type': asset_type,
-        'stats':{
-          'clicks': row.metrics.clicks.value,
-          'all_conversions' : row.metrics.all_conversions.value,
-          'impressions': row.metrics.impressions.value,
-          'cost':row.metrics.cost_micros.value / 1000000
+        'stats': {
+            'clicks': row.metrics.clicks.value,
+            'all_conversions': row.metrics.all_conversions.value,
+            'impressions': row.metrics.impressions.value,
+            'cost': row.metrics.cost_micros.value / 1000000
         }
     }
     if asset_type == 'IMAGE':
@@ -276,6 +276,48 @@ class AccountStructureBuilder(StructureBuilder):
     return structure
 
 
+class AccountAdGroupStructureBuilder(StructureBuilder):
+  """ Create strucutre of form account:adgroups."""
+
+  def build(self):
+    structure = {
+        'id': self._customer_id,
+        'adgroups': []
+    }
+
+    rows = self._get_rows(f'''
+        SELECT
+          campaign.id,
+          campaign.name,
+          campaign.status,
+          ad_group.id,
+          ad_group.name,
+          ad_group.status
+        FROM
+          ad_group
+        WHERE
+          {self._campaign_filter}
+        AND
+          {self._ad_group_filter}
+    ''')
+
+    for row in rows:
+      adgroup_status = self._enums['adgroup_status'].Name(row.ad_group.status)
+      campaign_status = self._enums['campaign_status'].Name(row.campaign.status)
+
+      ad_group = {
+          'id': row.ad_group.id.value,
+          'name': row.ad_group.name.value,
+          'status': adgroup_status,
+          'campaign_id': row.campaign.id.value,
+          'campaign_name': row.campaign.name.value,
+          'campaign_status': campaign_status
+      }
+      structure['adgroups'].append(ad_group)
+
+    return structure
+
+
 class MCCStructureBuilder(StructureBuilder):
   """MCC structure builder class."""
 
@@ -351,6 +393,11 @@ def get_all_accounts_assets(client):
     account['assets'] = get_accounts_assets(client, str(account['id']))
   return accounts
 
+def get_account_adgroup_structure(client, customer_id):
+  """Account structre of the form account:adgroups."""
+  builder = AccountAdGroupStructureBuilder(client, customer_id)
+  return builder.build()
+
 
 if __name__ == '__main__':
   googleads_client = GoogleAdsClient.load_from_storage(
@@ -363,4 +410,4 @@ if __name__ == '__main__':
       get_assets_from_adgroup(googleads_client, 8791307154, 79845268520),
       indent=2))
 
-  print(json.dumps(get_accounts_assets(googleads_client,'9489090398')))
+  print(json.dumps(get_accounts_assets(googleads_client, '9489090398')))
