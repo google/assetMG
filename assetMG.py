@@ -19,7 +19,7 @@ from googleads import adwords
 from google.ads.google_ads.client import GoogleAdsClient
 import app.backend.setup as setup
 from app.backend.mutate import mutate_ad
-from app.backend.structure import create_mcc_struct, get_accounts, get_all_accounts_assets, get_accounts_assets
+from app.backend import structure
 from app.backend.upload_asset import upload
 from app.backend.service import Service_Class
 from app.backend.yt_upload import initialize_upload
@@ -38,19 +38,25 @@ import shutil
 from werkzeug.utils import secure_filename
 import webview
 import string
+from PIL import Image
 
 
-from flask_cors import CORS
-server = Flask(__name__)
-CORS(server)
+# from flask_cors import CORS
+# server = Flask(__name__)
+# CORS(server)
 
-# server = Flask(__name__, static_url_path='',
-#             static_folder='app/asset_browser/frontend/dist/frontend',
-#             template_folder='app/asset_browser/frontend/dist/frontend')
+server = Flask(__name__, static_url_path='',
+            static_folder='app/asset_browser/frontend/dist/frontend',
+            template_folder='app/asset_browser/frontend/dist/frontend')
 
 
 UPLOAD_FOLDER = Path('app/uploads')
 ALLOWED_EXTENSIONS = {'txt','png', 'jpg', 'jpeg', 'zip','gif'}
+ALLOWED_DIMENSIONS = [(200,200), (240,400), (250,250), (250,360),
+                      (300,250), (336,280), (580,400), (120,600),
+                      (160,600), (300,600), (300,1050), (468,60),
+                      (728,90), (930,180), (970,90), (970,250),
+                      (980,120), (300,50), (320,50), (320,100)]
 
 server.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -85,7 +91,7 @@ if config_file['config_valid']:
   googleads_client = GoogleAdsClient.load_from_storage(
     CONFIG_PATH / 'google-ads.yaml')
   try:
-    create_mcc_struct(
+    structure.create_mcc_struct(
         googleads_client, account_struct_json_path, asset_to_ag_json_path)
   except Exception as e:
     logging.exception('error when trying to create struct')
@@ -234,7 +240,7 @@ def upload_to_yt():
 @server.route('/create-struct/', methods=['GET'])
 def create_struct():
   try:
-    create_mcc_struct(
+    structure.create_mcc_struct(
         googleads_client, account_struct_json_path, asset_to_ag_json_path)
     status=200
   except Exception as e:
@@ -248,22 +254,36 @@ def create_struct():
 def get_all_accounts():
   """gets all accounts under the configured MCC. name and id"""
   try:
-    accounts = get_accounts(googleads_client)
+    accounts = structure.get_accounts(googleads_client)
     return _build_response(msg=json.dumps(accounts), status=200)
   except:
     return _build_response(msg='Couldn\'t get accoutns', status=500)
 
 
+@server.route('/account-ag-struct', methods=['GET'])
+def get_account_ag_struct():
+  """Get account's adgroups structure."""
+  cid = request.args.get('cid')
+  try:
+    msg = json.dumps(structure.get_account_adgroup_structure(googleads_client,cid))
+    status = 200
+  except Exception as e:
+    logging.exception('could not get adgroup structure for ' + cid)
+    msg = json.dumps('Could not get adgroup structure for' + cid + str(e))
+    status = 500
+
+  return _build_response(msg=msg, status=status)
+
 
 @server.route('/accounts-assets/', methods=['GET'])
-def get_all_accounts_assets():
+def accounts_assets():
   """if cid gets all its assets. else gets all accounts and their assets."""
   cid = request.args.get('cid')
   if cid:
     return get_specific_accounts_assets(cid)
   else:
     return _build_response(
-      json.dumps(get_all_accounts_assets(googleads_client, client), indent=2))
+      json.dumps(structure.get_all_accounts_assets(googleads_client), indent=2))
 
 
 def get_specific_accounts_assets(cid):
@@ -275,7 +295,7 @@ def get_specific_accounts_assets(cid):
 
   else:
     try:
-      res = get_accounts_assets(googleads_client, cid, account_struct_json_path)
+      res = structure.get_accounts_assets(googleads_client, cid)
       return _build_response(msg=json.dumps(res),status=200)
     except Exception as e:
       logging.exception('Failed getting assets for: ' + cid + ' ' + str(e))
@@ -520,18 +540,33 @@ def allowed_file(filename):
   return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
 @server.route('/upload-files/', methods=['POST'])
 def upload_files():
   status=200
+  msg=''
   file = request.files['file']
-  if file and allowed_file(file.filename):
-    filename = secure_filename(file.filename)
-    try:
-      file.save(os.path.join(server.config['UPLOAD_FOLDER'], filename))
-    except Exception as e:
-      logging.error(str(e))
+  if file and file.filename:
+    if allowed_file(file.filename):
+      filename = secure_filename(file.filename)
+      file_extension = filename.rsplit('.', 1)[1].lower()
+      try:
+        file_path = os.path.join(server.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
+        if file_extension != 'zip':
+          img_w, img_h = Image.open(file_path).size
+          if (img_w, img_h) not in ALLOWED_DIMENSIONS:
+            status = 500
+            msg='Image is not in valid dimensions'
+            clean_dir()
+      except Exception as e:
+        logging.error(str(e))
+        status=500
+    else:
       status=500
-  return _build_response(status=status)
+      msg='Image not in valid format'
+
+  return _build_response(msg=msg, status=status)
 
 
 @server.route('/clean-dir/')
@@ -539,7 +574,7 @@ def clean_dir():
   status=200
   folder = UPLOAD_FOLDER
   for filename in os.listdir(folder):
-    if filename == '.gitkeep':
+    if filename.startswith('.'):
       continue
     file_path = os.path.join(folder, filename)
     try:
@@ -550,11 +585,10 @@ def clean_dir():
     except Exception as e:
       logging.error('Failed to delete %s. Reason: %s' % (file_path, e))
 
-  if len(os.listdir(folder)) != 0:
+  if len(os.listdir(folder)) != 1:
     status=500
 
   return _build_response(status=status)
-
 
 
 @server.route('/upload-asset/', methods=['POST'])
@@ -689,5 +723,5 @@ def start_server():
   server.run()
 
 if __name__ == '__main__':
-  # threading.Timer(1, open_browser).start()
+  threading.Timer(1, open_browser).start()
   server.run()
