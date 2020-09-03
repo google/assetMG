@@ -37,3 +37,9 @@
     readonly="true"
     [value]="selectedFileName">
 </form>
+<div *ngIf="invalidDimensionsMsg?.length"
+class="margin-bottom-thin button-update-msg"
+[ngClass]="{'warning-msg': isError}">
+  <i class="fas fa-info-circle"></i>
+  {{this.invalidDimensionsMsg}}<span>&nbsp;</span>
+</div>

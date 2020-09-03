@@ -82,6 +82,20 @@ export class UploadAssetService {
     return this.http.post(endpoint, asset, { observe: 'response' });
   }
 
+  validateDimensions(
+    width: number,
+    height: number
+  ){
+    let image = {
+      width: width,
+      height: height
+    }
+    const endpoint = this.API_SERVER + '/validate-dimensions/'
+
+    return this.http.post(endpoint, image,{ observe: 'response'})
+  }
+
+
   clearUploads() {
     const endpoint = this.API_SERVER + '/clean-dir/';
     let subscritpion = this.http.get(endpoint).subscribe((_) => {

@@ -4,3 +4,4 @@ flask
 google-api-python-client
 pywebview
 pylint
+Pillow

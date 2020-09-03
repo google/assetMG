@@ -35,3 +35,7 @@ export interface UploadResponse {
   unsuccessfull?: number[];
   msg?: string;
 }
+
+export interface ValidationResponse{
+  valid: boolean
+}

@@ -38,6 +38,7 @@ import shutil
 from werkzeug.utils import secure_filename
 import webview
 import string
+from PIL import Image
 
 
 # from flask_cors import CORS
@@ -51,6 +52,11 @@ server = Flask(__name__, static_url_path='',
 
 UPLOAD_FOLDER = Path('app/uploads')
 ALLOWED_EXTENSIONS = {'txt','png', 'jpg', 'jpeg', 'zip','gif'}
+ALLOWED_DIMENSIONS = [(200,200), (240,400), (250,250), (250,360),
+                      (300,250), (336,280), (580,400), (120,600),
+                      (160,600), (300,600), (300,1050), (468,60),
+                      (728,90), (930,180), (970,90), (970,250),
+                      (980,120), (300,50), (320,50), (320,100)]
 
 server.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -534,18 +540,38 @@ def allowed_file(filename):
   return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
 @server.route('/upload-files/', methods=['POST'])
 def upload_files():
   status=200
+  msg=''
   file = request.files['file']
-  if file and allowed_file(file.filename):
-    filename = secure_filename(file.filename)
-    try:
-      file.save(os.path.join(server.config['UPLOAD_FOLDER'], filename))
-    except Exception as e:
-      logging.error(str(e))
+  if file and file.filename:
+    if allowed_file(file.filename):
+      filename = secure_filename(file.filename)
+      file_extension = filename.rsplit('.', 1)[1].lower()
+      try:
+        file_path = os.path.join(server.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
+      except Exception as e:
+        logging.error(str(e))
+        status=500
+    else:
       status=500
-  return _build_response(status=status)
+      msg='Image not in valid format'
+
+  return _build_response(msg=msg, status=status)
+
+
+@server.route('/validate-dimensions/', methods=['POST'])
+def validate_dimensions():
+  data = request.get_json(force=True)
+  height = data['height']
+  width = data['width']
+
+  valid = (width, height) in ALLOWED_DIMENSIONS
+
+  return _build_response(msg=json.dumps({"valid": valid}))
 
 
 @server.route('/clean-dir/')
@@ -564,11 +590,10 @@ def clean_dir():
     except Exception as e:
       logging.error('Failed to delete %s. Reason: %s' % (file_path, e))
 
-  if len(os.listdir(folder)) != 0:
+  if len(os.listdir(folder)) != 1:
     status=500
 
   return _build_response(status=status)
-
 
 
 @server.route('/upload-asset/', methods=['POST'])
