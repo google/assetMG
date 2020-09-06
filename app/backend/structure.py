@@ -390,8 +390,12 @@ def get_accounts_assets(client, customer_id):
 
 def get_all_accounts_assets(client):
   accounts = get_accounts(client)
-  for account in accounts:
-    account['assets'] = get_accounts_assets(client, str(account['id']))
+  with futures.ThreadPoolExecutor() as executor:
+    account_assets = executor.map(
+        lambda account: get_accounts_assets(client, str(account['id'])),
+        accounts)
+  for account, assets in zip(accounts, account_assets):
+    account['assets'] = assets
   return accounts
 
 def get_account_adgroup_structure(client, customer_id):
@@ -411,4 +415,6 @@ if __name__ == '__main__':
       get_assets_from_adgroup(googleads_client, 8791307154, 79845268520),
       indent=2))
 
-  print(json.dumps(get_accounts_assets(googleads_client, '9489090398')))
+  print(json.dumps(get_accounts_assets(googleads_client, '9489090398'),
+                   indent=2))
+  print(json.dumps(get_all_accounts_assets(googleads_client), indent=2))
