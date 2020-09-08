@@ -162,12 +162,19 @@ export class AssetService {
             this.getActiveAssetAdGroups(changedAsset.id)
           );
           // Updated the caller that the API is done
+          let msg = '';
+          if (response.status === STATUS.PARTIAL_SUCCESS) {
+            for (let update of <any[]>response.body) {
+              for (let failure of <any[]>update.failures) {
+                msg += 'Update failed for the ad group ' + failure.adgroup
+                    + ': ' + failure.error_message
+              }
+            }
+          }
+            
           this._updateFinished$.next({
             status_code: response.status,
-            msg:
-              response.status === STATUS.SUCCESS
-                ? ''
-                : 'Update failed for some ad-groups',
+            msg: msg,
             assets: updatedAssets,
           });
           subscritpion.unsubscribe();

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-error_to_massage = {
+error_to_message = {
      'CollectionSizeError.TOO_MANY' : 'Could not assign asset. This ad has reached the max amount of this asset type',
      'CollectionSizeError.TOO_FEW' : 'Could not remove asset. This ad has reached the minimum amount of this asset type',
      'YoutubeAdVideoRegistrationError{super=YoutubeAdVideoRegistrationError.VIDEO_NOT_ACCESSIBLE' : 'YouTube video link is not accessible',
@@ -29,8 +29,7 @@ def error_mapping(err):
   if error:
     error = error[1:-1]
 
-  err_msg = error_to_massage.get(error)
+  err_msg = error_to_message.get(error)
   if err_msg:
     return err_msg
-  else:
-    return general_error_msg
+  return general_error_msg
