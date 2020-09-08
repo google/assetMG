@@ -523,8 +523,13 @@ def _text_asset_mutate(data, asset_id, asset_struct):
   return _build_response(
     msg=json.dumps(
       [{
+<<<<<<< HEAD
         'asset': asset_handlers,
         'failures': failed_assign
+=======
+        'asset':asset_handlers,
+        'failures':failed_assign
+>>>>>>> bcf595ec (Showing error messages for complete and partial failures in updates)
       }]
     ),
     status=status)
