@@ -553,12 +553,6 @@ def upload_files():
       try:
         file_path = os.path.join(server.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
-        if file_extension != 'zip':
-          img_w, img_h = Image.open(file_path).size
-          if (img_w, img_h) not in ALLOWED_DIMENSIONS:
-            status = 500
-            msg='Image is not in valid dimensions'
-            clean_dir()
       except Exception as e:
         logging.error(str(e))
         status=500
@@ -569,12 +563,23 @@ def upload_files():
   return _build_response(msg=msg, status=status)
 
 
+@server.route('/validate-dimensions/', methods=['POST'])
+def validate_dimensions():
+  data = request.get_json(force=True)
+  height = data['height']
+  width = data['width']
+
+  valid = (width, height) in ALLOWED_DIMENSIONS
+
+  return _build_response(msg=json.dumps({"valid": valid}))
+
+
 @server.route('/clean-dir/')
 def clean_dir():
   status=200
   folder = UPLOAD_FOLDER
   for filename in os.listdir(folder):
-    if filename.startswith('.'):
+    if filename == '.gitkeep':
       continue
     file_path = os.path.join(folder, filename)
     try:
