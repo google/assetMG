@@ -171,7 +171,6 @@ export class AssetService {
               }
             }
           }
-
           this._updateFinished$.next({
             status_code: response.status,
             msg: msg,
