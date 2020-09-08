@@ -391,7 +391,12 @@ def mutate():
       mutation = mutate_ad(client, account, adgroup, asset, action)
     except Exception as e:
       failed_assign.append(
-        {'adgroup':adgroup,'error_message':error_mapping(str(e)),'err':str(e)})
+          {
+              'adgroup': adgroup,
+              'error_message': error_mapping(str(e)),
+              'err': str(e)
+          }
+      )
       mutation = 'failed'
       logging.error('could not execute mutation on adgroup: ' + str(adgroup))
 
@@ -488,7 +493,12 @@ def _text_asset_mutate(data, asset_id, asset_struct):
 
     except Exception as e:
       failed_assign.append(
-        {'adgroup':adgroup,'error_message':error_mapping(str(e)),'err':str(e)})
+          {
+              'adgroup': adgroup,
+              'error_message': error_mapping(str(e)),
+              'err': str(e)
+          }
+      )
       mutation = 'failed'
       logging.error(
         'could not execute mutation on adgroup: ' + str(adgroup) + str(e))
@@ -521,18 +531,13 @@ def _text_asset_mutate(data, asset_id, asset_struct):
     'mutate response: msg={} , status={}'.format(str(asset_handlers),index))
   # switch to this return and tell Mariam the changed return type.
   return _build_response(
-    msg=json.dumps(
-      [{
-<<<<<<< HEAD
-        'asset': asset_handlers,
-        'failures': failed_assign
-=======
-        'asset':asset_handlers,
-        'failures':failed_assign
->>>>>>> bcf595ec (Showing error messages for complete and partial failures in updates)
-      }]
-    ),
-    status=status)
+      msg=json.dumps(
+          [{
+              'asset': asset_handlers,
+              'failures': failed_assign
+          }]
+      ),
+      status=status)
   # return _build_response(msg=json.dumps(asset_handlers), status=status)
 
 
