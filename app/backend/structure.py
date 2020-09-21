@@ -402,14 +402,13 @@ def get_accounts(client):
 
 def get_assets_from_adgroup(client, customer_id, ad_group_id):
   builder = AdGroupAssetsStructureBuilder(client, customer_id)
-  return sorted(builder.build(),
-                  key=lambda item: item['stats']['clicks'], reverse=True)
+  return builder.build(ad_group_id)
 
 
 def get_accounts_assets(client, customer_id):
   builder = AccountAssetsBuilder(client, customer_id)
-  return builder.build()
-
+  return sorted(builder.build(),
+                key = lambda item: item['stats']['clicks'], reverse=True)
 
 def get_all_accounts_assets(client):
   accounts = get_accounts(client)
@@ -441,4 +440,5 @@ if __name__ == '__main__':
   print(json.dumps(get_accounts_assets(googleads_client, '9489090398'),
                    indent=2))
   print(json.dumps(get_all_accounts_assets(googleads_client), indent=2))
+
   print(get_accounts(googleads_client))
