@@ -185,14 +185,16 @@ export class AssetService {
           // Updated the caller that the API is done
           let msg = '';
           if (response.status === STATUS.PARTIAL_SUCCESS) {
-            let failures = (<any[]>response.body)[0].failures || (<any>response.body).failures;
-            if(failures) {
+            let failures =
+              (<any[]>response.body)[0].failures ||
+              (<any>response.body).failures;
+            if (failures) {
               for (let failure of failures) {
                 msg += `Update failed for the ad group ${failure.adgroup}:
                     ${failure.error_message}<br/>`;
               }
             } else {
-              msg = 'Update failed for some ad groups.'
+              msg = 'Update failed for some ad groups.';
             }
           }
           this._updateFinished$.next({

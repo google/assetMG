@@ -256,12 +256,18 @@ export class AccountStructComponent implements OnChanges {
 
   sortBySelection() {
     if (this.showAdGroupColOnly()) {
-      this.sort.sort(<MatSortable>{ id: 'adgroup-sel', start: 'desc' });
+      this.dataSource.sort.sort(<MatSortable>{
+        id: 'adgroup-sel',
+        start: 'desc',
+      });
     } else {
-      this.sort.sort(<MatSortable>{ id: 'desc-sel', start: 'desc' });
-      this.sort.sort(<MatSortable>{ id: 'headline-sel', start: 'desc' });
+      this.dataSource.sort.sort(<MatSortable>{ id: 'desc-sel', start: 'desc' });
+      this.dataSource.sort.sort(<MatSortable>{
+        id: 'headline-sel',
+        start: 'desc',
+      });
     }
-    this.dataSource.sort = this.sort;
+
     this.dataSource.sort.sortChange.emit();
   }
 
