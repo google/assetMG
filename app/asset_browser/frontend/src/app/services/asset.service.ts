@@ -162,10 +162,20 @@ export class AssetService {
           let updatedAssets: Asset[] = [];
           for (let update of <any[]>response.body) {
             updatedAssets.push(update.asset);
-            if (!update.id) {
-              this._assetsToAdGroups.push(update.asset);
+            if (update.index) {
+              // This is a non-text asset
+              this._assetsToAdGroups[update.index] = update.asset;
+            } else if (update.asset?.length) {
+              // Text asset, so index can be {found in the assets array (headlines and descriptions)
+              for (let txt_asset of update.asset) {
+                if (txt_asset.index) {
+                  this._assetsToAdGroups[txt_asset.index] = txt_asset.asset;
+                } else {
+                  this._assetsToAdGroups.push(txt_asset.asset);
+                }
+              }
             } else {
-              this._assetsToAdGroups[update.id] = update.asset;
+              this._assetsToAdGroups.push(update.asset);
             }
           }
           // Update the new selection
@@ -203,7 +213,7 @@ export class AssetService {
           } else {
             errorMessage = `Error Code: ${error.status}<br/>Message: ${error.message}`;
           }
-          
+
           this._updateFinished$.next({
             status_code: STATUS.FAIL,
             msg: errorMessage,

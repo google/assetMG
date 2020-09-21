@@ -15,9 +15,18 @@
 """Module for fetching account structure using Google Ads reporting API."""
 
 import json
+import logging
+import time
 from concurrent import futures
 from google.ads.google_ads.client import GoogleAdsClient
 
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='[%(asctime)s - %(levelname)s] %(message).5000s')
+logging.getLogger('google.ads.google_ads.client').setLevel(logging.INFO)
+
+
+_MAX_RETRIES = 3
 
 class RowsIterator(object):
   """Streamed report results iterator."""
@@ -356,7 +365,20 @@ class MCCStructureBuilder(StructureBuilder):
 
 def create_mcc_struct(client, mcc_struct_file, assets_file):
   builder = MCCStructureBuilder(client)
-  structure = builder.build()
+  for _ in range(_MAX_RETRIES):
+    try:
+      structure = builder.build()
+    except Exception as e:
+      logging.exception(e)
+      time.sleep(10)
+      continue
+    else:
+      break
+
+  else:
+    logging.error('Could not create structure')
+    raise ConnectionError('Can not connect to gRpc')
+
   with open(mcc_struct_file, 'w') as f:
     json.dump(structure, f, indent=2)
   assets = {}
