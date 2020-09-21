@@ -7,17 +7,36 @@
 <mat-divider></mat-divider>
 <div class="asset-details">
   <div class="asset-info">
-    <app-asset
-      [asset] = "asset">
-    </app-asset>
-    <!-- <p>{{asset?.id}}</p>
-    <p>{{asset?.name}}</p> -->
+    <app-asset [asset]="asset"> </app-asset>
+    <p>
+      <span class="primary-color info-header">{{ asset?.name }}</span>
+      <span [ngSwitch]="asset?.type">
+        <span class="img-details" *ngSwitchCase="assetType.IMG">
+          <span>
+            Dimensions: {{ asset?.image_width }} x {{ asset?.image_height }}
+          </span>
+          <span>Size: {{ asset?.file_size }}</span>
+        </span>
+        <span class="video-details" *ngSwitchCase="assetType.VIDEO">
+          <!-- <span>Video id: {{ asset?.video_id }}</span> -->
+          <span>
+            <a href="{{ asset?.link }}" target="_blank">URL</a>
+          </span>
+        </span>
+      </span>
+      <span class="primary-color info-header">Stats</span>
+      <span class="asset-stats">
+        <span>Clicks: {{ asset?.stats?.clicks }}</span>
+        <span>Impressions: {{ asset?.stats?.impressions }}</span>
+        <span>Cost: {{ asset?.stats?.cost }}</span>
+        <span>All conversions: {{ asset?.stats?.all_conversions }}</span>
+      </span>
+    </p>
   </div>
   <app-account-struct
     #accountAdGroups
     [account]="account">
   </app-account-struct>
-  {{this.asset?.type}}
 </div>
 <app-progress-btn
   btnLabel='Update'
@@ -26,4 +45,3 @@
   [inProgress]="updateInProgress"
   (btnClick)="updateAsset()">
 </app-progress-btn>
-

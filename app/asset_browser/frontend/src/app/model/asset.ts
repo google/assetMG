@@ -44,6 +44,12 @@ interface AssetBase {
   type: string;
   name?: string;
   adgroups?: number[];
+  stats?: {
+    clicks: number;
+    all_conversions: number;
+    impressions: number;
+    cost: number;
+  };
 }
 
 export interface ImgAsset extends AssetBase {
