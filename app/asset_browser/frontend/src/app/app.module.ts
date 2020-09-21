@@ -22,7 +22,6 @@ import { AppComponent } from './app.component';
 import { AssetGalleryComponent } from './asset-gallery/asset-gallery.component';
 import { AssetDetailsComponent } from './asset-details/asset-details.component';
 import { AssetComponent } from './asset/asset.component';
-import { AccountCampaignsComponent } from './account-campaigns/account-campaigns.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { SearchBarComponent } from './search-bar/search-bar.component';
 import { SettingsComponent } from './settings/settings.component';
@@ -44,7 +43,6 @@ import { AssetGridComponent } from './asset-grid/asset-grid.component';
     AssetGalleryComponent,
     AssetDetailsComponent,
     AssetComponent,
-    AccountCampaignsComponent,
     ToolbarComponent,
     SearchBarComponent,
     SettingsComponent,
