@@ -155,7 +155,7 @@ def _assign_new_asset_to_adgroups(client, googleads_client, account, asset,
     except Exception as e:
       unsuccesseful_assign.append({
           'adgroup': ag,
-          'error_massage': error_mapping(str(e)), 'err': str(e)
+          'error_message': error_mapping(str(e)), 'err': str(e)
       })
   # assignment status:
   #   0 - succesfull,

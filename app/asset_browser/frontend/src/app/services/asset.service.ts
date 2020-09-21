@@ -175,11 +175,14 @@ export class AssetService {
           // Updated the caller that the API is done
           let msg = '';
           if (response.status === STATUS.PARTIAL_SUCCESS) {
-            for (let update of <any[]>response.body) {
-              for (let failure of <any[]>update.failures) {
-                msg += 'Update failed for the ad group ' + failure.adgroup
-                    + ': ' + failure.error_message
+            let failures = (<any[]>response.body)[0].failures || (<any>response.body).failures;
+            if(failures) {
+              for (let failure of failures) {
+                msg += `Update failed for the ad group ${failure.adgroup}:
+                    ${failure.error_message}<br/>`;
               }
+            } else {
+              msg = 'Update failed for some ad groups.'
             }
           }
           this._updateFinished$.next({
@@ -191,9 +194,19 @@ export class AssetService {
         },
         (error) => {
           // API call failed - Returned status 500
+          let errorMessage = '';
+          let failures = error.error[0].failures || error.error.failures;
+          if (failures) {
+            for (let failure of failures) {
+              errorMessage += `Update failed for the ad group ${failure.adgroup}: ${failure.error_message}<br/>`;
+            }
+          } else {
+            errorMessage = `Error Code: ${error.status}<br/>Message: ${error.message}`;
+          }
+          
           this._updateFinished$.next({
             status_code: STATUS.FAIL,
-            msg: 'Update failed',
+            msg: errorMessage,
             assets: [],
           });
           subscritpion.unsubscribe();

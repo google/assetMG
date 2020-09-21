@@ -225,7 +225,10 @@ export class UploadAssetsComponent implements OnInit {
             subscription.unsubscribe();
           },
           (error) => {
-            this.processUploadResponse(STATUS.FAIL);
+            this.processUploadResponse(
+              STATUS.FAIL, 
+              this.buildErrorResponse(error)
+            );
           }
         );
     } else {
@@ -246,7 +249,10 @@ export class UploadAssetsComponent implements OnInit {
             subscription.unsubscribe();
           },
           (error) => {
-            this.processUploadResponse(STATUS.FAIL);
+            this.processUploadResponse(
+              STATUS.FAIL, 
+              this.buildErrorResponse(error)
+            );
           }
         );
     }
@@ -257,7 +263,7 @@ export class UploadAssetsComponent implements OnInit {
     this.uploadInProgress = false;
     if (status != STATUS.SUCCESS) {
       this.isErrorMessage = true;
-      this.uploadMessage = 'Upload Failed';
+      this.uploadMessage = response.msg;
     } else if (response?.asset) {
       // Notify the asset service of newly added asset
       if (response.asset) {
@@ -271,5 +277,21 @@ export class UploadAssetsComponent implements OnInit {
       }
       this.uploadDialogRef.close({ successful: status == STATUS.SUCCESS });
     }
+  }
+
+  buildErrorResponse(error) {
+    let response = {};
+    if (error.error) {
+      let msg = '';
+      msg += `${error.error.msg}<br/>`;
+      for (let failure of error.error.failures) {
+        msg += `Update failed for the ad group ${failure.adgroup}: 
+          ${failure.error_message}<br/>`;
+      }
+      response['msg'] = msg;
+    } else {
+      response['msg'] = 'Upload Failed';
+    }
+    return response;
   }
 }

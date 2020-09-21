@@ -11,7 +11,7 @@
   <div *ngIf="btnUpdateMsg?.length"
     class="margin-bottom-thin button-update-msg"
     [ngClass]="{'warning-msg': isError}">
-    <i class="fas fa-info-circle"></i>
-    {{this.btnUpdateMsg}}<span>&nbsp;</span>
+    <i class="fas fa-info-circle"></i>&nbsp;
+    <span [innerHTML]="btnUpdateMsg"></span>
   </div>
 </div>

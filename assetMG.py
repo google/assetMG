@@ -650,9 +650,9 @@ def upload_asset():
     # Asset not uploaded
     return _build_response(msg=json.dumps(
       {'msg': 'Could not upload asset',
-       'error_massage': error_mapping(str(e)),
-       'err': str(e)})
-      , status=400)
+       'error_message': error_mapping(str(e)),
+       'err': str(e)}), 
+       status=400)
 
   Service_Class.reset_cid(client)
 
@@ -673,7 +673,7 @@ def upload_asset():
   if result['status'] == 3:
     return _build_response(msg=json.dumps(
       {'msg':'Text asset could not be assigned to any adgroup',
-      'failures':result['unsuccessfull']}))
+      'failures':result['unsuccessfull']}), status=500)
 
   # asset uploaded but didn't assign to any ad groups
   elif result['status'] == 2:

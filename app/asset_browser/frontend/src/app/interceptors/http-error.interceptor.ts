@@ -33,15 +33,13 @@ export class HttpErrorInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
-        let errorMessage = '';
         if (error.error instanceof ErrorEvent) {
           // client-side error
-          errorMessage = `Client Side Error: ${error.error.message}`;
-        } else {
-          // server-side error
-          errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+          let errorMessage = `Client Side Error: ${error.error.message}`;
+          return throwError(errorMessage);
         }
-        return throwError(errorMessage);
+        // server-side error
+        return throwError(error);
       })
     );
   }
