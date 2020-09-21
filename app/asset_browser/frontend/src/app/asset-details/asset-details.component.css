@@ -23,9 +23,31 @@ h1 {
   padding-bottom: 0px;
 }
 
-.asset-info p{
-  float: left;
+.asset-info p {
+  display: grid;
+  width: 100%x;
   padding: 5px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+}
+
+.asset-info p span {
+  text-align: left;
+}
+
+.img-details,
+.video-details,
+.asset-stats {
+  display: grid;
+}
+
+.info-header {
+  /* text-align: center !important; */
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-weight: bold;
 }
 
 .mat-card-image:first-child {

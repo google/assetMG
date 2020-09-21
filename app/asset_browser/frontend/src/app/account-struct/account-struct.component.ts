@@ -373,7 +373,6 @@ export class AccountStructComponent implements OnChanges {
     let agIds = [];
     rows.forEach((row) => agIds.push(row.id));
 
-    console.log('AGIds: ', agIds);
     return agIds;
   }
 }

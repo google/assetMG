@@ -53,7 +53,7 @@ class StructureBuilder(object):
         'SEARCH_MOBILE_APP',
         'DISPLAY_MOBILE_APP'
       )
-      AND 
+      AND
         campaign.status NOT IN('REMOVED')
   '''
   _AD_GROUP_FILTER = 'ad_group.status NOT IN ("REMOVED")'
@@ -137,12 +137,12 @@ class AccountAssetsBuilder(StructureBuilder):
 
   def build(self):
     rows = self._get_rows('''
-        SELECT 
+        SELECT
           asset.name,
           asset.id,
-          asset.image_asset.file_size, 
-          asset.image_asset.full_size.url, 
-          asset.text_asset.text, 
+          asset.image_asset.file_size,
+          asset.image_asset.full_size.url,
+          asset.text_asset.text,
           asset.image_asset.full_size.height_pixels,
           asset.image_asset.full_size.width_pixels,
           asset.youtube_video_asset.youtube_video_id,
@@ -375,12 +375,13 @@ def create_mcc_struct(client, mcc_struct_file, assets_file):
 
 def get_accounts(client):
   builder = MCCStructureBuilder(client)
-  return builder.get_accounts()
+  return sorted(builder.get_accounts(), key=lambda item: item['name'])
 
 
 def get_assets_from_adgroup(client, customer_id, ad_group_id):
   builder = AdGroupAssetsStructureBuilder(client, customer_id)
-  return builder.build(ad_group_id)
+  return sorted(builder.build(),
+                  key=lambda item: item['stats']['clicks'], reverse=True)
 
 
 def get_accounts_assets(client, customer_id):
@@ -418,3 +419,4 @@ if __name__ == '__main__':
   print(json.dumps(get_accounts_assets(googleads_client, '9489090398'),
                    indent=2))
   print(json.dumps(get_all_accounts_assets(googleads_client), indent=2))
+  print(get_accounts(googleads_client))
