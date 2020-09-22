@@ -53,6 +53,11 @@ mat-card-content p {
   font-size: larger;
 }
 
+.fit-more-text {
+  top: 0% !important;
+  font-size: medium !important;
+}
+
 mat-card-content img {
   position: relative;
   /* width: auto; */

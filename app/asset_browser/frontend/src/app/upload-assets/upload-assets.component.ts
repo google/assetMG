@@ -226,7 +226,7 @@ export class UploadAssetsComponent implements OnInit {
           },
           (error) => {
             this.processUploadResponse(
-              STATUS.FAIL, 
+              STATUS.FAIL,
               this.buildErrorResponse(error)
             );
           }
@@ -250,7 +250,7 @@ export class UploadAssetsComponent implements OnInit {
           },
           (error) => {
             this.processUploadResponse(
-              STATUS.FAIL, 
+              STATUS.FAIL,
               this.buildErrorResponse(error)
             );
           }
@@ -284,8 +284,9 @@ export class UploadAssetsComponent implements OnInit {
     if (error.error) {
       let msg = '';
       msg += `${error.error.msg}<br/>`;
+      console.log('Failure:', error);
       for (let failure of error.error.failures) {
-        msg += `Update failed for the ad group ${failure.adgroup}: 
+        msg += `Update failed for the ad group ${failure.adgroup}:
           ${failure.error_message}<br/>`;
       }
       response['msg'] = msg;

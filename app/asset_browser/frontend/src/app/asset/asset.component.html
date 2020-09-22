@@ -26,7 +26,9 @@
             (click)="openDetails()">
     <mat-card-subtitle><i class="fas fa-font"></i> Text </mat-card-subtitle>
     <mat-card-content>
-        <p>{{asset.asset_text}}</p>
+        <p [ngClass]="{'fit-more-text': asset.asset_text.length >= 60 }">
+          {{asset.asset_text}}
+        </p>
     </mat-card-content>
   </mat-card>
   <mat-card *ngSwitchCase="assetType.HTML"
