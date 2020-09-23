@@ -76,9 +76,9 @@ export class AppSetupComponent implements OnInit {
           transformAction.REMOVE_DASHES
         )
       ),
-      client_id: this.credentials.form.get('clientIDCtrl').value,
-      client_secret: this.credentials.form.get('clientSecretCtrl').value,
-      developer_token: this.credentials.form.get('devTokenCtrl').value,
+      client_id: this.credentials.form.get('clientIDCtrl').value.trim(),
+      client_secret: this.credentials.form.get('clientSecretCtrl').value.trim(),
+      developer_token: this.credentials.form.get('devTokenCtrl').value.trim(),
     };
     if (event.selectedIndex === 1) {
       // Update the config file with the credentials and get the URL
