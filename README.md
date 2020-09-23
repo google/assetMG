@@ -23,7 +23,8 @@ Easily add, change or remove creative assets across different ad groups and camp
   [Apply for access to the AdWords API](https://developers.google.com/adwords/api/docs/guides/signup)).
 - OAuth 2 credentials (refer to
   [Generate OAuth2 credentials](https://developers.google.com/adwords/api/docs/guides/authentication#create_a_client_id_and_client_secret)).
-  
+- [Enable Google ads API](https://developers.google.com/google-ads/api/docs/first-call/oauth-cloud-project#enable_the_in_your_project)
+
 
 ## Setup
 
