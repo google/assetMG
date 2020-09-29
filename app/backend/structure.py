@@ -76,6 +76,8 @@ class StructureBuilder(object):
         'field_type': client.get_type('AssetFieldTypeEnum').AssetFieldType,
         'adgroup_status': client.get_type('AdGroupStatusEnum').AdGroupStatus,
         'campaign_status': client.get_type('CampaignStatusEnum').CampaignStatus,
+        'performance_label': client.get_type(
+          'AssetPerformanceLabelEnum').AssetPerformanceLabel
     }
 
 
@@ -86,6 +88,8 @@ class StructureBuilder(object):
 
   def _build_asset(self, row):
     asset_type = self._enums['type'].Name(row.asset.type)
+    perf_label = self._enums['performance_label'].Name(
+      row.ad_group_ad_asset_view.performance_label)
     asset = {
         'id': row.asset.id.value,
         'name': row.asset.name.value,
@@ -95,7 +99,8 @@ class StructureBuilder(object):
             'all_conversions': row.metrics.all_conversions.value,
             'impressions': row.metrics.impressions.value,
             'cost': row.metrics.cost_micros.value / 1000000
-        }
+        },
+        'performance': perf_label
     }
     if asset_type == 'IMAGE':
       asset['image_url'] = row.asset.image_asset.full_size.url.value
@@ -266,6 +271,7 @@ class AccountStructureBuilder(StructureBuilder):
           asset.image_asset.full_size.height_pixels,
           asset.image_asset.full_size.width_pixels,
           ad_group_ad_asset_view.field_type,
+          ad_group_ad_asset_view.performance_label,
           asset.text_asset.text,
           asset.youtube_video_asset.youtube_video_id,
           metrics.all_conversions,
@@ -387,10 +393,25 @@ def create_mcc_struct(client, mcc_struct_file, assets_file):
       for ad_group in campaign['adgroups']:
         for asset in ad_group['assets']:
           try:
-            assets[asset['id']]['adgroups'].append(ad_group['id'])
+            performance_type = 'nontext'
+            if asset['type'] == 'TEXT':
+              performance_type = asset['text_type']
+            assets[asset['id']]['adgroups'].append(
+              {
+                'id': ad_group['id'],
+                'performance': asset['performance'],
+                'performance_type': performance_type
+              }
+            )
           except KeyError:
             assets[asset['id']] = asset
-            assets[asset['id']]['adgroups'] = [ad_group['id']]
+            assets[asset['id']]['adgroups'] = [
+              {
+                'id': ad_group['id'],
+                'performance': asset['performance'],
+                'performance_type': performance_type
+              }
+            ]
   with open(assets_file, 'w') as f:
     json.dump(list(assets.values()), f, indent=2)
 

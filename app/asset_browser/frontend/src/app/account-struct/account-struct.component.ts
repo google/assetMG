@@ -48,6 +48,9 @@ export interface AdGroupRow extends AdGroup {
   id: number;
   campaign: string;
   campaign_id: number;
+  performance: string;
+  headlinePerformance: string;
+  descriptionPerformance: string;
 
   /** Every adgroups has to store the edited/disabled state of all three checkmarks  */
   disabled: checkBoxOptions;
@@ -77,13 +80,13 @@ export class AccountStructComponent implements OnChanges {
   filter: string;
 
   displayedColumns$ = new BehaviorSubject<string[]>(null);
-  /** Members that reporesent the table UI
+  /** Members that represent the table UI
    * There are three selectable columns; one for non-text assets
    * 2 for text assets (Headlines and Descriptions)
    * the visibility of the columns depends on the asset type
    */
-  nonTextAssetCols: string[] = ['adgroup-sel', 'adgroup', 'campaign'];
-  textAssetCols: string[] = ['headline-sel', 'desc-sel', 'adgroup', 'campaign'];
+  nonTextAssetCols: string[] = ['adgroup-sel', 'adgroup', 'performance', 'campaign'];
+  textAssetCols: string[] = ['headline-sel', 'headline-performance', 'desc-sel', 'desc-performance', 'adgroup', 'campaign'];
 
   dataSource: MatTableDataSource<AdGroupRow>;
   adgroup_sel = new SelectionModel<AdGroupRow>(true, []);
@@ -202,7 +205,7 @@ export class AccountStructComponent implements OnChanges {
   private createAdGroupRows(): AdGroupRow[] {
     let adgroups = this.account.adgroups;
     // Add any additional fields here
-    adgroups.forEach(function (ag) {
+    adgroups.forEach(ag => {
       (ag as AdGroupRow).isEdited = [false, false, false];
       (ag as AdGroupRow).disabled = [false, false, false];
     });
@@ -240,8 +243,31 @@ export class AccountStructComponent implements OnChanges {
     let selectAdGroups = this._assetToAdgroups?.get(connType);
     if (selectAdGroups) {
       let selectedRows = this._adGroupRows.filter((agRow) =>
-        selectAdGroups.some((id) => agRow.id == id)
+        selectAdGroups.some((adGroup) => agRow.id == adGroup.id)
       );
+
+      this._adGroupRows.map(agRow => {
+        selectAdGroups.filter(ag => ag.id == agRow.id).forEach(adGroup => {
+          switch (adGroup.performance_type) {
+            case 'adgroup': {
+              agRow.performance = adGroup.performance;
+              break;
+            }
+            case 'headlines': {
+              agRow.headlinePerformance = adGroup.performance;
+              break;
+            }
+            case 'descriptions': {
+              agRow.descriptionPerformance = adGroup.performance;
+              break;
+            }
+            default: {
+              agRow.performance = adGroup.performance;
+              break;
+            }
+          }
+        })
+      });
 
       let selArray = this.getSelectionArray(assetConn);
       selArray.select(...selectedRows);

@@ -37,19 +37,28 @@ export enum MutateAction {
   REMOVE = 'REMOVE',
 }
 
-export type AssetAdGroups = Map<AssetConnType, number[]>;
+export type AssetAdGroups = Map<AssetConnType, AssetAdGroup[]>;
+
+interface AssetAdGroup {
+  id: number;
+  performance: string;
+  performance_type: string;
+}
+
+interface AssetStats {
+  clicks: number;
+  all_conversions: number;
+  impressions: number;
+  cost: number;
+}
 
 interface AssetBase {
   id: number;
   type: string;
   name?: string;
-  adgroups?: number[];
-  stats?: {
-    clicks: number;
-    all_conversions: number;
-    impressions: number;
-    cost: number;
-  };
+  adgroups?: AssetAdGroup[];
+  stats?: AssetStats;
+  performance?: string;
 }
 
 export interface ImgAsset extends AssetBase {

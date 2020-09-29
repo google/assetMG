@@ -35,7 +35,6 @@
 
     <!-- Selection column for text assets -->
     <ng-container
-
       matColumnDef="headline-sel">
       <th mat-header-cell *matHeaderCellDef>
         <mat-checkbox class="header-checkmark"
@@ -54,6 +53,11 @@
           [checked]="headline_sel.isSelected(row)">
         </mat-checkbox>
       </td>
+    </ng-container>
+    <!-- Headline Performance Column -->
+    <ng-container *ngIf="isTextAsset" matColumnDef="headline-performance">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Headline Performance </th>
+      <td mat-cell *matCellDef="let row"> {{row.headlinePerformance}} </td>
     </ng-container>
     <ng-container
       matColumnDef="desc-sel">
@@ -75,6 +79,11 @@
         </mat-checkbox>
       </td>
     </ng-container>
+    <!-- Description Performance Column -->
+    <ng-container *ngIf="isTextAsset" matColumnDef="desc-performance">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Description Performance </th>
+      <td mat-cell *matCellDef="let row"> {{row.descriptionPerformance}} </td>
+    </ng-container>
       <!-- Type Column -->
       <!-- <ng-container matColumnDef="type">
         <th mat-header-cell *matHeaderCellDef> Type </th>
@@ -85,6 +94,12 @@
       <ng-container matColumnDef="adgroup">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Ad group </th>
         <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+      </ng-container>
+
+      <!-- Performance Column -->
+      <ng-container *ngIf="!isTextAsset" matColumnDef="performance">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Performance </th>
+        <td mat-cell *matCellDef="let row"> {{row.performance}} </td>
       </ng-container>
 
       <!-- Campaign Column -->
