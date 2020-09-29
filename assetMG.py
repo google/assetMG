@@ -545,10 +545,16 @@ def _asset_ag_update(asset,adgroup,action):
   """remove or add the adgroup to the asset entry"""
 
   if action == 'ADD':
-    asset['adgroups'].append(adgroup)
+    asset['adgroups'].append({
+        "id": adgroup,
+        "performance": "NEEDS UPDATE",
+        "performance_type": "nontext"
+    })
 
   if action == 'REMOVE':
-    asset['adgroups'].remove(adgroup)
+    asset['adgroups'] = [
+        item for item in asset['adgroups'] if item['id'] != adgroup]
+
 
   return asset
 

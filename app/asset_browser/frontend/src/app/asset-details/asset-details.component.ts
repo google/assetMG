@@ -82,7 +82,7 @@ export class AssetDetailsComponent implements OnInit {
     );
 
     this._subscriptions.push(
-      this.dataService.activeAssetAdGroups$.subscribe((adGroups) => {
+      this.dataService.activeAssetAdGroups$.subscribe((_) => {
         this.updateMessage = '';
         this.isErrorMessage = false;
       })

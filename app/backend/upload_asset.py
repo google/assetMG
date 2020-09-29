@@ -151,7 +151,7 @@ def _assign_new_asset_to_adgroups(client, googleads_client, account, asset,
     # mutate_ad returns None if it finishes succesfully
     try:
       mutate.mutate_ad(client, account, ag, asset, 'ADD', text_type)
-      successeful_assign.append(ag)
+      successeful_assign.append({"id": ag})
     except Exception as e:
       unsuccesseful_assign.append({
           'adgroup': ag,
@@ -207,7 +207,7 @@ def _update_asset_struct(asset):
 
 def _extract_text_asset_info(googleads_client, account, thin_asset, adgroup):
   """Retrive text-assets info from an adgroup it was assigned to"""
-  adgroups_assets = get_assets_from_adgroup(googleads_client, account, adgroup)
+  adgroups_assets = get_assets_from_adgroup(googleads_client, account, adgroup["id"])
 
   for asset in adgroups_assets:
     if asset['type'] == 'TEXT':
