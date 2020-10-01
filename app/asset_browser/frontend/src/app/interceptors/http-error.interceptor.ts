@@ -24,9 +24,14 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Injectable } from "@angular/core";
+import {Component} from '@angular/core';
+import { ErrorDialogComponent } from '../error-dialog/error-dialog.component'
+import {MatDialog} from '@angular/material/dialog';
+
 
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor {
+  constructor(public dialog: MatDialog) {}
   intercept(
     request: HttpRequest<any>,
     next: HttpHandler
@@ -38,9 +43,23 @@ export class HttpErrorInterceptor implements HttpInterceptor {
           let errorMessage = `Client Side Error: ${error.error.message}`;
           return throwError(errorMessage);
         }
+        if (error.status === 403){
+          this.openDialog(error.error)
+        }
         // server-side error
         return throwError(error);
       })
     );
+  }
+  openDialog(error_message) {
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      width : '700px',
+      data: {error_message: error_message}
+      }
+    );
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`);
+    });
   }
 }

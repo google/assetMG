@@ -94,7 +94,7 @@ if config_file['config_valid']:
     structure.create_mcc_struct(
         googleads_client, account_struct_json_path, asset_to_ag_json_path)
   except Exception as e:
-    logging.exception('error when trying to create struct')
+    logging.exception('Error when trying to create struct')
     Service_Class.reset_cid(client)
 
 
@@ -239,15 +239,17 @@ def upload_to_yt():
 
 @server.route('/create-struct/', methods=['GET'])
 def create_struct():
+  msg = ''
   try:
     structure.create_mcc_struct(
         googleads_client, account_struct_json_path, asset_to_ag_json_path)
     status=200
   except Exception as e:
-    status=500
-    logging.error(str(e))
-
-  return _build_response(status=status)
+    status=403
+    msg = str(e)
+    logging.exception(e)
+    
+  return _build_response(msg=msg,status=status)
 
 
 @server.route('/accounts/', methods=['GET'])
@@ -256,8 +258,8 @@ def get_all_accounts():
   try:
     accounts = structure.get_accounts(googleads_client)
     return _build_response(msg=json.dumps(accounts), status=200)
-  except:
-    return _build_response(msg='Couldn\'t get accoutns', status=500)
+  except Exception as e:
+    return _build_response(msg=str(e), status=403)
 
 
 @server.route('/account-ag-struct', methods=['GET'])
