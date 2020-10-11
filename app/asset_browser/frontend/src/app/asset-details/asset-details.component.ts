@@ -35,6 +35,8 @@ import {
   AssetConn,
 } from '../account-struct/account-struct.component';
 import { Subscription } from 'rxjs';
+import { SelectionModel } from '@angular/cdk/collections';
+import { setClassMetadata } from '@angular/core/src/r3_symbols';
 
 @Component({
   selector: 'app-asset-details',
@@ -121,11 +123,11 @@ export class AssetDetailsComponent implements OnInit {
   updateAsset() {
     let mutateRecords: MutateRecord[] = [];
     this.accountAdGroups.getUpdatedRows().forEach((row) => {
-      mutateRecords.push(this.createMutateRecord(row));
+      mutateRecords.push(...this.createMutateRecord(row));
     });
 
     // console.log('Updates: ', this.accountAdGroups.getUpdatedRows());
-    // console.log('Mutate: ', mutateRecords);
+    console.log('Mutate: ', mutateRecords);
 
     if (mutateRecords.length) {
       this.updateInProgress = true;
@@ -138,27 +140,42 @@ export class AssetDetailsComponent implements OnInit {
     this.accountAdGroups.resetEditedRows();
   }
 
-  private createMutateRecord(row: AdGroupRow): MutateRecord {
+  private createMutateRecord(row: AdGroupRow): MutateRecord[] {
     // Assume it's a non-text asset unless it is text
+    let selArray: any;
+    let mutateObjs = [];
     let connection = AssetConnType.ADGROUP;
-    let selArray = this.accountAdGroups.adgroup_sel;
 
-    if (this.asset.type == this.assetType.TEXT) {
+    if (this.asset.type != this.assetType.TEXT) {
+      selArray = this.accountAdGroups.adgroup_sel;
+      mutateObjs.push(this.createMutateObj(connection, row, selArray));
+    } else {
       if (row.isEdited[AssetConn.HEADLINE]) {
         connection = AssetConnType.HEADLINE;
         selArray = this.accountAdGroups.headline_sel;
-      } else if (row.isEdited[AssetConn.DESC]) {
+        mutateObjs.push(this.createMutateObj(connection, row, selArray));
+      }
+      if (row.isEdited[AssetConn.DESC]) {
         connection = AssetConnType.DESC;
         selArray = this.accountAdGroups.description_sel;
+        mutateObjs.push(this.createMutateObj(connection, row, selArray));
       }
     }
+    return mutateObjs;
+  }
 
+  /** Helper function to create the mutate Object */
+  private createMutateObj(
+    connection: AssetConnType,
+    row: AdGroupRow,
+    selArray: SelectionModel<AdGroupRow>
+  ) {
     // Check if its added or removed
     let action = selArray.isSelected(row)
       ? MutateAction.ADD
       : MutateAction.REMOVE;
 
-    let assetObj = this.createMutateAssetObj(connection);
+    let assetObj = this.createAssetObj(connection);
     let mutateObj: MutateRecord = {
       account: this._account.id,
       adgroup: row.id,
@@ -168,8 +185,9 @@ export class AssetDetailsComponent implements OnInit {
 
     return mutateObj;
   }
+
   /** Helper function that creates the appropriate asset object */
-  private createMutateAssetObj(connection: AssetConnType) {
+  private createAssetObj(connection: AssetConnType) {
     let assetObj: MutateAsset = {
       id: this._activeAsset.id,
       type: <AssetType>this._activeAsset.type,
