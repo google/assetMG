@@ -54,13 +54,18 @@ $assetmg-app-theme: mat-light-theme($assetmg-app-primary, $assetmg-app-accent, $
   color: mat-color($assetmg-app-warn) !important;
 }
 
-.mat-h1, .mat-headline, .mat-typography h1 {
+.mat-h1, .mat-headline, .mat-typography h1,
+.mat-h2, .mat-headline, .mat-typography h2 {
   background-color: mat-color($assetmg-app-primary);
   color:white;
   font-weight: 500;
+}
+.mat-h1, .mat-headline, .mat-typography h1{
   padding: 12px;
 }
-
+.mat-h2, .mat-headline, .mat-typography h2 {
+  padding: 8px;
+}
 .mat-step-header .mat-step-label.mat-step-label-active {
   color: mat-color($assetmg-app-primary);
 }

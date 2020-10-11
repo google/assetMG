@@ -18,20 +18,21 @@ import {
   HttpInterceptor,
   HttpHandler,
   HttpRequest,
-  HttpResponse,
   HttpErrorResponse,
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Injectable } from "@angular/core";
-import {Component} from '@angular/core';
-import { ErrorDialogComponent } from '../error-dialog/error-dialog.component'
-import {MatDialog} from '@angular/material/dialog';
-
+import { Injectable } from '@angular/core';
+import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { ReloadAppService } from '../services/reload-app.service';
 
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor {
-  constructor(public dialog: MatDialog) {}
+  constructor(
+    public dialog: MatDialog,
+    private reloadAppService: ReloadAppService
+  ) {}
   intercept(
     request: HttpRequest<any>,
     next: HttpHandler
@@ -43,23 +44,27 @@ export class HttpErrorInterceptor implements HttpInterceptor {
           let errorMessage = `Client Side Error: ${error.error.message}`;
           return throwError(errorMessage);
         }
-        if (error.status === 403){
-          this.openDialog(error.error)
+        if (error.status === 403) {
+          this.openErrorDialog(error.error);
         }
         // server-side error
         return throwError(error);
       })
     );
   }
-  openDialog(error_message) {
-    const dialogRef = this.dialog.open(ErrorDialogComponent, {
-      width : '700px',
-      data: {error_message: error_message}
-      }
-    );
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
+  openErrorDialog(errorMessage) {
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      width: '700px',
+      disableClose: true,
+      autoFocus: false,
+      data: { errorMessage: errorMessage },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result.success) {
+        this.reloadAppService.reloadMcc.next(true);
+      }
     });
   }
 }
