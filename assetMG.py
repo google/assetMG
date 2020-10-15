@@ -652,9 +652,10 @@ def upload_asset():
         url=data.get('url'),
         adgroups=data.get('adgroups'))
   except Exception as e:
-    logging.error(str(e))
+    logging.exception(e)
     Service_Class.reset_cid(client)
     # Asset not uploaded
+    print(str(e))
     return _build_response(msg=json.dumps(
       {'msg': 'Could not upload asset',
        'error_message': error_mapping(str(e)),

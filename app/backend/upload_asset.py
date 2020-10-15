@@ -64,8 +64,11 @@ def upload_yt_video_asset(
   asset_service = Service_Class.get_asset_service(client)
 
   url_data = urllib.parse.urlparse(url)
-  query = urllib.parse.parse_qs(url_data.query)
-  video_id = query['v'][0]
+  if url_data.netloc == 'youtu.be':
+    video_id = url_data.path.lstrip('/')
+  else:
+    query = urllib.parse.parse_qs(url_data.query)
+    video_id = query['v'][0]
 
   vid_asset = {
       'xsi_type': 'YouTubeVideoAsset',
