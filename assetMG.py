@@ -38,7 +38,6 @@ import shutil
 from werkzeug.utils import secure_filename
 import webview
 import string
-from PIL import Image
 
 
 # from flask_cors import CORS
@@ -248,7 +247,7 @@ def create_struct():
     status=403
     msg = str(e)
     logging.exception(e)
-    
+
   return _build_response(msg=msg,status=status)
 
 
@@ -653,13 +652,14 @@ def upload_asset():
         url=data.get('url'),
         adgroups=data.get('adgroups'))
   except Exception as e:
-    logging.error(str(e))
+    logging.exception(e)
     Service_Class.reset_cid(client)
     # Asset not uploaded
+    print(str(e))
     return _build_response(msg=json.dumps(
       {'msg': 'Could not upload asset',
        'error_message': error_mapping(str(e)),
-       'err': str(e)}), 
+       'err': str(e)}),
        status=400)
 
   Service_Class.reset_cid(client)

@@ -207,7 +207,7 @@ export class AssetService {
         (error) => {
           // API call failed - Returned status 500
           let errorMessage = '';
-          let failures = error.error[0].failures || error.error.failures;
+          let failures = error.error[0]?.failures || error.error?.failures;
           if (failures) {
             for (let failure of failures) {
               errorMessage += `Update failed for the ad group ${failure.adgroup}: ${failure.error_message}<br/>`;
