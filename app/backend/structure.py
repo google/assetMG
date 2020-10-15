@@ -397,7 +397,9 @@ def create_mcc_struct(client, mcc_struct_file, assets_file):
             performance_type = 'nontext'
             if asset['type'] == 'TEXT':
               performance_type = asset['text_type']
-            assets[asset['id']]['adgroups'].append(
+            key = str(asset['id']) + performance_type
+
+            assets[key]['adgroups'].append(
                 {
                     'id': ad_group['id'],
                     'performance': asset['performance'],
@@ -405,8 +407,8 @@ def create_mcc_struct(client, mcc_struct_file, assets_file):
                 }
             )
           except KeyError:
-            assets[asset['id']] = asset
-            assets[asset['id']]['adgroups'] = [
+            assets[key] = asset
+            assets[key]['adgroups'] = [
                 {
                     'id': ad_group['id'],
                     'performance': asset['performance'],
