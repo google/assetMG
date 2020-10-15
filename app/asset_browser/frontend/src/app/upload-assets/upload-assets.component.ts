@@ -284,10 +284,14 @@ export class UploadAssetsComponent implements OnInit {
     if (error.error) {
       let msg = '';
       msg += `${error.error.msg}<br/>`;
-      console.log('Failure:', error);
-      for (let failure of error.error.failures) {
-        msg += `Update failed for the ad group ${failure.adgroup}:
+      let failures = error.error[0]?.failures || error.error;
+      if (failures.length) {
+        for (let failure of failures) {
+          msg += `Update failed for the ad group ${failure.adgroup}:
           ${failure.error_message}<br/>`;
+        }
+      } else {
+        msg = `${msg}`;
       }
       response['msg'] = msg;
     } else {
