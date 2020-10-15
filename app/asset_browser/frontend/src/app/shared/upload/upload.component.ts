@@ -23,7 +23,7 @@ import {
   EventEmitter,
 } from '@angular/core';
 import { UploadAssetService } from '../../services/upload-asset.service';
-import {ValidationResponse } from '../../model/response'
+import { ValidationResponse } from '../../model/response';
 
 export enum FileType {
   IMG = 'image/*',
@@ -39,21 +39,19 @@ export enum FileType {
 export class UploadComponent implements OnInit {
   fileNames: string[] = [];
   selectedFileName: string = '';
-  invalidDimensionsMsg: string ='';
+  invalidDimensionsMsg: string = '';
   isError: boolean = false;
 
   @Input() acceptsType: FileType;
   @ViewChild('form') form: ElementRef;
   @Output() isValid = new EventEmitter<boolean>();
 
-
   constructor(private _uploadService: UploadAssetService) {}
- 
   ngOnInit(): void {}
 
   onChange(event) {
-    this.invalidDimensionsMsg = ''
-    this.isError = false
+    this.invalidDimensionsMsg = '';
+    this.isError = false;
     this.fileNames = [];
     for (let file of event.target.files) {
       this.fileNames.push(file.name);
@@ -75,22 +73,22 @@ export class UploadComponent implements OnInit {
         img.src = <string>fileReader.result;
 
         img.onload = function () {
-         // Call the Validation API here -
-        let subscription =  self._uploadService
-          .validateDimensions(img.width, img.height )
-          .subscribe((response) => {
-            console.log(img.height, img.width)
-            self.isValid.emit((response.body as ValidationResponse).valid);
-            if (!(response.body as ValidationResponse).valid){
-              self.invalidDimensionsMsg = 'Invalid Image Dimensions'
-              self.isError = true
-            }
-            subscription.unsubscribe();
-          });
-        }
+          // Call the Validation API here -
+          let subscription = self._uploadService
+            .validateDimensions(img.width, img.height)
+            .subscribe((response) => {
+              console.log(img.height, img.width);
+              self.isValid.emit((response.body as ValidationResponse).valid);
+              if (!(response.body as ValidationResponse).valid) {
+                self.invalidDimensionsMsg = 'Invalid Image Dimensions';
+                self.isError = true;
+              }
+              subscription.unsubscribe();
+            });
         };
       };
       fileReader.readAsDataURL(file);
+    }
 
     if (this.fileNames.length) {
       this.selectedFileName = this.fileNames[0];
