@@ -26,8 +26,8 @@ import { HttpErrorInterceptor } from '../interceptors/http-error.interceptor';
 import { LoaderInterceptor } from '../interceptors/loader.interceptor';
 import { MaterialModule } from './material.module';
 import { LoaderService } from '../services/loader.service';
-// import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { UploadComponent } from './upload/upload.component';
+import { ErrorMsgPipe } from './error-msg.pipe';
 
 @NgModule({
   declarations: [
@@ -37,14 +37,9 @@ import { UploadComponent } from './upload/upload.component';
     RefreshCodeComponent,
     UploadComponent,
     ClientIDPipe,
+    ErrorMsgPipe,
   ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MaterialModule,
-    // RxReactiveFormsModule,
-  ],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MaterialModule],
   exports: [
     ProgressBtnComponent,
     LoaderComponent,
@@ -53,12 +48,13 @@ import { UploadComponent } from './upload/upload.component';
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
-    // RxReactiveFormsModule,
     UploadComponent,
+    ErrorMsgPipe,
   ],
   providers: [
     LoaderService,
     ClientIDPipe,
+    ErrorMsgPipe,
     { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
   ],

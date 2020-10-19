@@ -36,6 +36,7 @@ import { PreviewComponent } from './preview/preview.component';
 import { YouTubePlayerModule } from '@angular/youtube-player';
 import { AccountStructComponent } from './account-struct//account-struct.component';
 import { AssetGridComponent } from './asset-grid/asset-grid.component';
+import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
 
 @NgModule({
   declarations: [
@@ -55,6 +56,7 @@ import { AssetGridComponent } from './asset-grid/asset-grid.component';
     PreviewComponent,
     AccountStructComponent,
     AssetGridComponent,
+    ErrorDialogComponent,
   ],
   imports: [
     BrowserModule,

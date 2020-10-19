@@ -23,6 +23,7 @@ import { tap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { SettingsComponent } from '../settings/settings.component';
 import { ConfigService } from '../services/config.service';
+import { ReloadAppService } from '../services/reload-app.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -38,10 +39,19 @@ export class ToolbarComponent implements OnInit {
   constructor(
     private _dataService: AssetService,
     private _configService: ConfigService,
+    private _reloadAppService: ReloadAppService,
     private _settingsDialog: MatDialog
-  ) {}
+  ) {
+    this._reloadAppService.reloadAccountIds.subscribe(() => {
+      this.loadAccountIds();
+    });
+  }
 
   ngOnInit(): void {
+    this.loadAccountIds();
+  }
+
+  loadAccountIds(): void {
     this.accounts$ = this._dataService.getAccountIds().pipe(
       tap((accounts) => {
         if (accounts.length) {
@@ -58,6 +68,7 @@ export class ToolbarComponent implements OnInit {
       this._dataService.changeAccount(event.source.value);
     }
   }
+
   openSettings() {
     let config = this._configService.getConfigSettings();
     this._settingsDialog.open(SettingsComponent, {
@@ -67,12 +78,11 @@ export class ToolbarComponent implements OnInit {
         client_secret: config.client_secret,
         developer_token: config.developer_token,
         refresh_token: config.refresh_token,
-        config_valid: config.config_valid
+        config_valid: config.config_valid,
       },
     });
   }
 
-  /** TODO: add a proper email here */
   feedbackClicked() {
     let mailText = 'mailto:assetmg@google.com+?subject=AssetMG%Feedback';
     window.location.href = mailText;

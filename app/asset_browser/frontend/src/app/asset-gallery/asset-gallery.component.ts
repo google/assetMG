@@ -24,6 +24,7 @@ import { AppSetupComponent } from '../app-setup/app-setup.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginator } from '@angular/material/paginator';
 import { AssetDetailsComponent } from '../asset-details/asset-details.component';
+import { ReloadAppService } from '../services/reload-app.service';
 
 @Component({
   selector: 'app-asset-gallery',
@@ -43,6 +44,7 @@ export class AssetGalleryComponent implements OnInit {
   constructor(
     private _dataService: AssetService,
     private _configService: ConfigService,
+    private _reloadAppService: ReloadAppService,
     private _setupDialog: MatDialog,
     private _snackBar: MatSnackBar
   ) {}
@@ -63,19 +65,7 @@ export class AssetGalleryComponent implements OnInit {
 
         configDialogRef.afterClosed().subscribe((success) => {
           if (success) {
-            this.openSnackBar();
-            let subscription = this._dataService.loadMccStruct().subscribe(
-              () => {
-                this._configService.configValid = true;
-                this.dismissSnackBar();
-                subscription.unsubscribe();
-              },
-              (error) => {
-                this.dismissSnackBar();
-                this.openSnackBarStructFail();
-                subscription.unsubscribe();
-              }
-            );
+            this.loadMccStruct();
           }
         });
       }
@@ -84,6 +74,12 @@ export class AssetGalleryComponent implements OnInit {
       this._dataService.accountAGs$.subscribe((account) => {
         this.account = account;
         this.sideNav?.close();
+      })
+    );
+
+    this._subscriptions.push(
+      this._reloadAppService.reloadMcc.subscribe(() => {
+        this.loadMccStruct(true);
       })
     );
   }
@@ -103,6 +99,23 @@ export class AssetGalleryComponent implements OnInit {
     return this.closeAssetDetails.bind(this);
   }
 
+  loadMccStruct(loadAccounts: boolean = false) {
+    this.openSnackBar();
+    let subscription = this._dataService.loadMccStruct().subscribe(
+      () => {
+        this._configService.configValid = true;
+        if (loadAccounts) this._reloadAppService.reloadAccountIds.next(true);
+        this.dismissSnackBar();
+        subscription.unsubscribe();
+      },
+      (error) => {
+        this.dismissSnackBar();
+        if (error.status != 403) this.openSnackBarStructFail();
+        subscription.unsubscribe();
+      }
+    );
+  }
+
   /** Functions that may need to be called from a child component */
   openAssetDetails() {
     this.openSideNav = true;
@@ -116,19 +129,6 @@ export class AssetGalleryComponent implements OnInit {
     this.sideNav.close();
     this._dataService.unselectAsset();
   }
-
-  // uploadAsset() {
-  //   // Make sure to unselect any assets to avoid loading the campaign selection
-  //   // of any previously selected assets
-  //   this.unselectAsset();
-
-  //   const uploadDialogRef = this._uploadDialog.open(UploadAssetsComponent, {
-  //     disableClose: true,
-  //     data: this.account,
-  //   });
-
-  //   uploadDialogRef.afterClosed().subscribe(() => {});
-  // }
 
   private openSnackBar() {
     this._snackBar.open(

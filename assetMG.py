@@ -38,7 +38,6 @@ import shutil
 from werkzeug.utils import secure_filename
 import webview
 import string
-from PIL import Image
 
 
 # from flask_cors import CORS
@@ -94,7 +93,7 @@ if config_file['config_valid']:
     structure.create_mcc_struct(
         googleads_client, account_struct_json_path, asset_to_ag_json_path)
   except Exception as e:
-    logging.exception('error when trying to create struct')
+    logging.exception('Error when trying to create struct')
     Service_Class.reset_cid(client)
 
 
@@ -239,15 +238,17 @@ def upload_to_yt():
 
 @server.route('/create-struct/', methods=['GET'])
 def create_struct():
+  msg = ''
   try:
     structure.create_mcc_struct(
         googleads_client, account_struct_json_path, asset_to_ag_json_path)
     status=200
   except Exception as e:
-    status=500
-    logging.error(str(e))
+    status=403
+    msg = str(e)
+    logging.exception(e)
 
-  return _build_response(status=status)
+  return _build_response(msg=msg,status=status)
 
 
 @server.route('/accounts/', methods=['GET'])
@@ -256,8 +257,8 @@ def get_all_accounts():
   try:
     accounts = structure.get_accounts(googleads_client)
     return _build_response(msg=json.dumps(accounts), status=200)
-  except:
-    return _build_response(msg='Couldn\'t get accoutns', status=500)
+  except Exception as e:
+    return _build_response(msg=str(e), status=403)
 
 
 @server.route('/account-ag-struct', methods=['GET'])
@@ -545,10 +546,16 @@ def _asset_ag_update(asset,adgroup,action):
   """remove or add the adgroup to the asset entry"""
 
   if action == 'ADD':
-    asset['adgroups'].append(adgroup)
+    asset['adgroups'].append({
+        "id": adgroup,
+        "performance": "NEEDS UPDATE",
+        "performance_type": "nontext"
+    })
 
   if action == 'REMOVE':
-    asset['adgroups'].remove(adgroup)
+    asset['adgroups'] = [
+        item for item in asset['adgroups'] if item['id'] != adgroup]
+
 
   return asset
 
@@ -645,13 +652,14 @@ def upload_asset():
         url=data.get('url'),
         adgroups=data.get('adgroups'))
   except Exception as e:
-    logging.error(str(e))
+    logging.exception(e)
     Service_Class.reset_cid(client)
     # Asset not uploaded
+    print(str(e))
     return _build_response(msg=json.dumps(
       {'msg': 'Could not upload asset',
        'error_message': error_mapping(str(e)),
-       'err': str(e)}), 
+       'err': str(e)}),
        status=400)
 
   Service_Class.reset_cid(client)

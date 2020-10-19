@@ -77,7 +77,7 @@ class StructureBuilder(object):
         'adgroup_status': client.get_type('AdGroupStatusEnum').AdGroupStatus,
         'campaign_status': client.get_type('CampaignStatusEnum').CampaignStatus,
         'performance_label': client.get_type(
-          'AssetPerformanceLabelEnum').AssetPerformanceLabel
+            'AssetPerformanceLabelEnum').AssetPerformanceLabel
     }
 
 
@@ -89,7 +89,7 @@ class StructureBuilder(object):
   def _build_asset(self, row):
     asset_type = self._enums['type'].Name(row.asset.type)
     perf_label = self._enums['performance_label'].Name(
-      row.ad_group_ad_asset_view.performance_label)
+        row.ad_group_ad_asset_view.performance_label)
     asset = {
         'id': row.asset.id.value,
         'name': row.asset.name.value,
@@ -376,6 +376,7 @@ def create_mcc_struct(client, mcc_struct_file, assets_file):
       structure = builder.build()
     except Exception as e:
       logging.exception(e)
+      err_msg = e.args[0]
       time.sleep(10)
       continue
     else:
@@ -383,7 +384,7 @@ def create_mcc_struct(client, mcc_struct_file, assets_file):
 
   else:
     logging.error('Could not create structure')
-    raise ConnectionError('Can not connect to gRpc')
+    raise ConnectionError(err_msg)
 
   with open(mcc_struct_file, 'w') as f:
     json.dump(structure, f, indent=2)
@@ -396,21 +397,23 @@ def create_mcc_struct(client, mcc_struct_file, assets_file):
             performance_type = 'nontext'
             if asset['type'] == 'TEXT':
               performance_type = asset['text_type']
-            assets[asset['id']]['adgroups'].append(
-              {
-                'id': ad_group['id'],
-                'performance': asset['performance'],
-                'performance_type': performance_type
-              }
+            key = str(asset['id']) + performance_type
+
+            assets[key]['adgroups'].append(
+                {
+                    'id': ad_group['id'],
+                    'performance': asset['performance'],
+                    'performance_type': performance_type
+                }
             )
           except KeyError:
-            assets[asset['id']] = asset
-            assets[asset['id']]['adgroups'] = [
-              {
-                'id': ad_group['id'],
-                'performance': asset['performance'],
-                'performance_type': performance_type
-              }
+            assets[key] = asset
+            assets[key]['adgroups'] = [
+                {
+                    'id': ad_group['id'],
+                    'performance': asset['performance'],
+                    'performance_type': performance_type
+                }
             ]
   with open(assets_file, 'w') as f:
     json.dump(list(assets.values()), f, indent=2)
@@ -450,16 +453,16 @@ def get_account_adgroup_structure(client, customer_id):
 if __name__ == '__main__':
   googleads_client = GoogleAdsClient.load_from_storage(
       'app/config/google-ads.yaml')
-  create_mcc_struct(googleads_client,
-                    'app/cache/account_struct.json',
-                    'app/cache/asset_to_ag.json')
-  print(json.dumps(get_accounts(googleads_client), indent=2))
-  print(json.dumps(
-      get_assets_from_adgroup(googleads_client, 8791307154, 79845268520),
-      indent=2))
+  # create_mcc_struct(googleads_client,
+  #                   'app/cache/account_struct.json',
+  #                   'app/cache/asset_to_ag.json')
+  # print(json.dumps(get_accounts(googleads_client), indent=2))
+  # print(json.dumps(
+  #     get_assets_from_adgroup(googleads_client, 8791307154, 79845268520),
+  #     indent=2))
 
   print(json.dumps(get_accounts_assets(googleads_client, '9489090398'),
                    indent=2))
-  print(json.dumps(get_all_accounts_assets(googleads_client), indent=2))
+  # print(json.dumps(get_all_accounts_assets(googleads_client), indent=2))
 
-  print(get_accounts(googleads_client))
+  # print(get_accounts(googleads_client))
