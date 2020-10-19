@@ -2,7 +2,7 @@
   <mat-card *ngSwitchCase="assetType.IMG"
             [ngClass]="{'accent-border': selectedAssetId === asset.id }"
             (click)="openDetails()">
-    <mat-card-subtitle><i class="far fa-image"></i> Image </mat-card-subtitle>
+    <mat-card-subtitle><i class="far fa-image"></i> {{asset.name}} </mat-card-subtitle>
     <mat-card-content>
       <img mat-card-image [src]= 'asset.image_url' alt="">
       <button mat-icon-button (click)="openPreview()">
@@ -13,7 +13,7 @@
   <mat-card *ngSwitchCase="assetType.VIDEO"
             [ngClass]="{'accent-border': selectedAssetId === asset.id }"
             (click)="openDetails()">
-    <mat-card-subtitle><i class="fab fa-youtube"></i> Youtube Video </mat-card-subtitle>
+    <mat-card-subtitle><i class="fab fa-youtube"></i> {{asset.name}} </mat-card-subtitle>
     <mat-card-content>
       <img mat-card-image [src]= 'asset.image_url' alt="">
       <button mat-icon-button (click)="openPreview()">
@@ -34,7 +34,7 @@
   <mat-card *ngSwitchCase="assetType.HTML"
             [ngClass]="{'accent-border': selectedAssetId === asset.id }"
             (click)="openDetails()">
-    <mat-card-subtitle><i class="fab fa-html5"></i> HTML </mat-card-subtitle>
+    <mat-card-subtitle><i class="fab fa-html5"></i> {{asset.name}} </mat-card-subtitle>
     <mat-card-content>
       <img mat-card-image src= "./../../assets/html5_logo.png" alt="">
     </mat-card-content>

@@ -29,6 +29,11 @@ mat-card-subtitle {
   border-bottom: groove;
   border-width: thin;
   /* padding-bottom: 2px; */
+  display: inline-block;
+  width: 160px;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
 }
 mat-card-content {
   height: calc(100% - 2rem);
