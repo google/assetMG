@@ -261,9 +261,25 @@ export class UploadAssetsComponent implements OnInit {
   processUploadResponse(status, response?: UploadResponse) {
     // Stop the progress bar
     this.uploadInProgress = false;
+    console.log(response);
     if (status != STATUS.SUCCESS) {
       this.isErrorMessage = true;
-      this.uploadMessage = response.msg;
+      let msg = '';
+      if (status === STATUS.FAIL) {
+        msg = response.msg;
+      } else if (status === STATUS.PARTIAL_SUCCESS) {
+        let failures = (<any> response).unsuccessfull;
+        console.log(failures);
+        if (failures) {
+          for (let failure of failures) {
+            msg += `Update failed for the ad group ${failure.adgroup}:
+                ${failure.error_message}<br/>`;
+          }
+        } else {
+          msg = 'Update failed for some ad groups.';
+        }
+      }
+      this.uploadMessage = msg;
     } else if (response?.asset) {
       // Notify the asset service of newly added asset
       if (response.asset) {
