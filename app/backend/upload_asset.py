@@ -172,7 +172,7 @@ def _assign_new_asset_to_adgroups(client, googleads_client, account, asset,
     status = 1
 
   # if successefully assigned to all ad groups
-  if successeful_assign:
+  elif successeful_assign:
     status = 0
 
   # if text assets aren't assigned to any adgroup they weren't uploaded
