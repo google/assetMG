@@ -20,7 +20,6 @@ import time
 from concurrent import futures
 from google.ads.google_ads.client import GoogleAdsClient
 
-
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(asctime)s - %(levelname)s] %(message).5000s')
 logging.getLogger('google.ads.google_ads.client').setLevel(logging.INFO)
@@ -120,6 +119,13 @@ class StructureBuilder(object):
       asset['image_url'] = f'https://img.youtube.com/vi/{video_id}/1.jpg'
     return asset
 
+  def _build_yt_data(self,row):
+    yt_data  = {
+      'yt_id': row.video.id.value,
+      'yt_title': row.video.title.value
+    }
+    return yt_data
+
   def build(self):
     return None
 
@@ -165,9 +171,28 @@ class AccountAssetsBuilder(StructureBuilder):
           asset
     ''')
 
+    # for yt assets get the actual video title instead of asset name
+    yt_titles_rows = self._get_rows('''
+        SELECT
+          video.title,
+          video.id
+        FROM 
+          video
+    ''')
+  
+    yt_titles = {}
+    for row in yt_titles_rows:
+      yt_data = self._build_yt_data(row)
+      yt_titles[yt_data['yt_id']] = yt_data
+
     account_assets = {}
     for row in rows:
       asset = self._build_asset(row)
+      if asset['type'] == 'YOUTUBE_VIDEO':
+        yt_id = yt_titles.get(asset['video_id'])
+        if yt_id:
+          asset['name'] = yt_id['yt_title']
+
       account_assets[asset['id']] = asset
 
     source_assets = []
