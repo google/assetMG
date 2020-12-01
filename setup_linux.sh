@@ -105,9 +105,23 @@ echo "----------------------------------"
 echo -e "${NC}"
 cd app/asset_browser/frontend
 npm install
-npm audit fix
+ng build
 cd ../../..
 
+var1=$(pwd)
+
+cd ..
+cat > AssetMGLauncher.desktop << EOF1
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=true
+Exec=sh -c "cd $var1; ./run_unix.sh"
+Name=AssetMG
+Comment=Manage your assets easily
+EOF1
+
 echo "-----------------------------------------------------------------------------------"
-echo "Completed running setup.sh, restart your computer to ensure all updates take effect"
+echo -e "${GREEN}Completed running setup.sh, restart your computer to ensure all updates take effect${TITLECOLOR}"
 echo "-----------------------------------------------------------------------------------"
