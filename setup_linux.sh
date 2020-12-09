@@ -19,47 +19,37 @@ sudo -v
 sudo apt update
 sudo apt-get update
 
+#Installing Git
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Installing Git"
 echo "This might take a while to complete"
 echo "----------------------------------"
 echo -e "${NC}"
-#Installing python
 which git || sudo apt install git
 
+#Installing Python
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Installing Python"
 echo "This might take a while to complete"
 echo "----------------------------------"
 echo -e "${NC}"
-#Installing python
 which python3 || sudo apt install python3.8
 sudo apt install python3-pip
 
+#Installing NodeJS
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Installing Node"
 echo "This might take a while to complete"
 echo "----------------------------------"
 echo -e "${NC}"
-#Installing node
 curl -sL https://deb.nodesource.com/setup_15.x | sudo -E bash -
 sudo apt-get install -y nodejs
 sudo apt-get install -y npm
 
-echo -e "${TITLECOLOR}"
-echo "----------------------------------"
-echo "Installing Angular"
-echo "This might take a while to complete"
-echo "----------------------------------"
-echo -e "${NC}"
-#installing angular cli
-sudo npm install -g @angular/cli
-npm link @angular/cli
-
-#configurating virtual env
+#Downloading application
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Downloading updated application"
@@ -76,7 +66,7 @@ else
   cd assetMG
 fi
 
-
+#configurating virtual env
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Configuring Python environment"
@@ -105,7 +95,7 @@ echo "----------------------------------"
 echo -e "${NC}"
 cd app/asset_browser/frontend
 npm install
-ng build
+node_modules/.bin/ng build
 cd ../../..
 
 var1=$(pwd)
@@ -123,5 +113,5 @@ Comment=Manage your assets easily
 EOF1
 
 echo "-----------------------------------------------------------------------------------"
-echo -e "${GREEN}Completed running setup.sh, restart your computer to ensure all updates take effect${TITLECOLOR}"
+echo -e "${GREEN}All done, to start the app please run run_unix.sh or python assetMG.py${TITLECOLOR}"
 echo "-----------------------------------------------------------------------------------"

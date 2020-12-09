@@ -37,47 +37,37 @@ chmod u+w /usr/local/bin /usr/local/etc /usr/local/lib/pkgconfig /usr/local/sbin
 
 brew update
 
+#Installing Git
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Installing Git"
 echo "This might take a while to complete"
 echo "----------------------------------"
 echo -e "${NC}"
-#Installing python
 brew list git || brew install git
 
+#Installing Python
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Installing Python"
 echo "This might take a while to complete"
 echo "----------------------------------"
 echo -e "${NC}"
-#Installing python
 brew list python3 || brew install python3
 
+#Installing NodeJS
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Installing Node"
 echo "This might take a while to complete"
 echo "----------------------------------"
 echo -e "${NC}"
-#Installing node
 brew list node || brew install node
 
 #Cleaning up old versions
 brew cleanup
 
-echo -e "${TITLECOLOR}"
-echo "----------------------------------"
-echo "Installing Angular"
-echo "This might take a while to complete"
-echo "----------------------------------"
-echo -e "${NC}"
-#installing angular cli
-npm install -g @angular/cli
-npm link @angular/cli
-
-#configurating virtual env
+#Downloading application
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Downloading updated application"
@@ -94,7 +84,7 @@ else
   cd assetMG
 fi
 
-#env setup
+#configurating virtual env
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Configuring Python environment"
@@ -120,13 +110,12 @@ echo "----------------------------------"
 echo -e "${NC}"
 cd app/asset_browser/frontend
 npm install
-npm audit fix
-ng build
+node_modules/.bin/ng build
 cd ../../..
 
 mv app/AssetMG.command ../
 
 
 echo "-----------------------------------------------------------------------------------"
-echo -e "${GREEN}Completed running setup.sh, restart your computer to ensure all updates take effect${TITLECOLOR}"
+echo -e "${GREEN} All done, to start the app please run AssetMG.command or python assetMG.py${TITLECOLOR}"
 echo "-----------------------------------------------------------------------------------"

@@ -40,13 +40,6 @@ foreach ($h in $deps.GetEnumerator()) {
 	}
 }
 
-# Installing Angular CLI
-Write-Host -ForegroundColor DarkGray "Installing Angular CLI"
-npm install -g @angular/cli
-npm link @angular/cli
-if( $LASTEXITCODE -ne 0 ) {
-	Write-Host -ForegroundColor Red "An error occured during npm (frontend) dependencies installation, please investigate"
-}
 
 # Downloading updated application
 $github_repo_url = "https://github.com/google/assetMG.git"
@@ -90,8 +83,7 @@ if( $LASTEXITCODE -ne 0 ) {
 Write-Host -ForegroundColor DarkGray "Building front-end application"
 cd app/asset_browser/frontend
 npm install
-npm audit fix
-ng build
+node_modules/.bin/ng build
 cd ../../..
 
 
@@ -100,7 +92,7 @@ cd ../../..
 Write-Host -ForegroundColor DarkGray "Generating run scripts"
 "git pull
 cd app/asset_browser/frontend
-ng build
+node_modules/.bin/ng build
 cd ../../..
 . .\.venv\Scripts\Activate.ps1
 $python ./assetmg.py

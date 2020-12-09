@@ -25,8 +25,7 @@ elif [ $LOCAL = $BASE ]; then
   git pull
   cd app/asset_browser/frontend
   npm install
-  npm audit fix
-  ng build
+  node_modules/.bin/ng build
   cd ../../..
 fi
 
