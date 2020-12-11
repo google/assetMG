@@ -1,3 +1,15 @@
+#Requires -RunAsAdministrator
+function Test-Administrator
+{  
+    $user = [Security.Principal.WindowsIdentity]::GetCurrent();
+    (New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)  
+}
+if(-not (Test-Administrator))
+{
+    Write-Error "This script must be executed as Administrator.";
+    exit 1;
+}
+
 function Check-Python($python) {
 	if (Get-Command $python -ErrorAction SilentlyContinue) {
 		try {
