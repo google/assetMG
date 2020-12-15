@@ -12,7 +12,7 @@ cd "$(dirname "$BASH_SOURCE")" || {
   exit 1
 }
 
-#Installing homebrew
+# Installing homebrew
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Verifying Homebrew and dependencies"
@@ -23,6 +23,7 @@ echo -e "${NC}"
 if test ! "$(which brew)"; then
   # Ask for the administrator password upfront.
   echo "Installing homebrew..."
+  xcode-select --install
   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   export PATH="/usr/local/opt/python/libexec/bin:$PATH"
   export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
@@ -37,7 +38,7 @@ chmod u+w /usr/local/bin /usr/local/etc /usr/local/lib/pkgconfig /usr/local/sbin
 
 brew update
 
-#Installing Git
+# Installing Git
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Installing Git"
@@ -46,16 +47,30 @@ echo "----------------------------------"
 echo -e "${NC}"
 brew list git || brew install git
 
-#Installing Python
-echo -e "${TITLECOLOR}"
-echo "----------------------------------"
-echo "Installing Python"
-echo "This might take a while to complete"
-echo "----------------------------------"
-echo -e "${NC}"
-brew list python3 || brew install python3
 
-#Installing NodeJS
+# Checking version/Installing Python
+python3_installed() {
+  local a b
+  a=$(python3 --version 2>&1 | perl -pe 's/python *//i') ; b="3.7"
+  [ "$( (echo "$a" ; echo "$b") | sort -V | head -1)" == "$b" ]
+}
+if python3_installed ; then 
+  echo "Detected Python >= 3.7"
+else
+  echo -e "${TITLECOLOR}"
+  echo "----------------------------------"
+  echo "Installing Python"
+  echo "This might take a while to complete"
+  echo "----------------------------------"
+  echo -e "${NC}"
+  # NOTE: this will actually installs the latest version (not the version we detected)
+  # Potentially this can breaks things on the user machine.
+  # Probably we should use pyenv to workaround this
+	brew install python3
+fi
+
+
+# Installing NodeJS
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Installing Node"
@@ -64,10 +79,10 @@ echo "----------------------------------"
 echo -e "${NC}"
 brew list node || brew install node
 
-#Cleaning up old versions
+# Cleaning up old versions
 brew cleanup
 
-#Downloading application
+# Downloading application
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Downloading updated application"
@@ -83,26 +98,29 @@ else
   git clone https://github.com/google/assetMG.git
   cd assetMG
 fi
+# NOTE: we're now inside 'assetMG' folder
 
-#configurating virtual env
+# Configurating virtual env
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Configuring Python environment"
 echo "----------------------------------"
 echo -e "${NC}"
 python3 -m venv .venv
-chmod 557 .venv/bin/activate
 . .venv/bin/activate
+# NOTE: after moving to python 3.8 these one line can be removed
 export AC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
+# Installing dependencies via pip
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Installing backend dependencies"
 echo "----------------------------------"
 echo -e "${NC}"
-pip3 install -r requirements.txt
+python3 -m pip install -r requirements.txt
 
+# Installing frontend dependencies
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Installing frontend dependencies"
@@ -112,9 +130,11 @@ cd app/asset_browser/frontend
 npm install
 node_modules/.bin/ng build
 cd ../../..
+# NOTE: we're now inside 'assetMG' folder
 
-mv app/AssetMG.command ../
-
+# Prepare the run script
+mv scripts/AssetMG.command ./
+chmod 777 scripts/AssetMG.command
 
 echo "-----------------------------------------------------------------------------------"
 echo -e "${GREEN} All done, to start the app please run AssetMG.command or python assetMG.py${TITLECOLOR}"

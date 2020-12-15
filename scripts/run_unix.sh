@@ -35,6 +35,9 @@ echo "Starting backend"
 echo "----------------------------------"
 echo -e "${NC}"
 . .venv/bin/activate
+# NOTE: after moving to python 3.8 these one line can be removed
+export AC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
 python3 assetMG.py
 
 echo -e "${TITLECOLOR}"

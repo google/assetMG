@@ -8,7 +8,7 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
 
-#Installing homebrew
+# Updating apt-get packages
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Verifying package managers"
@@ -19,7 +19,7 @@ sudo -v
 sudo apt update
 sudo apt-get update
 
-#Installing Git
+# Installing Git
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Installing Git"
@@ -28,17 +28,29 @@ echo "----------------------------------"
 echo -e "${NC}"
 which git || sudo apt install git
 
-#Installing Python
-echo -e "${TITLECOLOR}"
-echo "----------------------------------"
-echo "Installing Python"
-echo "This might take a while to complete"
-echo "----------------------------------"
-echo -e "${NC}"
-which python3 || sudo apt install python3.8
-sudo apt install python3-pip
+# Checking version/Installing Python
+python3_installed() {
+  local a b
+  a=$(python3 --version 2>&1 | perl -pe 's/python *//i') ; b="3.7"
+  [ "$( (echo "$a" ; echo "$b") | sort -V | head -1)" == "$b" ]
+}
+if python3_installed ; then 
+  echo "Detected Python >= 3.7"
+else
+  echo -e "${TITLECOLOR}"
+  echo "----------------------------------"
+  echo "Installing Python"
+  echo "This might take a while to complete"
+  echo "----------------------------------"
+  echo -e "${NC}"
+  # NOTE: this will replace the Python3 installed on user machine and
+  # potentially this can breaks things.
+  # Probably we should use pyenv to workaround this.
+	sudo apt install python3.8
+fi
 
-#Installing NodeJS
+
+# Installing NodeJS
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
 echo "Installing Node"
@@ -75,8 +87,8 @@ echo -e "${NC}"
 sudo apt-get install python3-venv
 sudo apt autoremove
 python3 -m venv .venv
-chmod 777 .venv/bin/activate
 . .venv/bin/activate
+# NOTE: after moving to python 3.8 these one line can be removed
 export AC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
@@ -85,8 +97,7 @@ echo "----------------------------------"
 echo "Installing backend dependencies"
 echo "----------------------------------"
 echo -e "${NC}"
-pip3 install --upgrade pip
-pip3 install -r requirements.txt
+python3 -m pip install -r requirements.txt
 
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
@@ -97,6 +108,11 @@ cd app/asset_browser/frontend
 npm install
 node_modules/.bin/ng build
 cd ../../..
+# NOTE: we're now inside 'assetMG' folder
+
+# Prepare the run script
+mv scripts/run_unix.sh ./
+chmod 777 scripts/run_unix.sh
 
 var1=$(pwd)
 

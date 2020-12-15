@@ -28,59 +28,113 @@ Easily add, change or remove creative assets across different ad groups and camp
 
 ## Setup
 
-Download the latests zip file under the [release](https://github.com/google/assetMG/releases) tab.
-Create a folder called "assetMG" and extract the zip file to it.
+### Recommended way
 
-Open Terminal/CMD and navigate to the folder where you extracted the file
+For simplest installation experience we recommend using the following commands on supported platforms (Windows, MacOS, Linux (Debian)).  
 
-For Mac/Linux, copy the following block and paste it in the Terminal:
+#### Installation
+Execute a following command in a folder under which you want to have AssetMG installation. E.g. the user's home.
 
+Windows: put the command into cmd.exe ran as administrator
+```shell
+powershell -exec bypass -c "(New-Object Net.WebClient).Proxy.Credentials=[Net.CredentialCache]::DefaultNetworkCredentials;iwr('https://raw.githubusercontent.com/google/assetMG/master/scripts/setup_windows.ps1')|iex"
 ```
+NOTE: the script will fail if executed in non-administative command prompt.
+
+MacOS:
+```shell
+curl https://raw.githubusercontent.com/google/assetMG/master/scripts/setup_macos.command | bash -s
+```
+
+Linux:
+```shell
+curl https://raw.githubusercontent.com/google/assetMG/master/scripts/setup_linux.sh | bash -s
+```
+
+#### Running the app
+After a setup script completes all you need to do is run a "run" script from within AssetMG folder:
+* Windows: `win_run.cmd`  
+* MacOS: `AssetMG.command` (double-clickable)
+* Linux: `run_unix.sh`   
+
+On Windows the setup script creates a shortcut on the desktop (AssetMG.lnk).
+
+
+### Advanced/manual way
+This section contains all technical details about installing in case you either want to understand it thoroughly or setup scripts aren't suitable for you for any reason. Normally we'd suggest using the setup script from [Recommended way](#recommended-way).  
+
+Basically all you need to run the app is:  
+
+* have/install Python >=3.7
+* have/install NodeJS
+* clone the repo from GitHub (https://github.com/google/assetMG.git)
+* install server (Python) dependencies via `pip`
+* install front-end (npm) dependencies via `npm`
+* build Angular app (run `ng build` in app/asset_browser/frontend)
+* run `python3 assetMG.py`
+
+The setup scripts do the heavy-lifting on checking for installed software (Python, Git, NodeJS), their versions (we need Python 3.7 or later), install missing components, etc.
+
+The setup scripts install Python globably if it finds that currently installed version is below 3.7. If you need to keep you global version we recommand using [pyenv](https://github.com/pyenv/pyenv):
+```shell
+curl https://pyenv.run | bash
+pyenv install 3.7.7
+pyenv global 3.7.7
+```
+After that you'll need to execute `pyenv init` to instruction on how to update your shell config.
+
+A similar approach exists for NodeJS - to keep your current NodeJS use [NVM](https://github.com/nvm-sh/nvm).
+
+
+If we leave aside installion of required software (you can do it in whatether way you want), to setup and run the app for the first time execute the following block in the Terminal in a folder with cloned repository:  
+```shell
 python3 -m venv .venv
 . .venv/bin/activate
 pip3 install -r requirements.txt
+cd app/asset_browser/frontend
+npm install
+node_modules/.bin/ng build
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 python3 assetMG.py
 ```
 
-For Windows, copy the following block and paste it in the console:
+For Windows, the only difference will be is how you activate venv:
+`.venv\Scripts\activate.bat` (instead of `. .venv/bin/activate`), all other steps are the same.
 
-```
-python3 -m venv .venv
-.venv\Scripts\activate.bat
-pip3 install -r requirements.txt
-python3 assetMG.py
-```
+#### Steps Breakdown
 
-### Steps Breakdown
-
-0. Open Terminal/CMD and navigate to the folder where you extracted the file
+0. Open Terminal/CMD and navigate to the folder where you cloned the GitHub repositoty.
 
 1. Create a virtual environment
 [virtualenv](https://virtualenv.pypa.io/en/latest/) to isolate the Python
 environment and libraries:
 
-  ```bash
+  ```shell
   python3 -m venv .venv
   ```
   then, for mac/linux:
-  ```bash
+  ```shell
   . .venv/bin/activate
   ```  
   for windows:
-  ```bash
+  ```shell
   .venv\Scripts\activate.bat
   ```  
 
 2. Install required Python packages:
 
-  ```bash
+  ```shell
   pip3 install -r requirements.txt
   ```
-
-3. Run the app
-  ```bash
+3. Build the front-end app"
+  ```shell
+  cd app/asset_browser/frontend
+  npm install
+  node_modules/.bin/ng build
+  ```
+4. Run the app
+  ```shell
   python3 assetMG.py
   ```
   
@@ -89,20 +143,18 @@ environment and libraries:
   ValueError: unknown locale: UTF-8
   ```
   Please enter these lines in the console:
-  ```bash
+  ```shell
   export LC_ALL=en_US.UTF-8
   export LANG=en_US.UTF-8
   ```
-  
-4. If it is your first time using assetMG, please provide relevant credentials
 
-## Running the App
+#### Running the App
 
 After the first installation, in order to run the app just open the terminal/console, navigate to the app's directory and:
 
-For mac/linux, copy the following block and paste in the Terminal:
+For MacOS/Linux, copy the following block and paste in the Terminal:
 
-```
+```shell
 . .venv/bin/activate
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
@@ -111,10 +163,13 @@ python3 assetMG.py
 
 For Windows, copy the following block and paste in the Console:
 
-```
+```shell
 .venv\Scripts\activate.bat
 python3 assetMG.py
 ```
+
+But each time you update the repository (`git pull`) you'll need to reinstall Python (`pip3 install -r requirements.txt`) and npm dependencies (`npm i`), and rebuild Angular app (`ng build`).
+
 
 ## Managing Universal App Campaigns' assets.
 
