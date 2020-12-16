@@ -15,7 +15,7 @@ function Check-Python($python) {
 		try {
 			$ver = .$python "--version" | Out-String
 			$ver = $ver.Substring("Python ".Length)
-			#Trace-Command –Name CommandDiscovery –Expression {get-command $python} -PSHost
+			#Trace-Command ï¿½Name CommandDiscovery ï¿½Expression {get-command $python} -PSHost
 			$ver = [System.Version]::Parse($ver)
 			return ($python, $ver)
 		} catch {
@@ -78,13 +78,8 @@ Write-Host -ForegroundColor DarkGray "Creating virtual environment"
 . .\.venv\Scripts\Activate.ps1 
 
 # Installing dependencies via pip
-if ($python -eq "python3") { 
-	$pip = "pip3"
-} else {
-	$pip = "pip"
-}
 Write-Host -ForegroundColor DarkGray "Installing Python dependencies"
-.$pip install --default-timeout=100 -r requirements.txt 
+.$python3 -m pip install -r requirements.txt
 
 if( $LASTEXITCODE -ne 0 ) {
 	Write-Host -ForegroundColor Red "An error occured during python dependencies installation, please investigate"
@@ -102,12 +97,26 @@ cd ../../..
 # Generating run scripts
 # NOTE: we're till inside 'assetMG' folder
 Write-Host -ForegroundColor DarkGray "Generating run scripts"
-"git pull
-cd app/asset_browser/frontend
-node_modules/.bin/ng build
-cd ../../..
+"git fetch
+$local  = git rev-parse '@'
+$remote = git rev-parse '@{u}'
+$base   = git merge-base '@' '@{u}'
+if ($local -eq $remote) {
+	Write-Host -ForegroundColor Green 'Project is up-to-date'
+} elseif ($local -eq $base) {
+	Write-Host 'Project needs to be refreshed'
+	git pull
+
+  	. .\.venv\Scripts\Activate.ps1 
+  	.$python -m pip install -r requirements.txt
+
+	cd app/asset_browser/frontend
+	npm install
+  	node_modules/.bin/ng build
+	cd ../../..
+}
 . .\.venv\Scripts\Activate.ps1
-$python ./assetmg.py
+.$python ./assetmg.py
 " | out-file ./win_run.ps1 -encoding ascii
 
 "powershell ./win_run.ps1"  | out-file ./win_run.cmd -encoding ascii

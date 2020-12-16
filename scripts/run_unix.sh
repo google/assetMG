@@ -14,15 +14,18 @@ echo "----------------------------------"
 echo "Updating project"
 echo "----------------------------------"
 echo -e "${NC}"
-UPSTREAM=${1:-'@{u}'}
+git fetch
 LOCAL=$(git rev-parse @)
-REMOTE=$(git rev-parse "$UPSTREAM")
-BASE=$(git merge-base @ "$UPSTREAM")
+REMOTE=$(git rev-parse @{u})
+BASE=$(git merge-base @ @{u})
 
 if [ $LOCAL = $REMOTE ]; then
-  echo "Project up to date"
+  echo "Project is up-to-date"
 elif [ $LOCAL = $BASE ]; then
+  echo "Project needs to be refreshed"
   git pull
+  . .venv/bin/activate
+  python3 -m pip install -r requirements.txt
   cd app/asset_browser/frontend
   npm install
   node_modules/.bin/ng build
