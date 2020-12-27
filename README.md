@@ -18,7 +18,6 @@ Easily add, change or remove creative assets across different ad groups and camp
 
 ## Requirements
 
-- Python 3.7+ [Download](https://www.python.org/downloads/)
 - Access to AdWords API (refer to
   [Apply for access to the AdWords API](https://developers.google.com/adwords/api/docs/guides/signup)).
 - OAuth 2 credentials (refer to
@@ -35,18 +34,18 @@ For simplest installation experience we recommend using the following commands o
 #### Installation
 Execute a following command in a folder under which you want to have AssetMG installation. E.g. the user's home.
 
-Windows: put the command into cmd.exe ran as administrator
+**Windows:** put the command into cmd.exe ran as administrator [Guide](https://grok.lsu.edu/article.aspx?articleid=16850)
 ```shell
 powershell -exec bypass -c "(New-Object Net.WebClient).Proxy.Credentials=[Net.CredentialCache]::DefaultNetworkCredentials;iwr('https://raw.githubusercontent.com/google/assetMG/master/scripts/setup_windows.ps1')|iex"
 ```
 NOTE: the script will fail if executed in non-administative command prompt.
 
-MacOS:
+**MacOS:**
 ```shell
 curl https://raw.githubusercontent.com/google/assetMG/master/scripts/setup_macos.command | bash -s
 ```
 
-Linux:
+**Linux:**
 ```shell
 curl https://raw.githubusercontent.com/google/assetMG/master/scripts/setup_linux.sh | bash -s
 ```
