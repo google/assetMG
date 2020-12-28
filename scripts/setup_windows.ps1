@@ -15,7 +15,6 @@ function Check-Python($python) {
 		try {
 			$ver = .$python "--version" | Out-String
 			$ver = $ver.Substring("Python ".Length)
-			#Trace-Command �Name CommandDiscovery �Expression {get-command $python} -PSHost
 			$ver = [System.Version]::Parse($ver)
 			return ($python, $ver)
 		} catch {
@@ -74,12 +73,12 @@ if (Test-Path "assetMG") {
 ($python, $ver) = Find-Python
 # Creating Python virtual environment
 Write-Host -ForegroundColor DarkGray "Creating virtual environment"
-.$python -m venv .venv
+. $python -m venv .venv
 . .\.venv\Scripts\Activate.ps1 
 
 # Installing dependencies via pip
 Write-Host -ForegroundColor DarkGray "Installing Python dependencies"
-.$python3 -m pip install -r requirements.txt
+. $python -m pip install -r requirements.txt
 
 if( $LASTEXITCODE -ne 0 ) {
 	Write-Host -ForegroundColor Red "An error occured during python dependencies installation, please investigate"
@@ -108,7 +107,7 @@ if ($local -eq $remote) {
 	git pull
 
   	. .\.venv\Scripts\Activate.ps1 
-  	.$python -m pip install -r requirements.txt
+  	. $python -m pip install -r requirements.txt
 
 	cd app/asset_browser/frontend
 	npm install
@@ -116,7 +115,7 @@ if ($local -eq $remote) {
 	cd ../../..
 }
 . .\.venv\Scripts\Activate.ps1
-.$python ./assetmg.py
+. $python ./assetmg.py
 " | out-file ./win_run.ps1 -encoding ascii
 
 "powershell ./win_run.ps1"  | out-file ./win_run.cmd -encoding ascii
