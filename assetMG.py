@@ -32,11 +32,9 @@ import yaml
 from google_auth_oauthlib.flow import InstalledAppFlow
 import webbrowser
 import threading
-import sys
 import os
 import shutil
 from werkzeug.utils import secure_filename
-import webview
 import string
 
 
