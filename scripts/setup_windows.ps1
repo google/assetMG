@@ -97,12 +97,12 @@ cd ../../..
 # NOTE: we're till inside 'assetMG' folder
 Write-Host -ForegroundColor DarkGray "Generating run scripts"
 "git fetch
-$local  = git rev-parse '@'
-$remote = git rev-parse '@{u}'
-$base   = git merge-base '@' '@{u}'
-if ($local -eq $remote) {
+`$local  = git rev-parse '@'
+`$remote = git rev-parse '@{u}'
+`$base   = git merge-base '@' '@{u}'
+if (`$local -eq `$remote) {
 	Write-Host -ForegroundColor Green 'Project is up-to-date'
-} elseif ($local -eq $base) {
+} elseif (`$local -eq `$base) {
 	Write-Host 'Project needs to be refreshed'
 	git pull
 
