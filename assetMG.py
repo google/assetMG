@@ -24,6 +24,7 @@ from app.backend.upload_asset import upload
 from app.backend.service import Service_Class
 from app.backend.yt_upload import initialize_upload
 from app.backend.error_handling import error_mapping
+from app.backend.get_yt import get_all_yt_videos
 from googleapiclient.discovery import build
 from pathlib import Path
 import copy
@@ -186,6 +187,29 @@ def set_refresh_token():
     return _build_response(msg=json.dumps(refresh_token),status=200)
 
 
+@server.route('/set-yt/', methods=['POST'])
+def set_yt():
+  """Set yt-conifg.json with channel id and API key.
+  Will be used to get all the channel's videos. Gets a JSON with two keys:
+  channel_id
+  api_key
+  """
+  data = request.get_json(force=True)
+
+  try:
+    channel_id = data['channel_id']
+    api_key = data['api_key']
+
+    with open('./app/config/yt-config.json', 'w') as f:
+      json.dump({'channel_id':channel_id,'api_key':api_key},f)
+
+    return _build_response(status=200)
+
+  except Exception as e:
+    logging.exception(e)
+    return _build_response(msg=json.dumps(str(e)), status=400)
+
+
 @server.route('/init-yt/', methods=['GET'])
 def init_yt():
   """opens a browser with the login window. """
@@ -222,16 +246,28 @@ def upload_to_yt():
   if data.get('file') is None:
     return _build_response(msg=json.loads('File not specified', status=404))
   try:
-    id = initialize_upload(
+    vid_id = initialize_upload(
       yt_client,**{k: v for k, v in data.items() if v is not None})
     status=200
-    msg = {'vid_id' : id}
+    msg = {'vid_id' : vid_id}
   except Exception as e:
     msg = str(e)
     logging.error(str(e))
     status=500
 
   return _build_response(msg = json.dumps(msg), status=status)
+
+
+@server.route('/get-yt-videos/', methods=['GET'])
+def get_yt_videos():
+  try:
+    videos = get_all_yt_videos()
+
+  except Exception as e:
+    logging.exception(e)
+    return _build_response(msg=json.dumps(str(e)), status=400)
+
+  return _build_response(msg=json.dumps(videos), status=200)
 
 
 @server.route('/create-struct/', methods=['GET'])
@@ -354,7 +390,7 @@ def mutate():
   """
 
   data = request.get_json(force=True)
-  logging.info('Recived mutate request: ' + str(data))
+  logging.info('Recived mutate request: %s', str(data))
   asset_id = data[0]['asset']['id']
   asset_type = data[0]['asset']['type']
 
@@ -397,7 +433,7 @@ def mutate():
           }
       )
       mutation = 'failed'
-      logging.error('could not execute mutation on adgroup: ' + str(adgroup))
+      logging.error('could not execute mutation on adgroup: %s',str(adgroup))
 
 
     if mutation is None:
@@ -500,7 +536,7 @@ def _text_asset_mutate(data, asset_id, asset_struct):
       )
       mutation = 'failed'
       logging.error(
-        'could not execute mutation on adgroup: ' + str(adgroup) + str(e))
+        'could not execute mutation on adgroup: %s, %s' ,str(adgroup), str(e))
 
     if mutation is None:
       for obj in asset_handlers:
@@ -545,9 +581,9 @@ def _asset_ag_update(asset,adgroup,action):
 
   if action == 'ADD':
     asset['adgroups'].append({
-        "id": adgroup,
-        "performance": "NEEDS UPDATE",
-        "performance_type": "nontext"
+        'id': adgroup,
+        'performance': 'NEEDS UPDATE',
+        'performance_type': 'nontext'
     })
 
   if action == 'REMOVE':
@@ -571,7 +607,7 @@ def upload_files():
   if file and file.filename:
     if allowed_file(file.filename):
       filename = secure_filename(file.filename)
-      file_extension = filename.rsplit('.', 1)[1].lower()
+      filename.rsplit('.', 1)[1].lower()
       try:
         file_path = os.path.join(server.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
@@ -616,6 +652,52 @@ def clean_dir():
     status=500
 
   return _build_response(status=status)
+
+
+@server.route('/upload-asset-bulk/', methods=['POST'])
+def upload_bulk():
+  """Bulk upload a list of YT videos to Google Ads. Gets a list of 
+  dicts, each represents a video to upload.
+  Each dict should have the following fields:
+  account - to which account to upload (should be the same for all entries)
+  name - The name of the video, will be assigned as asset name
+  url - a link to the video in YT
+
+  will try to upload all entries one by one. If any will fail the return status
+  will be 206 and will provide a list of all failed videos and the reason for
+  the failure.
+  If all will succeed will return a 200 status code.
+
+  Currently only for YT videos. For images and HTML5 assets we
+  will need to adress the part of moving the files into the
+  'uploads' folder before uploading to Google Ads.
+  """
+  asset_list = request.get_json(force=True)
+  failed = []
+
+  for asset in asset_list:
+    try:
+      upload(
+        client,
+        googleads_client,
+        asset['account'],
+        asset_type='YOUTUBE_VIDEO',
+        asset_name=asset['name'],
+        url=asset['url']
+      )
+      logging.info('uploaded video named: %s with url: %s to account: %s',
+                  asset['name'], asset['url'], asset['account'])
+    except Exception as e:
+      failed.append({'url':asset['url'],'name':asset['name'],'error':str(e)})
+      logging.error('failed to upload video named: %s with url: %s to account: %s with error: %s',
+                  asset['name'], asset['url'], asset['account'], str(e))
+
+  #If some uploads have failed return 206 status code
+  if failed:
+    return _build_response(msg=json.dumps(failed),status=206)
+
+  #If all uploads succeeded return 200
+  return _build_response(status=200)
 
 
 @server.route('/upload-asset/', methods=['POST'])
