@@ -38,6 +38,10 @@ Execute a following command in a folder under which you want to have AssetMG ins
 ```shell
 powershell -exec bypass -c "(New-Object Net.WebClient).Proxy.Credentials=[Net.CredentialCache]::DefaultNetworkCredentials;iwr('https://raw.githubusercontent.com/google/assetMG/master/scripts/setup_windows.ps1')|iex"
 ```
+or if you're in PowerShell (should be ran as administrator as well):
+```powershell
+(New-Object Net.WebClient).Proxy.Credentials=[Net.CredentialCache]::DefaultNetworkCredentials;iwr('https://raw.githubusercontent.com/google/assetMG/master/scripts/setup_windows.ps1')|iex
+```
 NOTE: the script will fail if executed in non-administative command prompt.
 
 **MacOS:**
