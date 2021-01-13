@@ -44,6 +44,8 @@ or if you're in PowerShell (should be ran as administrator as well):
 ```
 NOTE: the script will fail if executed in non-administative command prompt.
 
+Tip: to quickly run PowerShell prompt in a folder of choice just go to that folder in Windows Explorer then click "Open Windows PowerShell as administrator" in File menu in the Explorer's ribbon.
+
 **MacOS:**
 ```shell
 curl https://raw.githubusercontent.com/google/assetMG/master/scripts/setup_macos.command | bash -s
@@ -69,12 +71,12 @@ This section contains all technical details about installing in case you either 
 Basically all you need to run the app is:  
 
 * have/install Python >=3.7
-* have/install NodeJS
+* have/install NodeJS (compatible with Angular cli's version used in the project - see in front-end folder)
 * clone the repo from GitHub (https://github.com/google/assetMG.git)
-* install server (Python) dependencies via `pip`
+* install server (Python) dependencies via `pip` (still the recommended way to do it in a virtual environment)
 * install front-end (npm) dependencies via `npm`
 * build Angular app (run `ng build` in app/asset_browser/frontend)
-* run `python3 assetMG.py`
+* run `python3 assetMG.py` to start the backend
 
 The setup scripts do the heavy-lifting on checking for installed software (Python, Git, NodeJS), their versions (we need Python 3.7 or later), install missing components, etc.
 
@@ -84,9 +86,9 @@ curl https://pyenv.run | bash
 pyenv install 3.7.7
 pyenv global 3.7.7
 ```
-After that you'll need to execute `pyenv init` to instruction on how to update your shell config.
+After that you'll need to execute `pyenv init` to get instructions on how to update your shell config.
 
-A similar approach exists for NodeJS - to keep your current NodeJS use [NVM](https://github.com/nvm-sh/nvm).
+A similar approach exists for NodeJS - to keep your current global NodeJS use [NVM](https://github.com/nvm-sh/nvm).
 
 
 If we leave aside installion of required software (you can do it in whatether way you want), to setup and run the app for the first time execute the following block in the Terminal in a folder with cloned repository:  
@@ -103,7 +105,7 @@ python3 assetMG.py
 ```
 
 For Windows, the only difference will be is how you activate venv:
-`.venv\Scripts\activate.bat` (instead of `. .venv/bin/activate`), all other steps are the same.
+`.venv\Scripts\activate.bat` (instead of `. .venv/bin/activate`), all other steps are the same (though `export`s commands are not needed).
 
 #### Steps Breakdown
 
