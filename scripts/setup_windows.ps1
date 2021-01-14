@@ -118,7 +118,7 @@ if (`$local -eq `$remote) {
 . $python ./assetmg.py
 " | out-file ./win_run.ps1 -encoding ascii
 
-"powershell ./win_run.ps1"  | out-file ./win_run.cmd -encoding ascii
+"powershell -ExecutionPolicy bypass -File ./win_run.ps1"  | out-file ./win_run.cmd -encoding ascii
 
 # Creating a shortcut on desktop to run the cmd script
 $DesktopPath = [Environment]::GetFolderPath("Desktop")
