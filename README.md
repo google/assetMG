@@ -36,15 +36,17 @@ Execute a following command in a folder under which you want to have AssetMG ins
 
 **Windows:** put the command into cmd.exe ran as administrator [Guide](https://grok.lsu.edu/article.aspx?articleid=16850)
 ```shell
-powershell -exec bypass -c "(New-Object Net.WebClient).Proxy.Credentials=[Net.CredentialCache]::DefaultNetworkCredentials;iwr('https://raw.githubusercontent.com/google/assetMG/master/scripts/setup_windows.ps1')|iex"
+powershell -exec bypass -c "(New-Object Net.WebClient).Proxy.Credentials=[Net.CredentialCache]::DefaultNetworkCredentials;[System.Net.ServicePointManager]::SecurityProtocol = 'Tls,Tls11,Tls12'; iwr -Uri 'https://raw.githubusercontent.com/google/assetMG/master/scripts/setup_windows.ps1' -UseBasicParsing|iex"
 ```
 or if you're in PowerShell (should be ran as administrator as well):
 ```powershell
-(New-Object Net.WebClient).Proxy.Credentials=[Net.CredentialCache]::DefaultNetworkCredentials;iwr('https://raw.githubusercontent.com/google/assetMG/master/scripts/setup_windows.ps1')|iex
+(New-Object Net.WebClient).Proxy.Credentials=[Net.CredentialCache]::DefaultNetworkCredentials;[System.Net.ServicePointManager]::SecurityProtocol = 'Tls,Tls11,Tls12'; iwr -Uri 'https://raw.githubusercontent.com/google/assetMG/master/scripts/setup_windows.ps1' -UseBasicParsing|iex
 ```
-NOTE: the script will fail if executed in non-administative command prompt.
+NOTE: the scripts will fail if executed in non-administative command/PS prompt.
 
-Tip: to quickly run PowerShell prompt in a folder of choice just go to that folder in Windows Explorer then click "Open Windows PowerShell as administrator" in File menu in the Explorer's ribbon.
+:warning: On Windows if you're running script directly in PowerShell then you need to make sure script execution is enable (`Get-ExecutionPolicy` doesn't return "Restricted"). If it's not you'll get an error "File ..ps1 cannot be loaded because running scripts is disabled on the system.". To overcome this either change the execution policy via `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned` or run scripts via cmd (with `powershell -ExecutionPolicy Bypass "PS commands"`).
+
+:point_up: to quickly run PowerShell prompt in a folder of choice just go to that folder in Windows Explorer then click "Open Windows PowerShell as administrator" in File menu in the Explorer's ribbon.
 
 **MacOS:**
 ```shell
