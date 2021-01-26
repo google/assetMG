@@ -22,3 +22,8 @@ export interface ConfigSettings {
   refresh_token?: string;
   config_valid?: boolean;
 }
+
+export interface YouTubeSettings {
+  channel_id: string;
+  api_key: string;
+}

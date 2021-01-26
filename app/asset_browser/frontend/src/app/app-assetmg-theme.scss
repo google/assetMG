@@ -86,6 +86,10 @@ $assetmg-app-theme: mat-light-theme($assetmg-app-primary, $assetmg-app-accent, $
   margin-bottom: 15px !important;
 }
 
+.cdk-overlay-pane {
+height: fit-content;
+}
+
 /** Mat Tabel styling */
 .mat-header-cell {
   background-color: mat-color($assetmg-app-primary);
@@ -108,4 +112,23 @@ tr.mat-header-row {
 
 .mat-checkbox-inner-container {
   height: 17px !important;
+}
+
+.mat-dialog-container {
+  height: 520px !important;
+  min-height: 520px !important;
+  max-height: fit-content !important;
+  overflow: unset !important;
+}
+
+.mat-tab-body-content {
+  overflow: unset !important;
+}
+
+.settings-form form {
+  height: 296px !important;
+}
+
+.mat-dialog-content {
+  max-height: 424px !important;
 }

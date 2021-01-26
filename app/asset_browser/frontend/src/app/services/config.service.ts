@@ -15,7 +15,7 @@
  */
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ConfigSettings } from '../model/settings';
+import { ConfigSettings, YouTubeSettings } from '../model/settings';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
@@ -26,6 +26,7 @@ export class ConfigService {
 
   /** A cache of the configuration settings */
   private _configSettings: ConfigSettings = null;
+  private _YtConfigSettings: YouTubeSettings = null;
   private _configLoaded$ = new BehaviorSubject<boolean>(false);
 
   /** Reflect the state of the config file */
@@ -45,12 +46,31 @@ export class ConfigService {
         subscritpion.unsubscribe();
       });
   }
+
   getConfigSettings() {
     return this._configSettings;
   }
 
   updateConfigCache(config: ConfigSettings) {
     this._configSettings = config;
+  }
+
+  loadYtConfigSettings(){
+    const endpoint = this.API_SERVER + '/yt-config/'
+    let subscritpion = this.http
+    .get<YouTubeSettings>(endpoint)
+    .subscribe((config) => {
+      this._YtConfigSettings = config 
+      subscritpion.unsubscribe();
+    });
+  }
+
+  getYtConfigSettings(){
+    return this._YtConfigSettings;
+  }
+
+  updateYtConfigSettings(config: YouTubeSettings){
+    this._YtConfigSettings = config;
   }
 
   setConfigCredentials(
@@ -74,6 +94,16 @@ export class ConfigService {
     return this.http.post(
       endpoint,
       { code: refreshCode },
+      { observe: 'response' }
+    );
+  }
+
+  setYouTubeConfig(conf: YouTubeSettings): Observable<any> {
+    const endpoint = this.API_SERVER + '/set-yt/';
+    return this.http.post(
+      endpoint,
+      { channel_id: conf.channel_id,
+        api_key: conf.api_key },
       { observe: 'response' }
     );
   }

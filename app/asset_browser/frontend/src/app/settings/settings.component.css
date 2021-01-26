@@ -1,3 +1,24 @@
 .right-align{
   margin-left: auto !important;
 }
+
+.all{
+  width: 1300px;
+  height: 500px;
+}
+.mat-dialog-actions {
+  margin-bottom: 0;
+}
+
+.mat-tab-group{
+  box-sizing: content-box !important;
+}
+
+.color-red {
+  color: red;
+}
+
+.msg{
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+}

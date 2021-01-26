@@ -55,6 +55,7 @@ export class AssetGalleryComponent implements OnInit {
 
   ngOnInit(): void {
     this._configService.loadConfigSettings();
+    this._configService.loadYtConfigSettings();
     this._configService.configLoaded$.subscribe((loaded) => {
       let config = this._configService.getConfigSettings();
       if (!loaded && config) {
