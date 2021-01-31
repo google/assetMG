@@ -24,7 +24,7 @@ from app.backend.upload_asset import upload
 from app.backend.service import Service_Class
 from app.backend.yt_upload import initialize_upload
 from app.backend.error_handling import error_mapping
-from app.backend.get_yt import get_all_yt_videos
+from app.backend.get_yt import get_all_yt_videos, test_yt_credentials
 from googleapiclient.discovery import build
 from pathlib import Path
 import copy
@@ -60,7 +60,7 @@ server.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 CONFIG_PATH = Path('app/config/')
 CONFIG_FILE_PATH = Path('config.yaml')
-YT_CONFIG_FILE_PATH = Path('app/config/yt_config.json')
+YT_CONFIG_FILE_PATH = Path('app/config/yt-config.json')
 LOGS_PATH = Path('app/logs/server.log')
 YT_CLIENT_SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
 
@@ -187,6 +187,21 @@ def set_refresh_token():
     return _build_response(msg=json.dumps(refresh_token),status=200)
 
 
+@server.route('/yt-config/', methods=['GET'])
+def get_yt_configs():
+  """return all config parameters"""
+  try:
+    with open(YT_CONFIG_FILE_PATH, 'r') as fi:
+      config = json.load(fi)
+  except Exception as e:
+    config = {
+        'channel_id': '',
+        'api_key': '',
+    }
+
+  return _build_response(json.dumps(config),status=200)
+
+
 @server.route('/set-yt/', methods=['POST'])
 def set_yt():
   """Set yt-conifg.json with channel id and API key.
@@ -200,7 +215,8 @@ def set_yt():
     channel_id = data['channel_id']
     api_key = data['api_key']
 
-    with open('./app/config/yt-config.json', 'w') as f:
+    test_yt_credentials(channel_id,api_key)
+    with open(YT_CONFIG_FILE_PATH, 'w') as f:
       json.dump({'channel_id':channel_id,'api_key':api_key},f)
 
     return _build_response(status=200)
@@ -210,52 +226,52 @@ def set_yt():
     return _build_response(msg=json.dumps(str(e)), status=400)
 
 
-@server.route('/init-yt/', methods=['GET'])
-def init_yt():
-  """opens a browser with the login window. """
-  setup.set_yt_config()
-  yt_flow = InstalledAppFlow.from_client_secrets_file(
-    YT_CONFIG_FILE_PATH , YT_CLIENT_SCOPES)
-  credentials = yt_flow.run_local_server(host='localhost',
-    port=8080,
-    authorization_prompt_message='Please visit this URL: {url}',
-    success_message='The auth flow is complete; you may close this window.',
-    open_browser=True)
-  global yt_client
-  yt_client = build('youtube', 'v3', credentials = credentials)
-  return _build_response(status=200)
+# @server.route('/init-yt/', methods=['GET'])
+# def init_yt():
+#   """opens a browser with the login window. """
+#   setup.set_yt_config()
+#   yt_flow = InstalledAppFlow.from_client_secrets_file(
+#     YT_CONFIG_FILE_PATH , YT_CLIENT_SCOPES)
+#   credentials = yt_flow.run_local_server(host='localhost',
+#     port=8080,
+#     authorization_prompt_message='Please visit this URL: {url}',
+#     success_message='The auth flow is complete; you may close this window.',
+#     open_browser=True)
+#   global yt_client
+#   yt_client = build('youtube', 'v3', credentials = credentials)
+#   return _build_response(status=200)
 
 
-@server.route('/upload-to-yt/', methods=['POST'])
-def upload_to_yt():
-  """Call this route to upload a video to YT.
-  Send a JSON with the following params:
+# @server.route('/upload-to-yt/', methods=['POST'])
+# def upload_to_yt():
+#   """Call this route to upload a video to YT.
+#   Send a JSON with the following params:
 
-  file - str, path to the file to upload
-  title - str,
-  description - str, video description
-  category - str representing a number.
-  https://developers.google.com/youtube/v3/docs/videoCategories/list',
-  keywords - list,
-  privacyStatus - str, private/public/unlisted
+#   file - str, path to the file to upload
+#   title - str,
+#   description - str, video description
+#   category - str representing a number.
+#   https://developers.google.com/youtube/v3/docs/videoCategories/list',
+#   keywords - list,
+#   privacyStatus - str, private/public/unlisted
 
-  Returns:
-  dict - {"vid_id" : id}
-  """
-  data = request.get_json(force=True)
-  if data.get('file') is None:
-    return _build_response(msg=json.loads('File not specified', status=404))
-  try:
-    vid_id = initialize_upload(
-      yt_client,**{k: v for k, v in data.items() if v is not None})
-    status=200
-    msg = {'vid_id' : vid_id}
-  except Exception as e:
-    msg = str(e)
-    logging.error(str(e))
-    status=500
+#   Returns:
+#   dict - {"vid_id" : id}
+#   """
+#   data = request.get_json(force=True)
+#   if data.get('file') is None:
+#     return _build_response(msg=json.loads('File not specified', status=404))
+#   try:
+#     vid_id = initialize_upload(
+#       yt_client,**{k: v for k, v in data.items() if v is not None})
+#     status=200
+#     msg = {'vid_id' : vid_id}
+#   except Exception as e:
+#     msg = str(e)
+#     logging.error(str(e))
+#     status=500
 
-  return _build_response(msg = json.dumps(msg), status=status)
+#   return _build_response(msg = json.dumps(msg), status=status)
 
 
 @server.route('/get-yt-videos/', methods=['GET'])

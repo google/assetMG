@@ -1,0 +1,26 @@
+<form [formGroup]="YTform">
+  <div class="settings-field">
+    <mat-form-field>
+      <mat-label>YouTube Channel Id</mat-label>
+      <input matInput
+            formControlName="channel"
+            autocomplete="off"
+            >
+    </mat-form-field>
+  </div>
+  <div class="settings-field long-field">
+    <mat-form-field >
+      <mat-label>API Key</mat-label>
+      <input matInput
+            formControlName="key"
+            autocomplete="off"
+            >
+    </mat-form-field>
+  </div>
+  <button mat-stroked-button color="primary" (click)="toggleText()">What is this?</button>
+  <ng-container *ngIf="showText">
+    <div>
+      <p innerHTML={{instructions}}>{{instructions}}</p>
+    </div>
+  </ng-container>
+</form>

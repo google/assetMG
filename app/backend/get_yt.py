@@ -49,3 +49,11 @@ def get_all_yt_videos():
 
 
   return videos
+
+def test_yt_credentials(channel,key):
+  youtube = build('youtube','v3',developerKey=key)
+
+  youtube.channels().list(
+      id=channel,
+      part='contentDetails').execute()
+      

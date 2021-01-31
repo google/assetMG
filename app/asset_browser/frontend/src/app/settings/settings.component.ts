@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {
   MatDialogRef,
   MAT_DIALOG_DATA,
   MatDialog,
 } from '@angular/material/dialog';
-import { ConfigSettings } from '../model/settings';
+import { ConfigSettings, YouTubeSettings } from '../model/settings';
 import { AppSetupComponent } from '../app-setup/app-setup.component';
+import { YtConifgComponent } from '../shared/config/yt-conifg/yt-conifg.component'
 import { ConfigService } from '../services/config.service';
 
 @Component({
@@ -30,12 +31,16 @@ import { ConfigService } from '../services/config.service';
 })
 export class SettingsComponent {
   editMode: boolean = false;
+  verificationText: string = '';
+  errorFound: boolean = false;
+
+  @ViewChild('ytFormGroup') ytCredentials: YtConifgComponent;
 
   constructor(
     private _setupDialog: MatDialog,
     private _configService: ConfigService,
     public dialogRef: MatDialogRef<SettingsComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ConfigSettings
+    @Inject(MAT_DIALOG_DATA) public data: any,
   ) {}
   ngOnInit() {
     this.dialogRef.updateSize('900px', '450px');
@@ -43,7 +48,7 @@ export class SettingsComponent {
   onEdit() {
     this.dialogRef.close();
     const configDialogRef = this._setupDialog.open(AppSetupComponent, {
-      data: this.data,
+      data: <ConfigSettings>this.data.config,
     });
 
     let subscription = configDialogRef.backdropClick().subscribe((_) => {
@@ -51,5 +56,23 @@ export class SettingsComponent {
       this._configService.revertConfigSettings(this.data);
       subscription.unsubscribe();
     });
+  }
+
+  onYtSubmit() {
+    let YtConf: YouTubeSettings = {
+      channel_id: this.ytCredentials.YTform.get('channel').value.trim(),
+      api_key: this.ytCredentials.YTform.get('key').value.trim()
+    } 
+    return this._configService.setYouTubeConfig(YtConf).subscribe(
+      (response) => {
+          this._configService.updateYtConfigSettings(YtConf)
+          this.errorFound = false
+          this.verificationText = 'Credentials Updated'
+      },
+      (error) =>{
+        this.errorFound = true
+        this.verificationText = 'Invalid Credentials'
+      }
+    )
   }
 }

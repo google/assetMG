@@ -71,15 +71,22 @@ export class ToolbarComponent implements OnInit {
 
   openSettings() {
     let config = this._configService.getConfigSettings();
+    let ytConfig = this._configService.getYtConfigSettings();
     this._settingsDialog.open(SettingsComponent, {
       data: {
+        config:{
         client_customer_id: config.client_customer_id,
         client_id: config.client_id,
         client_secret: config.client_secret,
         developer_token: config.developer_token,
         refresh_token: config.refresh_token,
-        config_valid: config.config_valid,
-      },
+        config_valid: config.config_valid
+        },
+        yt:{
+        channel_id: ytConfig.channel_id,
+        api_key: ytConfig.api_key
+        }
+      }
     });
   }
 

@@ -1,18 +1,42 @@
 <h1 mat-dialog-title>AssetMG Settings</h1>
-<div mat-dialog-content>
-  <app-credentials #credentialsFormGroup
-    [data]="this.data"
-    [editMode]=false>
-  </app-credentials>
-</div>
-<div mat-dialog-actions>
-  <button mat-stroked-button
-    color="primary"
-    (click)="onEdit()">Edit</button>
-  <button mat-stroked-button
-    color="primary"
-    class="right-align"
-    [mat-dialog-close]="true"
-    cdkFocusInitial>Ok</button>
-</div>
+<mat-tab-group>
+<mat-tab label="General">
+  <div mat-dialog-content>
+    <app-credentials class="settings-form" #credentialsFormGroup
+      [data]="this.data.config"
+      [editMode]=false>
+    </app-credentials>
+    <div mat-dialog-actions>
+      <button mat-stroked-button
+        color="primary"
+        (click)="onEdit()">Edit</button>
+      <button mat-stroked-button
+        color="primary"
+        class="right-align"
+        [mat-dialog-close]="true"
+        cdkFocusInitial>Ok</button>
+    </div>
+  </div>
+</mat-tab>
+<mat-tab label="YouTube Config">
+  <div mat-dialog-content>
+    <app-yt-config class="settings-form" #ytFormGroup
+    [ytData]="this.data.yt">
+    </app-yt-config>
+    <div>
+      <p [ngClass]="{'msg': true, 'color-red':this.errorFound}">{{verificationText}}</p>
+    </div>
+    <div mat-dialog-actions>
+      <button mat-stroked-button
+        color="primary"
+        (click)="onYtSubmit()">Update</button>
+      <button mat-stroked-button
+        color="primary"
+        class="right-align"
+        [mat-dialog-close]="true"
+        cdkFocusInitial>Ok</button>
+    </div>
+  </div>
+</mat-tab>
+</mat-tab-group>
 

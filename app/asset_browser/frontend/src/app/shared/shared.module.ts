@@ -20,6 +20,7 @@ import { ProgressBtnComponent } from './progress-btn/progress-btn.component';
 import { LoaderComponent } from './loader/loader.component';
 import { CredentialsComponent } from './config/credentials/credentials.component';
 import { RefreshCodeComponent } from './config/refresh-code/refresh-code.component';
+import { YtConifgComponent } from './config/yt-conifg/yt-conifg.component';
 import { ClientIDPipe } from './client-id.pipe';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpErrorInterceptor } from '../interceptors/http-error.interceptor';
@@ -38,6 +39,7 @@ import { ErrorMsgPipe } from './error-msg.pipe';
     UploadComponent,
     ClientIDPipe,
     ErrorMsgPipe,
+    YtConifgComponent,
   ],
   imports: [CommonModule, FormsModule, ReactiveFormsModule, MaterialModule],
   exports: [
@@ -50,6 +52,7 @@ import { ErrorMsgPipe } from './error-msg.pipe';
     ReactiveFormsModule,
     UploadComponent,
     ErrorMsgPipe,
+    YtConifgComponent,
   ],
   providers: [
     LoaderService,
