@@ -37,6 +37,8 @@ import { YouTubePlayerModule } from '@angular/youtube-player';
 import { AccountStructComponent } from './account-struct//account-struct.component';
 import { AssetGridComponent } from './asset-grid/asset-grid.component';
 import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
+import { VideoSelectComponent } from './upload-assets/video-select/video-select.component';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
 @NgModule({
   declarations: [
@@ -57,6 +59,7 @@ import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
     AccountStructComponent,
     AssetGridComponent,
     ErrorDialogComponent,
+    VideoSelectComponent,
   ],
   imports: [
     BrowserModule,
@@ -65,6 +68,7 @@ import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
     HttpClientModule,
     SharedModule,
     YouTubePlayerModule,
+    Ng2SearchPipeModule
   ],
   providers: [],
   bootstrap: [AppComponent],

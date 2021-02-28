@@ -39,7 +39,7 @@ import { MatDividerModule } from '@angular/material/divider';
 // import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-// import {MatListModule} from '@angular/material/list';
+import {MatListModule} from '@angular/material/list';
 // import {MatMenuModule} from '@angular/material/menu';
 // import {MatNativeDateModule, MatRippleModule} from '@angular/material/core';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -82,7 +82,7 @@ import { MatTreeModule } from '@angular/material/tree';
     // MatGridListModule,
     MatIconModule,
     MatInputModule,
-    // MatListModule,
+    MatListModule,
     // MatMenuModule,
     // MatNativeDateModule,
     MatPaginatorModule,

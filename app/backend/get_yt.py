@@ -13,7 +13,7 @@ def get_all_yt_videos():
   api_key = yt_config['api_key']
   videos = []
 
-  youtube = build('youtube','v3',developerKey=api_key)
+  youtube = build('youtube','v3',developerKey=api_key, cache_discovery=False)
 
   channels = youtube.channels().list(
       id=channel_id,
@@ -43,7 +43,8 @@ def get_all_yt_videos():
           'url': YT_URL_PREFIX + video_id
       })
 
-    next_page_token = vids.get('next_page_token')
+    next_page_token = vids.get('nextPageToken')
+    # print(vids)
     if next_page_token is None:
       break
 
