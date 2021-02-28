@@ -1,0 +1,19 @@
+.actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.video-list {
+  height: 360px;
+  overflow-y: auto;
+  display: inline-block;
+  width: -webkit-fill-available;
+}
+
+.vidSearchField {
+  width: 60%;
+  float: left;
+}
+

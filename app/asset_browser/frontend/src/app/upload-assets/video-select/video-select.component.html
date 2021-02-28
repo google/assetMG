@@ -1,0 +1,20 @@
+<div class="vidSearchField">
+<mat-form-field floatLabel=never appearance="legacy">
+  <input matInput class="form-control" type="text" name="search" [(ngModel)]="searchText" autocomplete="off" placeholder="Search video by name">
+  <span matPrefix><i class="fas fa-search"></i>&nbsp;</span>
+</mat-form-field>
+</div>
+  <form [formGroup]="form" (ngSubmit)="submit(form)">
+<mat-selection-list class="video-list" #vids formControlName="myOtherControl">
+  <mat-list-option *ngFor="let vid of videos | filter:searchText" [selected]="this.mySelect.indexOf(vid) > -1" [value]="vid">
+    <img matListAvatar src="{{vid.thumbnail}}" alt="{{vid.url}}"/>
+    {{vid.name}}
+    <a href="{{vid.url}}" target="_blank">Link</a>
+  </mat-list-option>
+</mat-selection-list>
+<div class="actions">
+  <button mat-raised-button class="add-btn" type="submit">Add</button>
+  <button mat-raised-button class="cancel-btn" type="button" (click)="dialogRef.close()">Cancel</button>
+</div>
+</form>
+

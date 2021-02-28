@@ -16,6 +16,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AssetType } from '../model/asset';
+import { YouTubeVid } from '../model/yt-vid'
 import { BehaviorSubject } from 'rxjs';
 import { UploadResponse } from '../model/response';
 
@@ -24,6 +25,9 @@ import { UploadResponse } from '../model/response';
 })
 export class UploadAssetService {
   private API_SERVER = 'http://127.0.0.1:5000';
+
+  private _YtVidList$ = new BehaviorSubject<YouTubeVid[]>(null);
+  ytVidList$ = this._YtVidList$.asObservable();  
 
   constructor(private http: HttpClient) {}
 
@@ -97,5 +101,19 @@ export class UploadAssetService {
     let subscritpion = this.http.get(endpoint).subscribe((_) => {
       subscritpion.unsubscribe();
     });
+  }
+
+  loadYtChannelVideos(){
+    const endpoint = this.API_SERVER + '/get-yt-videos/';
+    let subscription = this.http.get<YouTubeVid[]>(endpoint)
+    .subscribe((vids) =>{
+      this._YtVidList$.next(vids);
+      subscription.unsubscribe();
+    })
+  }
+
+  bulkUploadToYt(uploadList){
+    const endpoint = this.API_SERVER + '/upload-asset-bulk/'
+    return this.http.post(endpoint, uploadList, {observe: 'response'})
   }
 }

@@ -33,6 +33,8 @@
               <app-upload-video
                 #uploadVideo
                 (isChildFormValid)="updateStepValid($event)"
+                (isBulkUpload)="setIsBulkUpload($event)"
+                (isBulkVidFilesSelected)="setIsBulkFilesSelected($event)"
                 *ngSwitchCase="assetTypes.VIDEO">
               </app-upload-video>
               <app-upload-html
@@ -71,9 +73,15 @@
       <button mat-stroked-button
         color="primary"
         class="right-align"
-        *ngIf="stepper.selectedIndex !== 2"
+        *ngIf="stepper.selectedIndex !== 2 && isBulkUpload != true"
         [disabled]="!isChildFormValid"
         (click)="onNext(stepper)">Next</button>
+        <button mat-stroked-button
+        color="primary"
+        class="right-align"
+        *ngIf="isBulkUpload === true"
+        [disabled]="!isBulkFilesSelected"
+        (click)="bulkUploadVideos()">Upload</button>
       <app-progress-btn
         btnLabel='Add Asset'
         class="right-align"

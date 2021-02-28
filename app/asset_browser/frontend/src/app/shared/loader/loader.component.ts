@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { LoaderService } from '../../services/loader.service';
 @Component({
@@ -21,7 +21,16 @@ import { LoaderService } from '../../services/loader.service';
   templateUrl: './loader.component.html',
   styleUrls: ['./loader.component.css'],
 })
-export class LoaderComponent {
-  isLoading: Subject<boolean> = this.loaderService.isLoading;
-  constructor(private loaderService: LoaderService) {}
+export class LoaderComponent implements OnInit {
+  isLoading: boolean;
+  constructor(
+    private loaderService: LoaderService,
+    private cdf: ChangeDetectorRef
+  ) {}
+  ngOnInit(): void {
+    this.loaderService.isLoading.subscribe((loading) => {
+      this.isLoading = loading;
+      this.cdf.detectChanges();
+    });
+  }
 }
