@@ -37,6 +37,7 @@ export enum FileType {
   styleUrls: ['./upload.component.css'],
 })
 export class UploadComponent implements OnInit {
+  action: string = location.origin + '/upload-files/';
   fileNames: string[] = [];
   selectedFileName: string = '';
   invalidDimensionsMsg: string = '';

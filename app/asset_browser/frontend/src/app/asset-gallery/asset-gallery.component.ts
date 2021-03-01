@@ -16,7 +16,7 @@
 import { AssetService } from './../services/asset.service';
 import { AccountAGs } from './../model/account';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Subscription, Observable } from 'rxjs';
+import { Subscription, Observable, from } from 'rxjs';
 import { MatSidenav } from '@angular/material/sidenav';
 import { ConfigService } from '../services/config.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -25,6 +25,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginator } from '@angular/material/paginator';
 import { AssetDetailsComponent } from '../asset-details/asset-details.component';
 import { ReloadAppService } from '../services/reload-app.service';
+import { AuthorizationService } from '../services/authorization.service';
 
 @Component({
   selector: 'app-asset-gallery',
@@ -36,6 +37,7 @@ export class AssetGalleryComponent implements OnInit {
 
   account: AccountAGs;
   openSideNav: boolean = false;
+  showAssetGrid: boolean = false;
 
   @ViewChild('sideNav') sideNav: MatSidenav;
   @ViewChild('assetDetails') assetDetails: AssetDetailsComponent;
@@ -44,6 +46,7 @@ export class AssetGalleryComponent implements OnInit {
   constructor(
     private _dataService: AssetService,
     private _configService: ConfigService,
+    private _authorizationService: AuthorizationService,
     private _reloadAppService: ReloadAppService,
     private _setupDialog: MatDialog,
     private _snackBar: MatSnackBar
@@ -71,6 +74,17 @@ export class AssetGalleryComponent implements OnInit {
         });
       }
     });
+
+    this._subscriptions.push(
+      this._authorizationService.loggedIn$.subscribe((loggedIn) => {
+        if (loggedIn) {
+          this.showAssetGrid = true;
+        } else {
+          this.showAssetGrid = false;
+        }
+      })
+    )
+
     this._subscriptions.push(
       this._dataService.accountAGs$.subscribe((account) => {
         this.account = account;

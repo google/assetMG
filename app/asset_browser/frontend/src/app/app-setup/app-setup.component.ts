@@ -15,6 +15,7 @@
  */
 import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 //import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import {
   MatDialog,
   MatDialogRef,
@@ -28,6 +29,7 @@ import {
 import { ConfigService } from '../services/config.service';
 import { CredentialsComponent } from '../shared/config/credentials/credentials.component';
 import { ClientIDPipe, transformAction } from '../shared/client-id.pipe';
+import { AuthorizationService } from '../services/authorization.service';
 
 @Component({
   selector: 'app-app-setup',
@@ -41,11 +43,13 @@ import { ClientIDPipe, transformAction } from '../shared/client-id.pipe';
   ],
 })
 export class AppSetupComponent implements OnInit {
-  // private _oldConfig: ConfigSettings;
+  private _subscriptions: Subscription[] = [];
+
   generateTokenURL: string = '';
   verificationTitle: string = 'Setup verification';
   verificationText: string = '';
   setupInProgress: boolean = true;
+  isLoggedIn: boolean = false;
   errorFound: boolean = false;
 
   @ViewChild('credentialsFormGroup') credentials: CredentialsComponent;
@@ -53,6 +57,7 @@ export class AppSetupComponent implements OnInit {
 
   constructor(
     private _configService: ConfigService,
+    private _authorizationService: AuthorizationService,
     private _cidPipe: ClientIDPipe,
     public setupDialogRef: MatDialogRef<AppSetupComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ConfigSettings
@@ -60,9 +65,12 @@ export class AppSetupComponent implements OnInit {
 
   ngOnInit(): void {
     this.setupDialogRef.updateSize('800px', '520px');
-    // if (this.data.config_valid) {
-    //    this._oldConfig = this.data;
-    // }
+
+    this._subscriptions.push(
+      this._authorizationService.loggedIn$.subscribe((loggedIn) => {
+        this.isLoggedIn = loggedIn;
+      })
+    )
   }
 
   revertChanges() {}
@@ -81,25 +89,22 @@ export class AppSetupComponent implements OnInit {
       developer_token: this.credentials.form.get('devTokenCtrl').value.trim(),
     };
     if (event.selectedIndex === 1) {
-      // Update the config file with the credentials and get the URL
-      // to generate the refresh token
-      let subscription = this._configService
-        .setConfigCredentials(
+      // This is the login-to-server section.
+      // Updates the config settings in the Auth service and on the
+      // server-side to ensure correct gapi behaviour.
+      this._configService.updateConfigCache(config);
+      this._configService.setConfigCredentials(
           config.client_customer_id,
           config.client_id,
           config.client_secret,
           config.developer_token
         )
-        .subscribe((response) => {
-          this.generateTokenURL = response.body;
-          subscription.unsubscribe();
-        });
     } else if (event.selectedIndex === 2) {
-      // Update the refresh token - this will trigger a varification of
+      // Update the refresh token - this will trigger a verification of
       // the credentials in the backend
       let subscription = this._configService
         .setConfigRefreshCode(
-          this.refreshCode.form.get('refreshCodeCtrl').value
+          this._authorizationService.getRefreshToken()
         )
         .subscribe(
           (response) => {
@@ -108,22 +113,23 @@ export class AppSetupComponent implements OnInit {
             this._configService.updateConfigCache(config);
             this.setupInProgress = false;
             this.verificationText = 'Setup complete!';
+            this._authorizationService.logout();
             subscription.unsubscribe();
           },
           (error) => {
-            // console.log('Error: ', error);
-            // console.log('Config: ', this._oldConfig);
-            // if (this._oldConfig) {
-            //   this._configService.updateConfigCache(this._oldConfig);
-            // }
             this.setupInProgress = false;
             this.errorFound = true;
-            this.verificationText = 'Setup failed. Invalid crednetials.';
+            this.verificationText = 'Setup failed. Invalid credentials.';
             subscription.unsubscribe();
           }
         );
     }
   }
+
+  forceLogin() {
+    this._authorizationService.authenticate(true);
+  }
+
   private resetState() {
     this.errorFound = false;
     this.verificationText = '';

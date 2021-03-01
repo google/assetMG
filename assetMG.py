@@ -30,7 +30,7 @@ from pathlib import Path
 import copy
 import logging
 import yaml
-from google_auth_oauthlib.flow import InstalledAppFlow
+from google_auth_oauthlib.flow import InstalledAppFlow, Flow
 import webbrowser
 import threading
 import os
@@ -71,8 +71,10 @@ logging.basicConfig(filename=LOGS_PATH,
                     level=logging.INFO,
                     format='%(asctime)s:%(levelname)s:%(message)s')
 
-client=''
-googleads_client=''
+BASE_URL = ''
+flow = None
+client = ''
+googleads_client = ''
 
 
 # check if config is valid. if yes, init clients and create struct
@@ -124,7 +126,6 @@ def get_configs():
 def set_secret():
   """gets client id, client secret, dev token, account id.
   Saves to config.yaml and returns refresh url"""
-  global flow
   data = request.get_json(force=True)
 
   # determines if a reset to prev valid config or trying to setup new config
@@ -143,18 +144,43 @@ def set_secret():
     return _build_response(msg=json.dumps(
       'successfully restored previous configs'), status=200)
 
+  init_flow(
+      client_id=data['client_id'],
+      client_secret=data['client_secret']
+    )
+
+  return _build_response(msg=json.dumps(""), status=200)
+
+
+def init_flow(from_client_config=False, client_id=None, client_secret=None):
+  global flow
   try:
+    if from_client_config:
+      # Get credentials from config file
+      with open(CONFIG_FILE_PATH, 'r') as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
+        client_id = config['client_id']
+        client_secret = config['client_secret']
+
     client_config = {
-        'installed': {
-            'client_id': data['client_id'],
-            'client_secret': data['client_secret'],
+        'web': {
+            'client_id': client_id,
+            'client_secret': client_secret,
             'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
             'token_uri': 'https://accounts.google.com/o/oauth2/token',
         }
     }
-    flow = InstalledAppFlow.from_client_config(
-        client_config, scopes=['https://www.googleapis.com/auth/adwords'])
-    flow.redirect_uri = 'urn:ietf:wg:oauth:2.0:oob'
+    flow = Flow.from_client_config(
+        client_config=client_config,
+        scopes=[
+          'openid',
+          'https://www.googleapis.com/auth/adwords',
+          'https://www.googleapis.com/auth/userinfo.profile',
+          'https://www.googleapis.com/auth/userinfo.email'
+          ]
+        )
+    
+    flow.redirect_uri = BASE_URL
     auth_url, _ = flow.authorization_url()
     status=200
 
@@ -163,14 +189,36 @@ def set_secret():
     status=500
     auth_url = ''
 
-  return _build_response(msg=json.dumps(auth_url), status=status)
+
+@server.route('/get-refresh-token/', methods=['POST'])
+def get_refresh_token():
+  """Gets the refresh token from a given frontend refresh
+  access token."""
+  if not flow:
+    init_flow(from_client_config=True)
+    logging.info(flow)
+
+  data = request.get_json(force=True)
+  code = data['code']
+  failed, refresh_token = setup.get_refresh_token(code, flow)
+
+  if failed:
+    return _build_response(
+      msg=json.dumps('Could not get refresh token.'),
+      status=500
+    )
+  
+  return _build_response(
+    msg=json.dumps(refresh_token),
+    status=200
+  )
 
 
 @server.route('/set-refresh/', methods=['POST'])
 def set_refresh_token():
   """Can only be called if set-configs was called before.
   Gets the refresh token and saves it to config.yaml
-  If succesfull calls init_client()"""
+  If successful calls init_client()"""
   data = request.get_json(force=True)
   code = data['code']
   set_status, refresh_token = setup.set_refresh(code,flow)
@@ -725,8 +773,13 @@ def upload_asset():
   """
   data = request.get_json(force=True)
 
-  if data.get('account') is None or data.get('asset_type') is None:
+  if data.get('account') is None or data.get('asset_type') is None or data.get('refresh_token') is None:
     return _build_response(msg='invalid arguments', status=400)
+
+  refresh_token = data.get('refresh_token')
+  logging.info(f"Using provided refresh token: {refresh_token}")
+
+  ga_client = init_user_googleads_client(refresh_token)
 
   # uniform file names
   asset_name = data.get('asset_name')
@@ -739,7 +792,7 @@ def upload_asset():
   try:
     result = upload(
         client,
-        googleads_client,
+        ga_client,
         data.get('account'),
         data.get('asset_type'),
         asset_name,
@@ -828,6 +881,49 @@ def init_clients():
   return status
 
 
+def _get_config_file_contents():
+  """Gets the contents of the config file"""
+  try:
+    with open(CONFIG_FILE_PATH, 'r') as f:
+      config = yaml.load(f, Loader=yaml.FullLoader)
+    return config
+  except Exception as e:
+    logging.error(str(e))
+
+
+def _make_api_config_dict(refresh_token: string) -> dict:
+  """Creates a standard config structure for the GoogleAds and Adwords
+  API's client instantiation by using the generic configuration file
+  and adding the user's refresh token."""
+  c = _get_config_file_contents()
+  api_config = {
+    'client_id': c['client_id'],
+    'client_secret': c['client_secret'],
+    'client_customer_id': c['client_customer_id'],
+    'developer_token': c['developer_token'],
+    'refresh_token': refresh_token
+  }
+  return api_config
+
+
+def init_user_googleads_client(refresh_token: string) -> GoogleAdsClient:
+  """Initiates a new user-based GoogleAds API client."""
+  api_config = _make_api_config_dict(refresh_token)
+  ga_client = GoogleAdsClient.load_from_dict(api_config)
+  return ga_client
+
+
+def init_user_adwords_client(refresh_token: string) -> adwords.AdWordsClient:
+  """Initiates a new user-based GoogleAds API client."""
+  api_config = _make_api_config_dict(refresh_token)
+  config_dict = {
+    'adwords': api_config
+  }
+  yaml_string = yaml.dump(config_dict)
+  aw_client = adwords.AdWordsClient.LoadFromString(yaml_doc=yaml_string)
+  return aw_client
+
+
 def shutdown_server():
   func = request.environ.get('werkzeug.server.shutdown')
   if func is None:
@@ -842,12 +938,22 @@ def shutdown():
 
 
 def open_browser():
-  webbrowser.open_new('http://127.0.0.1:5000/')
+  webbrowser.open_new(BASE_URL)
 
 
-def start_server():
-  server.run()
+def get_server_config():
+  try:
+    with open('server.yaml', 'r') as f:
+      config_file = yaml.load(f, Loader=yaml.FullLoader)
+      host = config_file['hostname']
+      port = config_file['port']
+      return host, port
+  except:
+    raise RuntimeError('Cannot find server.yaml, or server.yaml is not correctly formatted.')
+
 
 if __name__ == '__main__':
+  host, port = get_server_config()
+  BASE_URL = f'http://{host}:{port}'
   threading.Timer(1, open_browser).start()
-  server.run()
+  server.run(host=host, port=port)

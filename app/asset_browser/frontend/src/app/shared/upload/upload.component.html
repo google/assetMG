@@ -1,7 +1,7 @@
 <iframe id="hiddenFrame" name="hiddenFrame"></iframe>
 <form #form
   ngNoForm
-  action='http://127.0.0.1:5000/upload-files/'
+  action={{action}}
   method="POST"
   enctype="multipart/form-data"
   target="hiddenFrame">

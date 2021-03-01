@@ -33,7 +33,7 @@ import { Account, AccountAGs } from './../model/account';
   providedIn: 'root',
 })
 export class AssetService {
-  private API_SERVER = 'http://127.0.0.1:5000';
+  private API_SERVER = location.origin;
 
   /** Gets updated when the account changes */
   private _activeAccountId$ = new BehaviorSubject<number>(null);
@@ -97,9 +97,9 @@ export class AssetService {
   /** Loads all the asset to adgroups mapping */
   private getAssetsToAdGroups() {
     const endpoint = this.API_SERVER + '/assets-to-ag/';
-    let subscritpion = this._http.get<Asset[]>(endpoint).subscribe((assets) => {
+    let subscription = this._http.get<Asset[]>(endpoint).subscribe((assets) => {
       this._assetsToAdGroups = assets;
-      subscritpion.unsubscribe();
+      subscription.unsubscribe();
     });
   }
 

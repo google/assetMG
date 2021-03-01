@@ -37,3 +37,7 @@ app-asset-grid {
 .left-align-content {
   margin: unset;
 }
+
+.pad-div {
+  padding: 20px;
+}

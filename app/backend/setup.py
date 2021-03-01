@@ -23,7 +23,6 @@ import json
 import os
 from pathlib import Path
 import logging
-from google_auth_oauthlib.flow import InstalledAppFlow
 from googleads import adwords
 
 LOGS_PATH = Path('app/logs/server.log')
@@ -48,31 +47,45 @@ def set_api_configs():
     yaml.dump(config, f)
 
 
-def set_refresh(code,flow):
-  """Gets the refresh token, using code from the user"""
+def get_refresh_token(code, flow):
+  """Gets the refresh token using the access code from the user"""
   code = code.strip()
-  finish_status = 0
+  failure = False
+  refresh_token = None
 
   try:
     flow.fetch_token(code=code)
-  except Exception as ex:
-    logging.error('Authentication has failed: %s' % ex)
-    finish_status = 1
+    refresh_token = flow.credentials.refresh_token
+    logging.info(refresh_token)
+  except Exception as e:
+    logging.error(f'Authentication has failed: {e}')
+    failure = True
+  
+  return failure, refresh_token
 
-  try:  
+
+def set_refresh(code,flow):
+  """Sets the refresh token in the config file, using code from
+  the user"""
+  failure = False
+
+  refresh_token = code
+  if failure:
+    return failure, refresh_token
+
+  try:
     with open(CONFIG_FILE_PATH, 'r') as f:
       credentials = yaml.safe_load(f)
 
-    refresh_token = flow.credentials.refresh_token
     credentials['refresh_token'] = refresh_token
     with open(CONFIG_FILE_PATH, 'w') as f:
       yaml.dump(credentials, f, default_flow_style=False)
 
   except Exception as e:
     logging.error(str(e))
-    finish_status = 1
-    
-  return finish_status , refresh_token
+    failure = True
+
+  return failure , refresh_token
 
 def set_yt_config():
   """set the YT api config file"""

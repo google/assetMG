@@ -14,7 +14,11 @@
         </mat-select>
         </mat-form-field>
     </div>
+    <div *ngIf="!this.loadAccounts" class="right-align">
+      <app-login></app-login>
+    </div>
     <div *ngIf="this.loadAccounts" class="right-align">
+      <app-login></app-login>
       <button mat-icon-button (click)="openSettings()"><mat-icon>settings</mat-icon></button>
       <button mat-icon-button (click)="feedbackClicked()"><mat-icon>feedback</mat-icon></button>
     </div>

@@ -13,9 +13,19 @@
       </app-asset-details>
     </mat-sidenav>
     <mat-sidenav-content>
-      <app-asset-grid [account]="account"
-        [openAssetDetails]="openAssetDetailsFunc"
-        [closeAssetDetails]="closeAssetDetailsFunc">
-      </app-asset-grid>
+      <ng-template [ngIf]="showAssetGrid">
+        <app-asset-grid 
+          [account]="account"
+          [openAssetDetails]="openAssetDetailsFunc"
+          [closeAssetDetails]="closeAssetDetailsFunc"
+          [hidden]>
+        </app-asset-grid>
+      </ng-template>
+
+      <ng-template [ngIf]="!showAssetGrid">
+        <div class="pad-div">
+          <mat-card>Please login to view assets.</mat-card>
+        </div>
+      </ng-template>
     </mat-sidenav-content>
   </mat-sidenav-container>

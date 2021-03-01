@@ -22,7 +22,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ConfigService {
-  private API_SERVER = 'http://127.0.0.1:5000';
+  private API_SERVER = location.origin;
 
   /** A cache of the configuration settings */
   private _configSettings: ConfigSettings = null;
@@ -37,13 +37,13 @@ export class ConfigService {
 
   loadConfigSettings() {
     const endpoint = this.API_SERVER + '/config/';
-    let subscritpion = this.http
+    let subscription = this.http
       .get<ConfigSettings>(endpoint)
       .subscribe((config) => {
         this._configSettings = config;
         this.configValid = config.config_valid;
         this._configLoaded$.next(this.configValid);
-        subscritpion.unsubscribe();
+        subscription.unsubscribe();
       });
   }
 
@@ -77,7 +77,8 @@ export class ConfigService {
     mcc: number,
     clientId: string,
     clientSecret: string,
-    dev_token: string
+    dev_token: string,
+    redirect_uri?: string,
   ): Observable<any> {
     const endpoint = this.API_SERVER + '/set-configs/';
     let configObj: ConfigSettings = {
@@ -85,8 +86,18 @@ export class ConfigService {
       client_id: clientId,
       client_secret: clientSecret,
       developer_token: dev_token,
+      redirect_uri: redirect_uri,
     };
     return this.http.post(endpoint, configObj, { observe: 'response' });
+  }
+
+  getConfigRefreshCode(refreshCode: string): Observable<any> {
+    const endpoint = this.API_SERVER + '/get-refresh-token/';
+    return this.http.post(
+      endpoint,
+      { code: refreshCode },
+      { observe: 'response' }
+    )
   }
 
   setConfigRefreshCode(refreshCode: string): Observable<any> {
@@ -111,9 +122,9 @@ export class ConfigService {
   revertConfigSettings(config: ConfigSettings) {
     if (config.config_valid) {
       const endpoint = this.API_SERVER + '/set-configs/';
-      let subscritpion = this.http.post(endpoint, config).subscribe((_) => {
+      let subscription = this.http.post(endpoint, config).subscribe((_) => {
         this.updateConfigCache(config);
-        subscritpion.unsubscribe();
+        subscription.unsubscribe();
       });
     }
   }

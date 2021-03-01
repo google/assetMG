@@ -15,17 +15,18 @@
             class="right-align">Next</button>
         </div>
     </mat-step>
-    <mat-step [stepControl]="refreshCodeFormGroup">
-        <ng-template matStepLabel>Generate a refresh token</ng-template>
-        <p>Click on the 'Generate Code' button and login with your account, then copy the generated code back here</p>
-        <app-refresh-code
-          #refreshCodeFormGroup
-          [openURL]="generateTokenURL"></app-refresh-code>
+    <mat-step>
+      <ng-template matStepLabel>Generate a refresh token</ng-template>
+      <p>Click below to login with your service account. Once you've done so, click next.</p>
+      <app-progress-btn
+        btnLabel='Server Login'
+        (btnClick)="forceLogin()">
+      </app-progress-btn>
         <div>
           <button mat-stroked-button matStepperPrevious color="primary">Back</button>
           <button mat-stroked-button
             matStepperNext
-            [disabled]="!refreshCodeFormGroup.form.valid"
+            [disabled]="!isLoggedIn"
             color="primary"
             class="right-align">Next</button>
         </div>

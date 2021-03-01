@@ -19,17 +19,21 @@ import { AssetType } from '../model/asset';
 import { YouTubeVid } from '../model/yt-vid'
 import { BehaviorSubject } from 'rxjs';
 import { UploadResponse } from '../model/response';
+import { AuthorizationService } from './authorization.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UploadAssetService {
-  private API_SERVER = 'http://127.0.0.1:5000';
+  private API_SERVER = location.origin;
 
   private _YtVidList$ = new BehaviorSubject<YouTubeVid[]>(null);
   ytVidList$ = this._YtVidList$.asObservable();  
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private _authorizationService: AuthorizationService
+  ) {}
 
   /** Used for text assets only */
   addTextAsset(
@@ -40,8 +44,10 @@ export class UploadAssetService {
   ) {
     const endpoint = this.API_SERVER + '/upload-asset/';
 
+    var refreshToken = this._authorizationService.getRefreshToken();
     let textAsset = {
       account: account,
+      refresh_token: refreshToken,
       asset_type: assetType,
       asset_name: '',
       asset_text: text,
@@ -62,9 +68,11 @@ export class UploadAssetService {
     let asset;
     const endpoint = this.API_SERVER + '/upload-asset/';
 
+    var refreshToken = this._authorizationService.getRefreshToken();
     if (assetType === AssetType.VIDEO) {
       asset = {
         account: account,
+        refresh_token: refreshToken,
         asset_type: assetType,
         asset_name: assetName,
         url: url,
@@ -73,6 +81,7 @@ export class UploadAssetService {
     } else {
       asset = {
         account: account,
+        refresh_token: refreshToken,
         asset_type: assetType,
         asset_name: assetName,
         adgroups: adGroups,

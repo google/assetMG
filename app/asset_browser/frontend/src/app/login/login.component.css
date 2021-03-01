@@ -1,0 +1,8 @@
+button {
+    min-width: 50px;
+    display: inline-block;
+    margin: 0 auto;
+    padding: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+  }

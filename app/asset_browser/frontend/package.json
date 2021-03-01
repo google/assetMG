@@ -25,6 +25,8 @@
     "@angular/youtube-player": "^10.0.1",
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@rxweb/reactive-form-validators": "^2.0.0-rc6",
+    "@types/gapi": "^0.0.39",
+    "@types/gapi.auth2": "^0.0.52",
     "font-awesome": "^4.7.0",
     "ng2-search-filter": "^0.5.1",
     "rxjs": "~6.6.0",
