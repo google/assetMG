@@ -98,7 +98,7 @@ export class AppSetupComponent implements OnInit {
           config.client_id,
           config.client_secret,
           config.developer_token
-        )
+        ).subscribe()
     } else if (event.selectedIndex === 2) {
       // Update the refresh token - this will trigger a verification of
       // the credentials in the backend
