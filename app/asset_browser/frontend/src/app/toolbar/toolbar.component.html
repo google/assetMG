@@ -14,13 +14,19 @@
         </mat-select>
         </mat-form-field>
     </div>
-    <div *ngIf="!this.loadAccounts" class="right-align">
+    <div class="right-align">
       <app-login></app-login>
-    </div>
-    <div *ngIf="this.loadAccounts" class="right-align">
-      <app-login></app-login>
-      <button mat-icon-button (click)="openSettings()"><mat-icon>settings</mat-icon></button>
-      <button mat-icon-button (click)="feedbackClicked()"><mat-icon>feedback</mat-icon></button>
+      <ng-container *ngIf="this.loggedIn">
+        <button mat-icon-button (click)="refreshCache()">
+            <mat-icon>update</mat-icon>
+        </button>
+      </ng-container>
+      <button mat-icon-button (click)="openSettings()">
+          <mat-icon>settings</mat-icon>
+      </button>
+      <button mat-icon-button (click)="feedbackClicked()">
+          <mat-icon>feedback</mat-icon>
+      </button>
     </div>
     </mat-toolbar-row>
   </mat-toolbar>

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 import { Component, OnInit, Input } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Account } from './../model/account';
 import { AssetService } from './../services/asset.service';
+import { AuthorizationService } from './../services/authorization.service';
 
 import { Asset } from './../model/asset';
 import { tap } from 'rxjs/operators';
@@ -31,14 +32,17 @@ import { ReloadAppService } from '../services/reload-app.service';
   styleUrls: ['./toolbar.component.css'],
 })
 export class ToolbarComponent implements OnInit {
+  private _subscriptions: Subscription[] = [];
   accounts$: Observable<Account[]>;
   defaultAccount: number;
+  loggedIn: boolean=false;
 
   @Input() loadAccounts: boolean = false;
 
   constructor(
     private _dataService: AssetService,
     private _configService: ConfigService,
+    private _authorizationService: AuthorizationService,
     private _reloadAppService: ReloadAppService,
     private _settingsDialog: MatDialog
   ) {
@@ -49,6 +53,12 @@ export class ToolbarComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadAccountIds();
+
+    this._subscriptions.push(
+      this._authorizationService.loggedIn$.subscribe((loggedIn) => {
+        this.loggedIn = loggedIn;
+      })
+    );
   }
 
   loadAccountIds(): void {
@@ -60,6 +70,12 @@ export class ToolbarComponent implements OnInit {
         }
       })
     );
+  }
+
+  refreshCache() {
+    // Manually force a cache refresh based on user trigger
+    console.log("Refreshing cache manually.");
+    this._reloadAppService.reloadMcc.next(true);
   }
 
   accountChanged(event) {
