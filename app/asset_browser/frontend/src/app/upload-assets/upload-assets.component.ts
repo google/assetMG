@@ -149,9 +149,10 @@ export class UploadAssetsComponent implements OnInit {
   bulkUploadVideos(){
     let subscription = this.uploadVideo.uploadBulkVids()
     subscription.subscribe((response) =>{
-      console.log('res ' + response);
-      console.log('status ' + response.status)
-      if (response.status === 200){
+      if (response.status === STATUS.SUCCESS || response.status === STATUS.PARTIAL_SUCCESS){
+        for (let asset of <any[]>response.body){
+          this._assetService.addNewAsset(asset);
+        }
         this.uploadDialogRef.close()
       }
     })
