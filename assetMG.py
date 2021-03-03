@@ -127,7 +127,6 @@ def set_secret():
   """gets client id, client secret, dev token, account id.
   Saves to config.yaml and returns refresh url"""
   data = request.get_json(force=True)
-
   # determines if a reset to prev valid config or trying to setup new config
   is_reset = True
 
@@ -388,17 +387,12 @@ def accounts_assets():
 def get_specific_accounts_assets(cid):
   """Returns all assets under the given cid."""
   # check input is valid
-  if len(cid) < 10:
-    return _build_response(
-        'Invalid Customer Id', status=400, mimetype='text/plain')
-
-  else:
-    try:
-      res = structure.get_accounts_assets(googleads_client, cid)
-      return _build_response(msg=json.dumps(res),status=200)
-    except Exception as e:
-      logging.exception('Failed getting assets for: ' + cid + ' ' + str(e))
-      return _build_response(status=500)
+  try:
+    res = structure.get_accounts_assets(googleads_client, cid)
+    return _build_response(msg=json.dumps(res),status=200)
+  except Exception as e:
+    logging.exception('Failed getting assets for: ' + cid + ' ' + str(e))
+    return _build_response(status=500)
 
 
 @server.route('/structure/', methods=['GET'])
@@ -444,26 +438,34 @@ def get_asset_to_ag():
 def mutate():
   """Assign or remove an asset from adgroups.
 
-  gets a json file with a list of asset, account, adgourp and action.
+  gets a dict with two entries:
+  1. refresh token to create clients
+  2. list of asset, account, adgourp and action.
   preforms all of the actions one by one.
 
-  returns a list withthe new asset objects with the changed adgroups list.
+  returns a list with the new asset objects with the changed adgroups list.
   if its a text asset, returns a list with
   both 'headlines' and 'descriptions' entries.
   also changes the asset_to_ag.json file.
   """
 
   data = request.get_json(force=True)
-  logging.info('Recived mutate request: %s', str(data))
-  asset_id = data[0]['asset']['id']
-  asset_type = data[0]['asset']['type']
+  logging.info('Recived mutate request: %s', str(data['data']))
+
+  refresh_token = data['refresh_token']
+  data_load = data['data']
+
+  asset_id = data_load[0]['asset']['id']
+  asset_type = data_load[0]['asset']['type']
+
+  aw_client = init_user_adwords_client(refresh_token)
 
   with open(asset_to_ag_json_path, 'r') as f:
     asset_struct = json.load(f)
 
   # special func for text assets, as they have 2 entries in asset_to_ag.json
   if asset_type == 'TEXT':
-    return _text_asset_mutate(data, asset_id, asset_struct)
+    return _text_asset_mutate(data_load, aw_client, asset_id, asset_struct)
 
   asset_handler = {}
   index = 0 # to re-write back to location
@@ -474,20 +476,20 @@ def mutate():
     index += 1
 
   if not asset_handler:
-    asset_handler = data[0]['asset']
+    asset_handler = data_load[0]['asset']
     asset_handler['adgroups'] = []
     index = None
 
   failed_assign = []
   successeful_assign = []
-  for item in data:
+  for item in data_load:
     account = item['account']
     adgroup = item['adgroup']
     action = item['action']
     asset = item['asset']
 
     try:
-      mutation = mutate_ad(client, account, adgroup, asset, action)
+      mutation = mutate_ad(aw_client, account, adgroup, asset, action)
     except Exception as e:
       failed_assign.append(
           {
@@ -504,7 +506,7 @@ def mutate():
       successeful_assign.append(adgroup)
       asset_handler = _asset_ag_update(asset_handler,adgroup,action)
 
-  Service_Class.reset_cid(client)
+  Service_Class.reset_cid(aw_client)
 
   if index:
     asset_struct[index] = asset_handler
@@ -529,7 +531,7 @@ def mutate():
     , status=status)
 
 
-def _text_asset_mutate(data, asset_id, asset_struct):
+def _text_asset_mutate(data, aw_client, asset_id, asset_struct):
   """Handles text asset mutations"""
 
   asset_handlers = []
@@ -587,7 +589,7 @@ def _text_asset_mutate(data, asset_id, asset_struct):
     text_type_to_assign = item['asset']['text_type_to_assign']
 
     try:
-      mutation = mutate_ad(client, account, adgroup, asset, action,
+      mutation = mutate_ad(aw_client, account, adgroup, asset, action,
                        text_type_to_assign)
 
     except Exception as e:
@@ -608,7 +610,7 @@ def _text_asset_mutate(data, asset_id, asset_struct):
           obj['asset'] = _asset_ag_update(obj['asset'],adgroup,action)
           successeful_assign.append(adgroup)
 
-  Service_Class.reset_cid(client)
+  Service_Class.reset_cid(aw_client)
 
   for obj in asset_handlers:
     if obj['index']:
@@ -628,7 +630,7 @@ def _text_asset_mutate(data, asset_id, asset_struct):
 
   logging.info(
     'mutate response: msg={} , status={}'.format(str(asset_handlers),index))
-  # switch to this return and tell Mariam the changed return type.
+
   return _build_response(
       msg=json.dumps(
           [{
@@ -637,10 +639,9 @@ def _text_asset_mutate(data, asset_id, asset_struct):
           }]
       ),
       status=status)
-  # return _build_response(msg=json.dumps(asset_handlers), status=status)
 
 
-def _asset_ag_update(asset,adgroup,action):
+def _asset_ag_update(asset, adgroup, action):
   """remove or add the adgroup to the asset entry"""
 
   if action == 'ADD':
@@ -736,19 +737,26 @@ def upload_bulk():
   will need to adress the part of moving the files into the
   'uploads' folder before uploading to Google Ads.
   """
-  asset_list = request.get_json(force=True)
-  failed = []
+  data = request.get_json(force=True)
+  asset_list = data['data']
+  refresh_token = data['refresh_token']
 
+  ga_client = init_user_googleads_client(refresh_token)
+  aw_client = init_user_adwords_client(refresh_token)
+
+  failed = []
+  success = []
   for asset in asset_list:
     try:
-      upload(
-        client,
-        googleads_client,
+      res = upload(
+        aw_client,
+        ga_client,
         asset['account'],
         asset_type='YOUTUBE_VIDEO',
         asset_name=asset['name'],
         url=asset['url']
       )
+      success.append(res['asset'])
       logging.info('uploaded video named: %s with url: %s to account: %s',
                   asset['name'], asset['url'], asset['account'])
     except Exception as e:
@@ -756,12 +764,17 @@ def upload_bulk():
       logging.error('failed to upload video named: %s with url: %s to account: %s with error: %s',
                   asset['name'], asset['url'], asset['account'], str(e))
 
+  #If non succeed return 400
+  if (not success):
+    return _build_response(msg=json.dumps(failed), status = 400)
+
+  status = 200
   #If some uploads have failed return 206 status code
   if failed:
-    return _build_response(msg=json.dumps(failed),status=206)
+    status = 206
 
   #If all uploads succeeded return 200
-  return _build_response(status=200)
+  return _build_response(msg=json.dumps(success),status=status)
 
 
 @server.route('/upload-asset/', methods=['POST'])
@@ -780,6 +793,7 @@ def upload_asset():
   logging.info(f"Using provided refresh token: {refresh_token}")
 
   ga_client = init_user_googleads_client(refresh_token)
+  aw_client = init_user_adwords_client(refresh_token)
 
   # uniform file names
   asset_name = data.get('asset_name')
@@ -791,7 +805,7 @@ def upload_asset():
 
   try:
     result = upload(
-        client,
+        aw_client,
         ga_client,
         data.get('account'),
         data.get('asset_type'),
@@ -802,16 +816,13 @@ def upload_asset():
         adgroups=data.get('adgroups'))
   except Exception as e:
     logging.exception(e)
-    Service_Class.reset_cid(client)
+    Service_Class.reset_cid(aw_client)
     # Asset not uploaded
-    print(str(e))
     return _build_response(msg=json.dumps(
       {'msg': 'Could not upload asset',
        'error_message': error_mapping(str(e)),
        'err': str(e)}),
        status=400)
-
-  Service_Class.reset_cid(client)
 
   # No adgroup assignment was requested, asset uploaded successfully
   if result['status'] == -1:
@@ -836,8 +847,6 @@ def upload_asset():
   elif result['status'] == 2:
     return _build_response(msg=json.dumps(
       {'msg':'could not assign asset','asset':result['asset']}), status=500)
-
-
 
 
 def _build_response(msg='', status=200, mimetype='application/json'):

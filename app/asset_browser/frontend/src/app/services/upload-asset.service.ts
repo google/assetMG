@@ -122,7 +122,9 @@ export class UploadAssetService {
   }
 
   bulkUploadToYt(uploadList){
-    const endpoint = this.API_SERVER + '/upload-asset-bulk/'
-    return this.http.post(endpoint, uploadList, {observe: 'response'})
+    const endpoint = this.API_SERVER + '/upload-asset-bulk/';
+    var refresh_token = this._authorizationService.getRefreshToken();
+    var payload = {'refresh_token': refresh_token, 'data': uploadList}
+    return this.http.post(endpoint, payload, {observe: 'response'})
   }
 }

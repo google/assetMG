@@ -28,6 +28,7 @@ import {
 } from './../model/asset';
 import { UpdateResponse, STATUS } from '../model/response';
 import { Account, AccountAGs } from './../model/account';
+import { AuthorizationService } from '../services/authorization.service'
 
 @Injectable({
   providedIn: 'root',
@@ -57,7 +58,10 @@ export class AssetService {
   activeAssetAdGroups$ = this._activeAssetAdGroups$.asObservable();
   updateFinished$ = this._updateFinished$.asObservable();
 
-  constructor(private _http: HttpClient) {}
+  constructor(
+    private _http: HttpClient,
+    private _authService: AuthorizationService
+    ) {}
 
   private getAllAssets(accountId: number) {
     // Reset the asset observable till the http request is made
@@ -154,8 +158,10 @@ export class AssetService {
 
   updateAsset(changedAsset: Asset, updateArray: MutateRecord[]) {
     const endpoint = this.API_SERVER + '/mutate-ad/';
-    let subscritpion = this._http
-      .post(endpoint, updateArray, { observe: 'response' })
+    var refresh_token = this._authService.getRefreshToken()
+    var load = {'refresh_token':refresh_token, 'data':updateArray}
+    let subscription = this._http
+      .post(endpoint, load, { observe: 'response' })
       .subscribe(
         (response) => {
           // update the asset to adgroup cache
@@ -202,7 +208,7 @@ export class AssetService {
             msg: msg,
             assets: updatedAssets,
           });
-          subscritpion.unsubscribe();
+          subscription.unsubscribe();
         },
         (error) => {
           // API call failed - Returned status 500
@@ -221,7 +227,7 @@ export class AssetService {
             msg: errorMessage,
             assets: [],
           });
-          subscritpion.unsubscribe();
+          subscription.unsubscribe();
         }
       );
   }

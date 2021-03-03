@@ -122,7 +122,6 @@ export class UploadVideoComponent implements OnInit {
     this._assetService.activeAccountId$.subscribe((id) =>{
       accountId = id;
     })
-    console.log('got here')
     var uploadList = []; 
     for (var item in this.chosenVids){
       uploadList.push({
