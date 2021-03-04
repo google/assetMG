@@ -305,7 +305,7 @@ export class UploadAssetsComponent implements OnInit {
         console.log(failures);
         if (failures) {
           for (let failure of failures) {
-            msg += `Update failed for the ad group ${failure.adgroup}:
+            msg += `Update failed for the ad group "${failure.adgroup.adgroup_name}" from campaign "${failure.adgroup.campaign_name}":
                 ${failure.error_message}<br/>`;
           }
         } else {
@@ -336,7 +336,7 @@ export class UploadAssetsComponent implements OnInit {
       let failures = error.error?.failures || error.error;
       if (failures.length) {
         for (let failure of failures) {
-          msg += `Update failed for the ad group ${failure.adgroup}:
+          msg += `Update failed for the ad group "${failure.adgroup.adgroup_name}" from campaign "${failure.adgroup.campaign_name}":
           ${failure.error_message}<br/>`;
         }
       } else {

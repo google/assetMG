@@ -25,6 +25,7 @@ from app.backend.service import Service_Class
 from app.backend.yt_upload import initialize_upload
 from app.backend.error_handling import error_mapping
 from app.backend.get_yt import get_all_yt_videos, test_yt_credentials
+from app.backend.helpers import populate_adgroup_details
 from googleapiclient.discovery import build
 from pathlib import Path
 import copy
@@ -459,13 +460,14 @@ def mutate():
   asset_type = data_load[0]['asset']['type']
 
   aw_client = init_user_adwords_client(refresh_token)
+  ga_client = init_user_googleads_client(refresh_token)
 
   with open(asset_to_ag_json_path, 'r') as f:
     asset_struct = json.load(f)
 
   # special func for text assets, as they have 2 entries in asset_to_ag.json
   if asset_type == 'TEXT':
-    return _text_asset_mutate(data_load, aw_client, asset_id, asset_struct)
+    return _text_asset_mutate(data_load, aw_client, ga_client, asset_id, asset_struct)
 
   asset_handler = {}
   index = 0 # to re-write back to location
@@ -493,7 +495,7 @@ def mutate():
     except Exception as e:
       failed_assign.append(
           {
-              'adgroup': adgroup,
+              'adgroup': populate_adgroup_details(ga_client, account, adgroup),
               'error_message': error_mapping(str(e)),
               'err': str(e)
           }
@@ -531,7 +533,7 @@ def mutate():
     , status=status)
 
 
-def _text_asset_mutate(data, aw_client, asset_id, asset_struct):
+def _text_asset_mutate(data, aw_client, ga_client, asset_id, asset_struct):
   """Handles text asset mutations"""
 
   asset_handlers = []
@@ -595,7 +597,7 @@ def _text_asset_mutate(data, aw_client, asset_id, asset_struct):
     except Exception as e:
       failed_assign.append(
           {
-              'adgroup': adgroup,
+              'adgroup': populate_adgroup_details(ga_client, account, adgroup),
               'error_message': error_mapping(str(e)),
               'err': str(e)
           }
