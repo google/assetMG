@@ -22,20 +22,23 @@
         btnLabel='Server Login'
         (btnClick)="forceLogin()">
       </app-progress-btn>
-        <div>
-          <button mat-stroked-button matStepperPrevious color="primary">Back</button>
-          <button mat-stroked-button
-            matStepperNext
-            [disabled]="!isLoggedIn"
-            color="primary"
-            class="right-align">Next</button>
-        </div>
+      <div class="vertical-padding setup-result">
+        <p [ngClass]="{'error-msg': this.errorFound }">{{verificationText}}</p>
+      </div>
+      <div>
+        <button mat-stroked-button matStepperPrevious color="primary">Back</button>
+        <button mat-stroked-button
+          matStepperNext
+          [disabled]="!isLoggedIn"
+          color="primary"
+          class="right-align">Next</button>
+      </div>
     </mat-step>
     <mat-step>
       <ng-template matStepLabel>{{verificationTitle}}</ng-template>
       <div class="vertical-padding setup-result">
         <p [ngClass]="{'error-msg': this.errorFound }">{{verificationText}}</p>
-    </div>
+      </div>
       <div><app-loader></app-loader></div>
       <div *ngIf="!this.setupInProgress" mat-dialog-actions>
         <button mat-stroked-button
