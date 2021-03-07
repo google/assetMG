@@ -196,7 +196,7 @@ export class AssetService {
               (<any>response.body).failures;
             if (failures) {
               for (let failure of failures) {
-                msg += `Update failed for the ad group ${failure.adgroup}:
+                msg += `Update failed for the ad group "${failure.adgroup.adgroup_name}" of campaign "${failure.adgroup.campaign_name}":
                     ${failure.error_message}<br/>`;
               }
             } else {
@@ -216,7 +216,8 @@ export class AssetService {
           let failures = error.error[0]?.failures || error.error?.failures;
           if (failures) {
             for (let failure of failures) {
-              errorMessage += `Update failed for the ad group ${failure.adgroup}: ${failure.error_message}<br/>`;
+              errorMessage += `Update failed for the ad group "${failure.adgroup.adgroup_name}" from campaign "${failure.adgroup.campaign_name}": 
+              ${failure.error_message}<br/>`;
             }
           } else {
             errorMessage = `Error Code: ${error.status}<br/>Message: ${error.message}`;

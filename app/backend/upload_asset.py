@@ -22,6 +22,7 @@ import app.backend.mutate as mutate
 from app.backend.structure import get_assets_from_adgroup
 from app.backend.service import Service_Class
 from app.backend.error_handling import error_mapping
+from app.backend.helpers import populate_adgroup_details
 from pathlib import Path
 import urllib
 import json
@@ -157,7 +158,7 @@ def _assign_new_asset_to_adgroups(client, googleads_client, account, asset,
       successeful_assign.append({"id": ag})
     except Exception as e:
       unsuccesseful_assign.append({
-          'adgroup': ag,
+          'adgroup': populate_adgroup_details(googleads_client,account,ag),
           'error_message': error_mapping(str(e)), 'err': str(e)
       })
   # assignment status:
