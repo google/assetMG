@@ -9,7 +9,7 @@
         <mat-label>Account</mat-label>
         <mat-select [(value)]="defaultAccount">
           <mat-option *ngFor="let account of (accounts$ | async)" [value]="account.id"
-            (onSelectionChange)="accountChanged($event)"> {{account.name}}
+            (onSelectionChange)="accountChanged($event)"> {{!!account.name ? account.name : account.id}}
           </mat-option>
         </mat-select>
         </mat-form-field>
