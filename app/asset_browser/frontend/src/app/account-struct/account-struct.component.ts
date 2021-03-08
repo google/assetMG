@@ -299,8 +299,10 @@ export class AccountStructComponent implements OnChanges {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
-    // console.log('Filter ', event);
-    // console.log('value:', filterValue);
+    
+    this.clearSelection(AssetConn.HEADLINE);
+    this.clearSelection(AssetConn.DESC);
+    this.clearSelection(AssetConn.ADGROUP);
   }
 
   toggleSelection(agRow: AdGroupRow, assetConn: AssetConn) {
@@ -337,15 +339,26 @@ export class AccountStructComponent implements OnChanges {
   isAllSelected(assetConn: AssetConn) {
     let selArr = this.getSelectionArray(assetConn);
     const numSelected = selArr.selected.length;
-    const numRows = this.dataSource.data.length;
+    const numRows = this.dataSource.filteredData.length;
     return numSelected === numRows;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle(assetConn: AssetConn) {
     this.isAllSelected(assetConn)
-      ? this.dataSource.data.forEach((row) => this.unselectRow(row, assetConn))
-      : this.dataSource.data.forEach((row) => this.selectRow(row, assetConn));
+      ? this.clearSelection(assetConn)
+      : this.selectAll(assetConn);
+  }
+
+  clearSelection(assetConn: AssetConn) {
+    this.dataSource.data.forEach((row) => this.unselectRow(row, assetConn));
+    this.adgroup_sel.clear();
+    this.headline_sel.clear();
+    this.description_sel.clear();
+  }
+
+  selectAll(assetConn: AssetConn) {
+    this.dataSource.filteredData.forEach((row) => this.selectRow(row, assetConn));
   }
 
   getSelectionArray(assetConn: AssetConn) {

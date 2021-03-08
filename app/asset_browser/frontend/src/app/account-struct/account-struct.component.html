@@ -16,7 +16,6 @@
       matColumnDef="adgroup-sel">
       <th mat-header-cell *matHeaderCellDef>
         <mat-checkbox class="header-checkmark"
-          [disabled] = "tableFilterInput.value != ''"
           (change)="$event ? masterToggle(assetConn.ADGROUP) : null"
           [checked]="adgroup_sel.hasValue() && isAllSelected(assetConn.ADGROUP)"
           [indeterminate]="adgroup_sel.hasValue() && !isAllSelected(assetConn.ADGROUP)">
@@ -38,7 +37,6 @@
       matColumnDef="headline-sel">
       <th mat-header-cell *matHeaderCellDef>
         <mat-checkbox class="header-checkmark"
-          [disabled] = "tableFilterInput.value != ''"
           (change)="$event ? masterToggle(assetConn.HEADLINE) : null"
           [checked]="headline_sel.hasValue() && isAllSelected(assetConn.HEADLINE)"
           [indeterminate]="headline_sel.hasValue() && !isAllSelected(assetConn.HEADLINE)">
@@ -63,7 +61,6 @@
       matColumnDef="desc-sel">
       <th mat-header-cell *matHeaderCellDef>
         <mat-checkbox class="header-checkmark"
-          [disabled] = "tableFilterInput.value != ''"
           (change)="$event ? masterToggle(assetConn.DESC) : null"
           [checked]="description_sel.hasValue() && isAllSelected(assetConn.DESC)"
           [indeterminate]="description_sel.hasValue() && !isAllSelected(assetConn.DESC)">
