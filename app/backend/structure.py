@@ -475,9 +475,9 @@ def get_account_adgroup_structure(client, customer_id):
   return builder.build()
 
 
-if __name__ == '__main__':
-  googleads_client = GoogleAdsClient.load_from_storage(
-      'app/config/google-ads.yaml')
+  # if __name__ == '__main__':
+  # googleads_client = GoogleAdsClient.load_from_storage(
+      # 'app/config/google-ads.yaml')
   # create_mcc_struct(googleads_client,
   #                   'app/cache/account_struct.json',
   #                   'app/cache/asset_to_ag.json')
@@ -486,8 +486,8 @@ if __name__ == '__main__':
   #     get_assets_from_adgroup(googleads_client, 8791307154, 79845268520),
   #     indent=2))
 
-  print(json.dumps(get_accounts_assets(googleads_client, '9489090398'),
-                   indent=2))
+  # print(json.dumps(get_accounts_assets(googleads_client, '9489090398'),
+  #                  indent=2))
   # print(json.dumps(get_all_accounts_assets(googleads_client), indent=2))
 
   # print(get_accounts(googleads_client))
