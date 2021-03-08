@@ -125,7 +125,8 @@ def upload_image_asset(
 
 
 def upload_text_asset(
-    client, googleads_client, account, text_type, name, text, adgroups):
+    client, googleads_client, global_ga_client, account,
+    text_type, name, text, adgroups):
   """Upload text asset and assign to ad groups."""
   asset = {
       'id': None,
@@ -136,11 +137,12 @@ def upload_text_asset(
   }
 
   return _assign_new_asset_to_adgroups(
-      client, googleads_client, account, asset, adgroups, text_type)
+      client, googleads_client, account, asset,
+       adgroups, text_type, global_ga_client= global_ga_client)
 
 
 def _assign_new_asset_to_adgroups(client, googleads_client, account, asset,
-                                  adgroups, text_type='descriptions'):
+                                  adgroups, text_type='descriptions', global_ga_client =None):
   """Assigns the new asset uploaded to the given ad groups, using the mutate
   module."""
   # common_typos_disable
@@ -185,7 +187,7 @@ def _assign_new_asset_to_adgroups(client, googleads_client, account, asset,
 
   if asset['type'] == 'TEXT' and successeful_assign:
     asset = _extract_text_asset_info(
-        googleads_client, account, asset, successeful_assign[0])
+        global_ga_client, account, asset, successeful_assign[0])
 
   asset['adgroups'] = successeful_assign
   _update_asset_struct(asset)
@@ -222,6 +224,7 @@ def _extract_text_asset_info(googleads_client, account, thin_asset, adgroup):
 
 def upload(client,
            googleads_client,
+           global_ga_client,
            account,
            asset_type,
            asset_name,
@@ -233,6 +236,8 @@ def upload(client,
 
   Args:
     client : adwords api client.
+    googleads_client : GoogleAds api client. user specific.
+    global_ga_client : Global GoogleAds Client, for read calls.
     account : account id, to which the asset will be uploaded.
     asset_type : image,video,text,html5. The relevant upload func is triggered
     according to the type.
@@ -253,7 +258,7 @@ def upload(client,
         client, googleads_client, account, asset_name, path, adgroups)
 
   if asset_type in ['descriptions', 'headlines']:
-    return upload_text_asset(client, googleads_client, account, asset_type,
+    return upload_text_asset(client, googleads_client, global_ga_client, account, asset_type,
                              asset_name, asset_text, adgroups)
 
   if asset_type == 'YOUTUBE_VIDEO':
