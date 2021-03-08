@@ -15,7 +15,7 @@
  */
 import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 //import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Subscription, from } from 'rxjs';
 import {
   MatDialog,
   MatDialogRef,
@@ -98,7 +98,7 @@ export class AppSetupComponent implements OnInit {
           config.client_id,
           config.client_secret,
           config.developer_token
-        ).subscribe()
+        ).subscribe();
     } else if (event.selectedIndex === 2) {
       // Update the refresh token - this will trigger a verification of
       // the credentials in the backend
@@ -127,7 +127,18 @@ export class AppSetupComponent implements OnInit {
   }
 
   forceLogin() {
-    this._authorizationService.authenticate(true);
+    this.resetState();
+
+    let subscription = from(this._authorizationService.authenticate(true))
+      .subscribe(
+        (response) => {
+          subscription.unsubscribe();
+        },
+        (error) => {
+          this.errorFound = true;
+          this.verificationText = error;
+          subscription.unsubscribe();
+        });
   }
 
   private resetState() {

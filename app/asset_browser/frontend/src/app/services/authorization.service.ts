@@ -49,6 +49,7 @@ export class AuthorizationService {
   }
 
   async authenticate(force=false) {
+    var error = "";
     var storedToken = await this.retrieveStoredRefreshToken();
     if (!force && storedToken) {
       this.refreshToken = storedToken;
@@ -68,7 +69,13 @@ export class AuthorizationService {
       .then((res) => {
         var refreshAccessToken = res.code;
         return refreshAccessToken;
+      })
+      .catch((err) => {
+        error = err["error"];
       });
+
+      // Quick exit
+      if (error) throw new Error(error);
 
       await this._configService
             .getConfigRefreshCode(refreshAccessToken)
@@ -77,7 +84,14 @@ export class AuthorizationService {
               this.refreshToken = response.body;
               this.loggedInSubject.next(true);
               this.storeRefreshToken(this.refreshToken);
+            })
+            .catch((err) => {
+              error = err["error"];
             });
+    }
+
+    if (error) {
+      throw new Error(error);
     }
   }
 
