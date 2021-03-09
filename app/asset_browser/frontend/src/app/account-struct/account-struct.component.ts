@@ -46,8 +46,10 @@ export type checkBoxOptions = Array<boolean>;
 export interface AdGroupRow extends AdGroup {
   name: string;
   id: number;
+  status: string;
   campaign: string;
   campaign_id: number;
+  campaign_status: string;
   performance: string;
   headlinePerformance: string;
   descriptionPerformance: string;
@@ -76,7 +78,7 @@ export class AccountStructComponent implements OnChanges {
   private _adGroupRows: AdGroupRow[];
   private _assetToAdgroups: AssetAdGroups;
   assetConn = AssetConn; /** connection types to be used in the html file */
-  isTextAsset: boolean; /** When this is set, Healine and Description columns appear and main selection column disappears */
+  isTextAsset: boolean; /** When this is set, Headline and Description columns appear and main selection column disappears */
   filter: string;
 
   displayedColumns$ = new BehaviorSubject<string[]>(null);
@@ -85,8 +87,8 @@ export class AccountStructComponent implements OnChanges {
    * 2 for text assets (Headlines and Descriptions)
    * the visibility of the columns depends on the asset type
    */
-  nonTextAssetCols: string[] = ['adgroup-sel', 'adgroup', 'performance', 'campaign'];
-  textAssetCols: string[] = ['headline-sel', 'headline-performance', 'desc-sel', 'desc-performance', 'adgroup', 'campaign'];
+  nonTextAssetCols: string[] = ['adgroup-sel', 'adgroup', 'adgroup-enabled', 'performance', 'campaign', 'campaign-enabled'];
+  textAssetCols: string[] = ['headline-sel', 'headline-performance', 'desc-sel', 'desc-performance', 'adgroup', 'adgroup-enabled', 'campaign', 'campaign-enabled'];
 
   dataSource: MatTableDataSource<AdGroupRow>;
   adgroup_sel = new SelectionModel<AdGroupRow>(true, []);
@@ -154,6 +156,7 @@ export class AccountStructComponent implements OnChanges {
           this.isTextAsset = this.activeAsset.type == AssetType.TEXT;
           this.displayedColumns$.next(this.getDisplayedColumns());
           this._changeDetectorRef.detectChanges();
+          this.applyFilterPredicate();
 
           // Reset the filter if any
           this.filter = '';
@@ -176,6 +179,8 @@ export class AccountStructComponent implements OnChanges {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
 
+    this.applyFilterPredicate();
+
     // Adjust sorting criteria
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
@@ -191,6 +196,49 @@ export class AccountStructComponent implements OnChanges {
           return item[property];
       }
     };
+  }
+
+  applyFilterPredicate(): void {
+    /** Creates the Filter Predicate for searching within the adgroup table.
+     * 
+     * A different predicate is made depending on whether the asset is a text asset
+     * or not. This is due to text assets displaying a different set of columns.
+     */
+
+    if (this.isTextAsset) {
+      this.dataSource.filterPredicate = function(data, filter: string): boolean {
+        var filterKeywords = filter.split(' ');
+        var searchFilter = true;
+  
+        for (var i=0; i < filterKeywords.length; i++) {
+          var keyword = filterKeywords[i];
+          searchFilter = searchFilter &&
+            String(data.name).toLowerCase().includes(keyword) ||
+            String(data.campaign_name).toLowerCase().includes(keyword) ||
+            String(data.headlinePerformance).toLowerCase().includes(keyword) ||
+            String(data.descriptionPerformance).toLowerCase().includes(keyword) ||
+            String(data.status).toLowerCase().includes(keyword) ||
+            String(data.campaign_status).toLowerCase().includes(keyword);
+        }
+        return searchFilter;
+      };
+    } else {
+      this.dataSource.filterPredicate = function(data, filter: string): boolean {
+        var filterKeywords = filter.split(' ');
+        var searchFilter = true;
+  
+        for (var i=0; i < filterKeywords.length; i++) {
+          var keyword = filterKeywords[i];
+          searchFilter = searchFilter &&
+            String(data.name).toLowerCase().includes(keyword) ||
+            String(data.campaign_name).toLowerCase().includes(keyword) ||
+            String(data.performance).toLowerCase().includes(keyword) ||
+            String(data.status).toLowerCase().includes(keyword) ||
+            String(data.campaign_status).toLowerCase().includes(keyword);
+        }
+        return searchFilter;
+      };
+    }
   }
 
   getDisplayedColumns(): string[] {

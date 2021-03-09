@@ -953,6 +953,15 @@ def shutdown():
 def open_browser():
   webbrowser.open_new(BASE_URL)
 
+def get_server_config():
+  try:
+    with open('server.yaml', 'r') as f:
+      config_file = yaml.load(f, Loader=yaml.FullLoader)
+      host = config_file['hostname']
+      port = config_file['port']
+      return host, port
+  except:
+    raise RuntimeError('Cannot find server.yaml, or server.yaml is not correctly formatted.')
 
 def get_server_config():
   try:
