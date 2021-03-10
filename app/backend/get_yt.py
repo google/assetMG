@@ -1,11 +1,10 @@
 from googleapiclient.discovery import build
 import json
 import app.backend.setup as setup
+from app.backend.setup import YT_CONFIG, YT_CONFIG_GS
 
 
 YT_URL_PREFIX = 'https://www.youtube.com/watch?v='
-YT_CONFIG = '/tmp/yt-config.json'
-YT_CONFIG_GS = 'yt-config.json'
 
 def get_all_yt_videos():
   setup.download_file_from_gcs(YT_CONFIG_GS, YT_CONFIG)
