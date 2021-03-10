@@ -78,7 +78,6 @@ if CLOUD_VERSION:
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s:%(levelname)s:%(message)s')
 else:
-    print(111111)
     logging.basicConfig(filename=LOGS_PATH,
                         level=logging.INFO,
                         format='%(asctime)s:%(levelname)s:%(message)s')
