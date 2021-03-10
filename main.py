@@ -78,6 +78,7 @@ if CLOUD_VERSION:
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s:%(levelname)s:%(message)s')
 else:
+    print(111111)
     logging.basicConfig(filename=LOGS_PATH,
                         level=logging.INFO,
                         format='%(asctime)s:%(levelname)s:%(message)s')
@@ -775,7 +776,7 @@ def upload_bulk():
 
     for asset in asset_list:
         try:
-            upload(
+            res = upload(
                 aw_client,
                 ga_client,
                 global_googleads_client,
