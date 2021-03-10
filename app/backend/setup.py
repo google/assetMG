@@ -73,7 +73,6 @@ def set_api_configs():
   with open(CONFIG_PATH / 'googleads.yaml', 'w') as f:
     yaml.dump(aw_config, f)
   upload_file_to_gcs(str(CONFIG_PATH) + '/googleads.yaml', 'googleads.yaml')
-  print('here now')
   config['login_customer_id'] = config['client_customer_id']
   with open(CONFIG_PATH / 'google-ads.yaml', 'w') as f:
     yaml.dump(config, f)
