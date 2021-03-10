@@ -740,7 +740,7 @@ def clean_dir():
         except Exception as e:
             logging.error('Failed to delete %s. Reason: %s' % (file_path, e))
 
-    if len(os.listdir(folder)) != 1:
+    if len(os.listdir(folder)) > 1:
         status=500
 
     return _build_response(status=status)
