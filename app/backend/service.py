@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import yaml
+import app.backend.setup as setup
+from app.backend.setup import CONFIG_PATH
 
 VERSION = 'v201809'
 
@@ -44,8 +46,10 @@ class Service_Class:
 
   @staticmethod
   def reset_cid(client):
-    with open('app/config/googleads.yaml', 'r') as f:
+    setup.download_file_from_gcs('googleads.yaml', str(CONFIG_PATH) + 'googleads.yaml')
+    with open(CONFIG_PATH / 'googleads.yaml', 'r') as f:
       config = yaml.load(f, Loader=yaml.FullLoader)
     
     cid = config['adwords']['client_customer_id']
     client.SetClientCustomerId(cid)
+

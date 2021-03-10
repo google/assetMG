@@ -1,2 +1,4 @@
 hostname: localhost
 port: 5000
+cloud: false
+bucket_name: 
