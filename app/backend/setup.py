@@ -27,7 +27,6 @@ from googleads import adwords
 from google.cloud import storage
 
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
 
 try:
   with open('server.yaml', 'r') as f:
@@ -37,7 +36,6 @@ try:
     CLOUD_VERSION = config_file['cloud']
     bucket_name = config_file['bucket_name']
   if (CLOUD_VERSION):
-    logging.debug('This is a cloud version...')
     BASE_URL =  f'https://{host}'
     BUCKET_NAME = bucket_name
   else:
@@ -48,10 +46,11 @@ except:
 
 if (CLOUD_VERSION):
   PREFIX = '/tmp/'
+  logging.basicConfig(level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
 else:
+  LOGS_PATH = Path('app/logs/server.log')
+  logging.basicConfig(filename=LOGS_PATH ,level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
   PREFIX = 'app/'
-# if cloud
-
 
 CONFIG_PATH = Path(PREFIX + 'config/')
 CONFIG_PATH.mkdir(parents=True, exist_ok=True)
@@ -68,7 +67,6 @@ def set_api_configs():
   download_file_from_gcs(CONFIG_FILE_PATH_GS, CONFIG_FILE_PATH)
   with open(CONFIG_FILE_PATH, 'r') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
-  print('setting API configs...')
   aw_config = {'adwords': config}
   with open(CONFIG_PATH / 'googleads.yaml', 'w') as f:
     yaml.dump(aw_config, f)
@@ -108,8 +106,7 @@ def set_refresh(code,flow):
     download_file_from_gcs(CONFIG_FILE_PATH_GS, CONFIG_FILE_PATH)
     with open(CONFIG_FILE_PATH, 'r') as f:
       credentials = yaml.safe_load(f)
-      print(credentials)
-      credentials['refresh_token'] = refresh_token 
+      credentials['refresh_token'] = refresh_token
     with open(CONFIG_FILE_PATH, 'w') as f:
       yaml.dump(credentials, f, default_flow_style=False)
     upload_file_to_gcs(CONFIG_FILE_PATH, CONFIG_FILE_PATH_GS)
