@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { Pipe, PipeTransform } from '@angular/core';
-import { subscribeOn } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Pipe({

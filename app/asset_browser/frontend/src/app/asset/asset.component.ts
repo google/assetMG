@@ -17,7 +17,6 @@ import {
   Component,
   Input,
   OnInit,
-  SimpleChange,
   ChangeDetectorRef,
 } from '@angular/core';
 import { Router } from '@angular/router';

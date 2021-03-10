@@ -78,7 +78,6 @@ export class UploadComponent implements OnInit {
           let subscription = self._uploadService
             .validateDimensions(img.width, img.height)
             .subscribe((response) => {
-              console.log(img.height, img.width);
               self.isValid.emit((response.body as ValidationResponse).valid);
               if (!(response.body as ValidationResponse).valid) {
                 self.invalidDimensionsMsg = 'Invalid Image Dimensions';

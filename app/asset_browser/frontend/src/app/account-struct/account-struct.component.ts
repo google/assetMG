@@ -213,12 +213,14 @@ export class AccountStructComponent implements OnChanges {
         for (var i=0; i < filterKeywords.length; i++) {
           var keyword = filterKeywords[i];
           searchFilter = searchFilter &&
-            String(data.name).toLowerCase().includes(keyword) ||
-            String(data.campaign_name).toLowerCase().includes(keyword) ||
-            String(data.headlinePerformance).toLowerCase().includes(keyword) ||
-            String(data.descriptionPerformance).toLowerCase().includes(keyword) ||
-            String(data.status).toLowerCase().includes(keyword) ||
-            String(data.campaign_status).toLowerCase().includes(keyword);
+            (
+              String(data.name).toLowerCase().includes(keyword) ||
+              String(data.campaign_name).toLowerCase().includes(keyword) ||
+              String(data.headlinePerformance).toLowerCase().includes(keyword) ||
+              String(data.descriptionPerformance).toLowerCase().includes(keyword) ||
+              String(data.status).toLowerCase().includes(keyword) ||
+              String(data.campaign_status).toLowerCase().includes(keyword)
+            );
         }
         return searchFilter;
       };
@@ -230,11 +232,13 @@ export class AccountStructComponent implements OnChanges {
         for (var i=0; i < filterKeywords.length; i++) {
           var keyword = filterKeywords[i];
           searchFilter = searchFilter &&
-            String(data.name).toLowerCase().includes(keyword) ||
-            String(data.campaign_name).toLowerCase().includes(keyword) ||
-            String(data.performance).toLowerCase().includes(keyword) ||
-            String(data.status).toLowerCase().includes(keyword) ||
-            String(data.campaign_status).toLowerCase().includes(keyword);
+            (
+              String(data.name).toLowerCase().includes(keyword) ||
+              String(data.campaign_name).toLowerCase().includes(keyword) ||
+              String(data.performance).toLowerCase().includes(keyword) ||
+              String(data.status).toLowerCase().includes(keyword) ||
+              String(data.campaign_status).toLowerCase().includes(keyword)
+            );
         }
         return searchFilter;
       };
