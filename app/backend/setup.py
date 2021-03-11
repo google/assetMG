@@ -122,7 +122,8 @@ def download_file_from_gcs(gs_path, local_path):
     client = storage.Client()
     bucket = client.get_bucket(BUCKET_NAME)
     blob = bucket.blob(gs_path)
-    blob.download_to_filename(str(local_path))
+    if blob.exists():
+      blob.download_to_filename(str(local_path))
 
 def upload_file_to_gcs(local_path, gs_path):
   """upload a local file to Google Cloud Storage path, if this is a cloud deployment"""
