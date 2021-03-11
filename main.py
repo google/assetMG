@@ -84,9 +84,28 @@ else:
 
 
 flow = None
-global_adwords_client = ''
-global_googleads_client = ''
+ADWORDS_CLIENT = ''
+GOOGLEADS_CLIENT = ''
 
+def get_global_adwords_client():
+    global ADWORDS_CLIENT
+    if ADWORDS_CLIENT:
+        return ADWORDS_CLIENT
+    else:
+        setup.set_api_configs()
+        ADWORDS_CLIENT = adwords.AdWordsClient.LoadFromStorage(
+            CONFIG_PATH / 'googleads.yaml')
+        return ADWORDS_CLIENT
+
+def get_global_googleads_client():
+    global GOOGLEADS_CLIENT
+    if GOOGLEADS_CLIENT:
+        return GOOGLEADS_CLIENT
+    else:
+        setup.set_api_configs()
+        GOOGLEADS_CLIENT = GoogleAdsClient.load_from_storage(
+            CONFIG_PATH / 'google-ads.yaml')
+        return GOOGLEADS_CLIENT
 
 # check if config is valid. if yes, init clients and create struct
 try:
@@ -96,18 +115,15 @@ try:
         config_file = yaml.load(f, Loader=yaml.FullLoader)
 except FileNotFoundError:
     config_file = {'config_valid': 0}
+
+
 if config_file['config_valid']:
-    setup.set_api_configs()
-    global_adwords_client = adwords.AdWordsClient.LoadFromStorage(
-        CONFIG_PATH / 'googleads.yaml')
-    global_googleads_client = GoogleAdsClient.load_from_storage(
-        CONFIG_PATH / 'google-ads.yaml')
     try:
         structure.create_mcc_struct(
-            global_googleads_client, account_struct_json_path, asset_to_ag_json_path)
+            get_global_googleads_client(), account_struct_json_path, asset_to_ag_json_path)
     except Exception as e:
         logging.exception('Error when trying to create struct')
-        Service_Class.reset_cid(global_adwords_client)
+        Service_Class.reset_cid(get_global_adwords_client())
 
 
 @app.route('/')
@@ -357,7 +373,7 @@ def create_struct():
     msg = ''
     try:
         structure.create_mcc_struct(
-            global_googleads_client, account_struct_json_path, asset_to_ag_json_path)
+            get_global_googleads_client(), account_struct_json_path, asset_to_ag_json_path)
         status=200
     except Exception as e:
         status=403
@@ -371,7 +387,7 @@ def create_struct():
 def get_all_accounts():
     """gets all accounts under the configured MCC. name and id"""
     try:
-        accounts = structure.get_accounts(global_googleads_client)
+        accounts = structure.get_accounts(get_global_googleads_client())
         return _build_response(msg=json.dumps(accounts), status=200)
     except Exception as e:
         return _build_response(msg=str(e), status=403)
@@ -382,7 +398,7 @@ def get_account_ag_struct():
     """Get account's adgroups structure."""
     cid = request.args.get('cid')
     try:
-        msg = json.dumps(structure.get_account_adgroup_structure(global_googleads_client,cid))
+        msg = json.dumps(structure.get_account_adgroup_structure(get_global_googleads_client(),cid))
         status = 200
     except Exception as e:
         logging.exception('could not get adgroup structure for ' + cid)
@@ -400,7 +416,7 @@ def accounts_assets():
         return get_specific_accounts_assets(cid)
     else:
         return _build_response(
-            json.dumps(structure.get_all_accounts_assets(global_googleads_client), indent=2))
+            json.dumps(structure.get_all_accounts_assets(get_global_googleads_client()), indent=2))
 
 
 def get_specific_accounts_assets(cid):
@@ -412,7 +428,7 @@ def get_specific_accounts_assets(cid):
 
     else:
         try:
-            res = structure.get_accounts_assets(global_googleads_client, cid)
+            res = structure.get_accounts_assets(get_global_googleads_client(), cid)
             return _build_response(msg=json.dumps(res),status=200)
         except Exception as e:
             logging.exception('Failed getting assets for: ' + cid + ' ' + str(e))
@@ -778,7 +794,7 @@ def upload_bulk():
             res = upload(
                 aw_client,
                 ga_client,
-                global_googleads_client,
+                get_global_googleads_client(),
                 asset['account'],
                 asset_type='YOUTUBE_VIDEO',
                 asset_name=asset['name'],
@@ -835,7 +851,7 @@ def upload_asset():
         result = upload(
             aw_client,
             ga_client,
-            global_googleads_client,
+            get_global_googleads_client(),
             data.get('account'),
             data.get('asset_type'),
             asset_name,
@@ -890,21 +906,11 @@ def init_clients():
     tries to create struct. if succesful, marks config_valid=1 in config.yaml
     to mark config is valid. Marks 0 otherwise."""
 
-    setup.set_api_configs()
-
     status = 0
 
-    global global_adwords_client
-    global global_googleads_client
-
     try:
-        setup.download_file_from_gcs('googleads.yaml', str(CONFIG_PATH) + '/googleads.yaml')
-        global_adwords_client = adwords.AdWordsClient.LoadFromStorage(
-            CONFIG_PATH / 'googleads.yaml')
-        setup.download_file_from_gcs('google-ads.yaml', str(CONFIG_PATH) + '/google-ads.yaml')
-        global_googleads_client = GoogleAdsClient.load_from_storage(
-            CONFIG_PATH / 'google-ads.yaml')
-        setup.download_file_from_gcs(CONFIG_FILE_PATH_GS, CONFIG_FILE_PATH)
+        get_global_adwords_client()
+        get_global_googleads_client()
         with open(CONFIG_FILE_PATH, 'r') as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
         config['config_valid'] = 1
