@@ -135,7 +135,7 @@ export class AppSetupComponent implements OnInit {
         },
         (error) => {
           this.errorFound = true;
-          this.verificationText = error;
+          this.verificationText = JSON.stringify(error.details);
           subscription.unsubscribe();
         });
   }
