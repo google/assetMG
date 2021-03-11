@@ -51,15 +51,15 @@ fi
 
 
 # Installing NodeJS
-echo -e "${TITLECOLOR}"
-echo "----------------------------------"
-echo "Installing Node"
-echo "This might take a while to complete"
-echo "----------------------------------"
-echo -e "${NC}"
-curl -sL https://deb.nodesource.com/setup_15.x | sudo -E bash -
-sudo apt-get install -y nodejs
-sudo apt-get install -y npm
+# echo -e "${TITLECOLOR}"
+# echo "----------------------------------"
+# echo "Installing Node"
+# echo "This might take a while to complete"
+# echo "----------------------------------"
+# echo -e "${NC}"
+# curl -sL https://deb.nodesource.com/setup_15.x | sudo -E bash -
+# sudo apt-get install -y nodejs
+# sudo apt-get install -y npm
 
 #Downloading application
 echo -e "${TITLECOLOR}"
@@ -99,16 +99,16 @@ echo "----------------------------------"
 echo -e "${NC}"
 python3 -m pip install -r requirements.txt
 
-echo -e "${TITLECOLOR}"
-echo "----------------------------------"
-echo "Installing frontend dependencies"
-echo "----------------------------------"
-echo -e "${NC}"
-cd app/asset_browser/frontend
-npm install
-node_modules/.bin/ng build
-cd ../../..
-# NOTE: we're now inside 'assetMG' folder
+# echo -e "${TITLECOLOR}"
+# echo "----------------------------------"
+# echo "Installing frontend dependencies"
+# echo "----------------------------------"
+# echo -e "${NC}"
+# cd app/asset_browser/frontend
+# npm install
+# node_modules/.bin/ng build
+# cd ../../..
+# # NOTE: we're now inside 'assetMG' folder
 
 # Prepare the run script
 mv scripts/run_unix.sh ./
@@ -129,5 +129,5 @@ Comment=Manage your assets easily
 EOF1
 
 echo "-----------------------------------------------------------------------------------"
-echo -e "${GREEN}All done, to start the app please run run_unix.sh or python assetMG.py${TITLECOLOR}"
+echo -e "${GREEN}All done, to start the app please run run_unix.sh or python main.py${TITLECOLOR}"
 echo "-----------------------------------------------------------------------------------"

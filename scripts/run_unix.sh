@@ -26,10 +26,10 @@ elif [ $LOCAL = $BASE ]; then
   git pull
   . .venv/bin/activate
   python3 -m pip install -r requirements.txt
-  cd app/asset_browser/frontend
-  npm install
-  node_modules/.bin/ng build
-  cd ../../..
+  # cd app/asset_browser/frontend
+  # npm install
+  # node_modules/.bin/ng build
+  # cd ../../..
 fi
 
 echo -e "${TITLECOLOR}"
@@ -41,11 +41,11 @@ echo -e "${NC}"
 # NOTE: after moving to python 3.8 these one line can be removed
 export AC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
-python3 assetMG.py
+python3 main.py
 
 echo -e "${TITLECOLOR}"
 echo "----------------------------------"
-echo -e "${GREEN}AssetMG is running on http://127.0.0.1:5000/"
+echo -e "${GREEN}AssetMG is running on localhost:5000/"
 echo -e "Open or refresh this address to access${TITLECOLOR}"
 echo "----------------------------------"
 echo -e "${NC}"

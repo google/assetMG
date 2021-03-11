@@ -71,13 +71,13 @@ fi
 
 
 # Installing NodeJS
-echo -e "${TITLECOLOR}"
-echo "----------------------------------"
-echo "Installing Node"
-echo "This might take a while to complete"
-echo "----------------------------------"
-echo -e "${NC}"
-brew list node || brew install node
+# echo -e "${TITLECOLOR}"
+# echo "----------------------------------"
+# echo "Installing Node"
+# echo "This might take a while to complete"
+# echo "----------------------------------"
+# echo -e "${NC}"
+# brew list node || brew install node
 
 # Cleaning up old versions
 brew cleanup
@@ -121,15 +121,15 @@ echo -e "${NC}"
 python3 -m pip install -r requirements.txt
 
 # Installing frontend dependencies
-echo -e "${TITLECOLOR}"
-echo "----------------------------------"
-echo "Installing frontend dependencies"
-echo "----------------------------------"
-echo -e "${NC}"
-cd app/asset_browser/frontend
-npm install
-node_modules/.bin/ng build
-cd ../../..
+# echo -e "${TITLECOLOR}"
+# echo "----------------------------------"
+# echo "Installing frontend dependencies"
+# echo "----------------------------------"
+# echo -e "${NC}"
+# cd app/asset_browser/frontend
+# npm install
+# node_modules/.bin/ng build
+# cd ../../..
 # NOTE: we're now inside 'assetMG' folder
 
 # Prepare the run script
@@ -137,5 +137,5 @@ mv scripts/AssetMG.command ./
 chmod 777 scripts/AssetMG.command
 
 echo "-----------------------------------------------------------------------------------"
-echo -e "${GREEN} All done, to start the app please run AssetMG.command or python assetMG.py${TITLECOLOR}"
+echo -e "${GREEN} All done, to start the app please run AssetMG.command or python main.py${TITLECOLOR}"
 echo "-----------------------------------------------------------------------------------"

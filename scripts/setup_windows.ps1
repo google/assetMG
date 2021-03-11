@@ -35,7 +35,7 @@ Import-PackageProvider ChocolateyGet -Force
 # Installing dependencies
 $deps = @{
 	python3 = 3.7
-	nodejs = 12.0
+	# nodejs = 12.0
 	git = 2.1
 }
 foreach ($h in $deps.GetEnumerator()) {
@@ -86,11 +86,11 @@ if( $LASTEXITCODE -ne 0 ) {
 
 
 # Installing frontend dependencies
-Write-Host -ForegroundColor DarkGray "Building front-end application"
-cd app/asset_browser/frontend
-npm install
-node_modules/.bin/ng build
-cd ../../..
+# Write-Host -ForegroundColor DarkGray "Building front-end application"
+# cd app/asset_browser/frontend
+# npm install
+# node_modules/.bin/ng build
+# cd ../../..
 
 
 # Generating run scripts
@@ -109,13 +109,9 @@ if (`$local -eq `$remote) {
   	. .\.venv\Scripts\Activate.ps1 
   	. $python -m pip install -r requirements.txt
 
-	cd app/asset_browser/frontend
-	npm install
-  	node_modules/.bin/ng build
-	cd ../../..
 }
 . .\.venv\Scripts\Activate.ps1
-. $python ./assetmg.py
+. $python ./main.py
 " | out-file ./win_run.ps1 -encoding ascii
 
 "powershell -ExecutionPolicy bypass -File ./win_run.ps1"  | out-file ./win_run.cmd -encoding ascii
@@ -132,4 +128,4 @@ $Shortcut.Arguments = "-Nop -Executionpolicy bypass -NoExit ""$targetPath"""
 $Shortcut.WorkingDirectory = (Resolve-Path .).Path
 $Shortcut.Save()
 
-Write-Host -ForegroundColor Green "All done, to start the app please run win_run.cmd or $python assetMG.py"
+Write-Host -ForegroundColor Green "All done, to start the app please run win_run.cmd or $python main.py"
