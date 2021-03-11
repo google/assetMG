@@ -17,18 +17,13 @@ mat-card {
   height: 100%;
   display: flow-root;
   width: 180px;
-  /* max-width: 100%; */
   max-height: 100%;
-
-  /* padding:0px;
-  padding-top:16px; */
 }
 
 mat-card-subtitle {
   font-size: 14px;
   border-bottom: groove;
   border-width: thin;
-  /* padding-bottom: 2px; */
   display: inline-block;
   width: 160px;
   white-space: nowrap;
@@ -65,7 +60,6 @@ mat-card-content p {
 
 mat-card-content img {
   position: relative;
-  /* width: auto; */
 }
 mat-card-content button {
   position: absolute;

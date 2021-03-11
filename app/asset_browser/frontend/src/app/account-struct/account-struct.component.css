@@ -28,12 +28,6 @@ table {
   width: 60px !important;
 }
 
-/* .mat-column-headline-sel,
-.mat-column-desc-sel {
-  flex: 0 0 95px !important;
-  width: 95px !important;
-} */
-
 .mat-cell,
 th.mat-header-cell {
   text-align: left;
@@ -43,7 +37,6 @@ th.mat-header-cell {
 
 .mat-header-cell .mat-checkbox {
   background-color: white !important;
-  /* height: 16px !important; */
 }
 
 th.mat-header-cell:first-of-type,

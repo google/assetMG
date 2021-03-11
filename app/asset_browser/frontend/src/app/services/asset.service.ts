@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/catch';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -68,7 +68,6 @@ export class AssetService {
     this._allAssets$.next(null);
     // Call the API and update the asset observable
     const endpoint = this.API_SERVER + '/accounts-assets/';
-    //let params = new HttpParams().set('cid', accountId?.toString());
     let subscription = this._http
       .get<Asset[]>(endpoint, { params: { cid: accountId?.toString() } })
       .subscribe((assets) => {
@@ -79,7 +78,6 @@ export class AssetService {
 
   private getAccountHierarchy(accountId: number) {
     const endpoint = this.API_SERVER + '/structure/';
-    //let params = new HttpParams().set('cid', accountId?.toString());
     let subscription = this._http
       .get<Account>(endpoint, { params: { cid: accountId?.toString() } })
       .subscribe((account) => {
@@ -133,7 +131,6 @@ export class AssetService {
   changeAccount(accountId: number) {
     this._activeAccountId$.next(accountId);
     this.getAllAssets(accountId);
-    //this.getAccountHierarchy(accountId);
     this.getAccountAdGroups(accountId);
     this.getAssetsToAdGroups();
     this.changeAsset(null);

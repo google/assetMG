@@ -21,8 +21,6 @@ import { YouTubeVid } from '../../model/yt-vid'
 import { VideoSelectComponent } from '../video-select/video-select.component';
 import { UploadAssetService } from '../../services/upload-asset.service'
 import { AssetService } from '../../services/asset.service'
-import { filter } from 'rxjs/operators';
-import { calcPossibleSecurityContexts } from '@angular/compiler/src/template_parser/binding_parser'
 
 
 @Component({

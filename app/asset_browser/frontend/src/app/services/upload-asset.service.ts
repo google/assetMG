@@ -18,7 +18,6 @@ import { HttpClient } from '@angular/common/http';
 import { AssetType } from '../model/asset';
 import { YouTubeVid } from '../model/yt-vid'
 import { BehaviorSubject } from 'rxjs';
-import { UploadResponse } from '../model/response';
 import { AuthorizationService } from './authorization.service';
 
 @Injectable({

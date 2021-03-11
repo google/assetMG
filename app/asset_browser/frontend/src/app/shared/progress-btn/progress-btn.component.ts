@@ -44,13 +44,4 @@ export class ProgressBtnComponent implements OnInit {
       this.btnClick.emit(event);
     }
   }
-
-  // ngOnChanges(changes: SimpleChanges) {
-  //   if (changes.active) {
-  //     this.options.active = changes.active.currentValue;
-  //   }
-  //   if (changes.disabled) {
-  //     this.options.disabled = changes.disabled.currentValue;
-  //   }
-  // }
 }

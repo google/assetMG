@@ -294,7 +294,6 @@ export class UploadAssetsComponent implements OnInit {
   processUploadResponse(status, response?: UploadResponse) {
     // Stop the progress bar
     this.uploadInProgress = false;
-    console.log(response);
     if (status != STATUS.SUCCESS) {
       this.isErrorMessage = true;
       let msg = '';
@@ -316,7 +315,6 @@ export class UploadAssetsComponent implements OnInit {
     } else if (response?.asset) {
       // Notify the asset service of newly added asset
       if (response.asset) {
-        //console.log(response.asset)
         this._assetService.addNewAsset(response.asset);
         this._snackBar.open('Uploaded Successfully', '', {
           duration: 2000,

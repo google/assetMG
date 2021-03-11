@@ -16,7 +16,7 @@
 import { AssetService } from './../services/asset.service';
 import { AccountAGs } from './../model/account';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Subscription, Observable, from } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { MatSidenav } from '@angular/material/sidenav';
 import { ConfigService } from '../services/config.service';
 import { MatDialog } from '@angular/material/dialog';

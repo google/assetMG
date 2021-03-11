@@ -126,7 +126,6 @@ export class AssetDetailsComponent implements OnInit {
       mutateRecords.push(...this.createMutateRecord(row));
     });
 
-    // console.log('Updates: ', this.accountAdGroups.getUpdatedRows());
     console.log('Mutate: ', mutateRecords);
 
     if (mutateRecords.length) {
