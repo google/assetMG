@@ -22,15 +22,16 @@ gcloud app create
 
 # Describe to get the URL
 $(gcloud app describe --format=config[export])
-echo $defaultHostname
-echo $defaultBucket
 
 # Update server.yaml
-echo $PWD
 echo "hostname: $defaultHostname" > server.yaml
 echo "port: 443" >> server.yaml
 echo "cloud: true" >> server.yaml
 echo "bucket_name: $defaultBucket" >> server.yaml
+
+# Waiting for details to propagate
+echo "Waiting 30 seconds before deploying..."
+sleep 30
 
 # Deploying to cloud
 gcloud app deploy

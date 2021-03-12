@@ -73,7 +73,8 @@ curl https://raw.githubusercontent.com/google/assetMG/master/scripts/setup_linux
 curl https://raw.githubusercontent.com/google/assetMG/master/scripts/deploy_cloud.sh | bash -s
 ```
 * Once the app is deployed, you should see the url to access it.
-* Alternatively, run "gcloud app browse" to open your app.
+* Alternatively, run "gcloud app browse" to open your app or get the URL.
+* Don't forget to whitelist the URL for your credentials (see OAuth2 steps to create client-id/client-secret for a web app)
 
 #### Running the app
 After a setup script completes all you need to do is run a "run" script from within AssetMG folder:
