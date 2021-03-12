@@ -63,6 +63,18 @@ curl https://raw.githubusercontent.com/google/assetMG/master/scripts/setup_macos
 curl https://raw.githubusercontent.com/google/assetMG/master/scripts/setup_linux.sh | bash -s
 ```
 
+**Google Cloud (AppEngine):**
+
+* Create a new cloud project
+* Open cloud shell. Make sure your new project is selected (gcloud config set project your-project)
+* Run the following command and follow the installation wizard.
+
+```shell
+curl https://raw.githubusercontent.com/google/assetMG/master/scripts/deploy_cloud.sh | bash -s
+```
+* Once the app is deployed, you should see the url to access it.
+* Alternatively, run "gcloud app browse" to open your app.
+
 #### Running the app
 After a setup script completes all you need to do is run a "run" script from within AssetMG folder:
 * Windows: `win_run.cmd`  

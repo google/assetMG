@@ -13,8 +13,7 @@ if [ -d "$DIR" ]; then
   git pull
 else
   ### Project didn't exist, cloning ###
-  # git clone with correct code to be updated
-  # git clone https://github.com/google/assetMG.git
+  git clone https://github.com/google/assetMG.git
   cd assetMG
 fi
 
