@@ -25,8 +25,10 @@ Easily add, change or remove creative assets across different ad groups and camp
 
 - Access to AdWords API (refer to
   [Apply for access to the AdWords API](https://developers.google.com/adwords/api/docs/guides/signup)).
-- OAuth 2 credentials (refer to
-  [Generate OAuth2 credentials](https://developers.google.com/adwords/api/docs/guides/authentication#create_a_client_id_and_client_secret)).
+- OAuth 2 credentials for **web application**(refer to
+  [Generate OAuth2 credentials](https://developers.google.com/adwords/api/docs/guides/authentication#generate_oauth2_credentials)).
+  - If you are doing a local deployment (not on cloud) add http://localhost:5000 to the credentials "Authorized JavaScript Origins" and "Authorized redirect" URIs. 
+  - If you are deploying on cloud, add the app's URI after deployment.
 - [Enable Google ads API](https://developers.google.com/google-ads/api/docs/first-call/oauth-cloud-project#enable_the_in_your_project)
 
 
@@ -94,9 +96,10 @@ Basically all you need to run the app is:
 * have/install NodeJS (compatible with Angular cli's version used in the project - see in front-end folder)
 * clone the repo from GitHub (https://github.com/google/assetMG.git)
 * install server (Python) dependencies via `pip` (still the recommended way to do it in a virtual environment)
-* install front-end (npm) dependencies via `npm`
-* build Angular app (run `ng build` in app/asset_browser/frontend)
-* run `python3 assetMG.py` to start the backend
+* Optional - build frontend locally (compiled FE is already in repo):
+  * install front-end (npm) dependencies via `npm install`
+  * build Angular app (run `ng build` in app/asset_browser/frontend)
+* run `python3 main.py` to start the backend
 
 The setup scripts do the heavy-lifting on checking for installed software (Python, Git, NodeJS), their versions (we need Python 3.7 or later), install missing components, etc.
 
@@ -121,7 +124,7 @@ npm install
 node_modules/.bin/ng build
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
-python3 assetMG.py
+python3 main.py
 ```
 
 For Windows, the only difference will be is how you activate venv:
@@ -152,7 +155,7 @@ environment and libraries:
   ```shell
   pip3 install -r requirements.txt
   ```
-3. Build the front-end app"
+3. Build the front-end app (optional)
   ```shell
   cd app/asset_browser/frontend
   npm install
@@ -160,7 +163,7 @@ environment and libraries:
   ```
 4. Run the app
   ```shell
-  python3 assetMG.py
+  python3 main.py
   ```
   
   if you get the following error:
@@ -183,14 +186,14 @@ For MacOS/Linux, copy the following block and paste in the Terminal:
 . .venv/bin/activate
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
-python3 assetMG.py
+python3 main.py
 ```
 
 For Windows, copy the following block and paste in the Console:
 
 ```shell
 .venv\Scripts\activate.bat
-python3 assetMG.py
+python3 main.py
 ```
 
 But each time you update the repository (`git pull`) you'll need to reinstall Python (`pip3 install -r requirements.txt`) and npm dependencies (`npm i`), and rebuild Angular app (`ng build`).

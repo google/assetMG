@@ -18,7 +18,7 @@ else
 fi
 
 # Create app engine for project if not exist
-gcloud app create
+gcloud app create --region europe-west2
 
 # Describe to get the URL
 $(gcloud app describe --format=config[export])
@@ -30,8 +30,9 @@ echo "cloud: true" >> server.yaml
 echo "bucket_name: $defaultBucket" >> server.yaml
 
 # Waiting for details to propagate
-echo "Waiting 30 seconds before deploying..."
-sleep 30
+echo "Waiting 45 seconds before deploying..."
+sleep 45
 
 # Deploying to cloud
-gcloud app deploy
+gcloud app deploy --quiet
+gcloud app browse
