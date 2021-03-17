@@ -76,7 +76,8 @@ curl https://raw.githubusercontent.com/google/assetMG/master/scripts/deploy_clou
 ```
 * Once the app is deployed, you should see the url to access it.
 * Alternatively, run "gcloud app browse" to open your app or get the URL.
-* Don't forget to whitelist the URL for your credentials (see OAuth2 steps to create client-id/client-secret for a web app)
+* Before using the app, add the app's URL to the Authorized JavaScript origins for your OAuth2 client. (see OAuth2 steps to create client-id/client-secret for a web app)
+* In your OAuth consent screen, make sure that User Type is set to "internal" to restrict access to only users in your organization. For extra security, you can set up firewalls to make the app accessible only from specific IP adresses. [Firewalls for AppEngine](https://cloud.google.com/appengine/docs/standard/python3/creating-firewalls)
 
 #### Running the app
 After a setup script completes all you need to do is run a "run" script from within AssetMG folder:
