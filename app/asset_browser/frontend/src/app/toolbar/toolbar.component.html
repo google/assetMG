@@ -7,7 +7,7 @@
       <div *ngIf="this.loadAccounts" class="toolbar_select">
         <mat-form-field class="account_select">
         <mat-label>Account</mat-label>
-        <mat-select [(value)]="defaultAccount">
+        <mat-select [(value)]="defaultAccount" *ngIf="this.loggedIn">
           <mat-option *ngFor="let account of (accounts$ | async)" [value]="account.id"
             (onSelectionChange)="accountChanged($event)"> {{!!account.name ? account.name : account.id}}
           </mat-option>
@@ -21,7 +21,7 @@
             <mat-icon>update</mat-icon>
         </button>
       </ng-container>
-      <button mat-icon-button (click)="openSettings()">
+      <button mat-icon-button (click)="openSettings()" *ngIf="this.loggedIn">
           <mat-icon>settings</mat-icon>
       </button>
       <button mat-icon-button (click)="feedbackClicked()">
