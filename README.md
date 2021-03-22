@@ -81,7 +81,8 @@ curl https://raw.githubusercontent.com/google/assetMG/master/scripts/deploy_clou
 * In your OAuth consent screen, make sure that User Type is set to "internal" to restrict access to only users in your organization. For extra security, you can set up firewalls to make the app accessible only from specific IP adresses. [Firewalls for AppEngine](https://cloud.google.com/appengine/docs/standard/python3/creating-firewalls)
 
 
-##### Using YouTube Channel Uploads (optional)
+
+#### Using YouTube Channel Uploads (optional)
 AssetMG has a feature that allows bulk upload of videos from any YouTube channel to your Google Ads account.
 It is an optional feature, and can be setup at any point.
 - In the cloud project where you created your oauth2 credentials, look for YouTube Data API v3 and enable it
@@ -90,9 +91,8 @@ It is an optional feature, and can be setup at any point.
   - Click "Create Credentials"
   - Choose "API key"
 - In the assetMG UI, after logining in, click the settings button and click on "YouTube Config" tab
-- Enter your API Key and any [channel ID](https://support.google.com/youtube/answer/3250431?hl=en)
-
-
+- Enter your API Key and any [channel ID](https://support.google.com/youtube/answer/3250431?hl=en) and click "Update"
+- Now when uploading a video asset, you can choose "Choose From Channel" and select all the videos you want to upload.
 
 
 #### Running the app
