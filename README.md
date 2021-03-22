@@ -27,6 +27,7 @@ Easily add, change or remove creative assets across different ad groups and camp
   [Apply for access to the AdWords API](https://developers.google.com/adwords/api/docs/guides/signup)).
 - OAuth 2 credentials for **web application**(refer to
   [Generate OAuth2 credentials](https://developers.google.com/adwords/api/docs/guides/authentication#generate_oauth2_credentials)).
+  - In initial setup, under "oauth consent screen", make sure to select "Internal"
   - If you are doing a local deployment (not on cloud) add http://localhost:5000 to the credentials "Authorized JavaScript Origins" and "Authorized redirect" URIs. 
   - If you are deploying on cloud, add the app's URI after deployment.
 - [Enable Google ads API](https://developers.google.com/google-ads/api/docs/first-call/oauth-cloud-project#enable_the_in_your_project)
@@ -78,6 +79,21 @@ curl https://raw.githubusercontent.com/google/assetMG/master/scripts/deploy_clou
 * Alternatively, run "gcloud app browse" to open your app or get the URL.
 * Before using the app, add the app's URL to the Authorized JavaScript origins for your OAuth2 client. (see OAuth2 steps to create client-id/client-secret for a web app)
 * In your OAuth consent screen, make sure that User Type is set to "internal" to restrict access to only users in your organization. For extra security, you can set up firewalls to make the app accessible only from specific IP adresses. [Firewalls for AppEngine](https://cloud.google.com/appengine/docs/standard/python3/creating-firewalls)
+
+
+##### Using YouTube Channel Uploads (optional)
+AssetMG has a feature that allows bulk upload of videos from any YouTube channel to your Google Ads account.
+It is an optional feature, and can be setup at any point.
+- In the cloud project where you created your oauth2 credentials, look for YouTube Data API v3 and enable it
+- Under API & Services (where you generated your oauth2 credentials):
+  - Choose "credentials" in the left menu bar
+  - Click "Create Credentials"
+  - Choose "API key"
+- In the assetMG UI, after logining in, click the settings button and click on "YouTube Config" tab
+- Enter your API Key and any [channel ID](https://support.google.com/youtube/answer/3250431?hl=en)
+
+
+
 
 #### Running the app
 After a setup script completes all you need to do is run a "run" script from within AssetMG folder:
