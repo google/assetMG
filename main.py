@@ -119,8 +119,12 @@ except FileNotFoundError:
 
 if config_file['config_valid']:
     try:
-        structure.create_mcc_struct(
-            get_global_googleads_client(), account_struct_json_path, asset_to_ag_json_path)
+        setup.download_file_from_gcs('account_struct.json', account_struct_json_path)
+        setup.download_file_from_gcs('asset_to_ag.json', asset_to_ag_json_path)
+        if CLOUD_VERSION and Path(account_struct_json_path).exists():
+            print('Not creating the structure, since this is cloud')
+        else:
+            structure.create_mcc_struct(get_global_googleads_client(), account_struct_json_path, asset_to_ag_json_path)
     except Exception as e:
         logging.exception('Error when trying to create struct')
         Service_Class.reset_cid(get_global_adwords_client())
