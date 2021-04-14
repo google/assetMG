@@ -122,7 +122,8 @@ if config_file['config_valid']:
         setup.download_file_from_gcs('account_struct.json', account_struct_json_path)
         setup.download_file_from_gcs('asset_to_ag.json', asset_to_ag_json_path)
         if CLOUD_VERSION and Path(account_struct_json_path).exists():
-            print('Not creating the structure, since this is cloud')
+            get_global_googleads_client() # to initialize googleads.yaml file
+            logging.info('Skipping structure creation on startup, since this is the cloud version')
         else:
             structure.create_mcc_struct(get_global_googleads_client(), account_struct_json_path, asset_to_ag_json_path)
     except Exception as e:
