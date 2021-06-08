@@ -16,7 +16,7 @@
 import json
 from flask import Flask, request, jsonify, render_template
 from googleads import adwords
-from google.ads.google_ads.client import GoogleAdsClient
+from google.ads.googleads.client import GoogleAdsClient
 import app.backend.setup as setup
 from app.backend.mutate import mutate_ad
 from app.backend import structure

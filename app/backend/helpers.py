@@ -14,14 +14,14 @@
 
 """Helper functions to be used by the backend."""
 
-from google.ads.google_ads.client import GoogleAdsClient
+from google.ads.googleads.client import GoogleAdsClient
 
 
 def populate_adgroup_details(client, account, ag_id):
   """Gets an adgroup ID and returns an adgroup object including
   adgroup id, adgroup name and campaign name."""
 
-  ga_service = client.get_service('GoogleAdsService', version='v4')
+  ga_service = client.get_service('GoogleAdsService', version='v7')
 
   query = '''
         SELECT
@@ -34,11 +34,15 @@ def populate_adgroup_details(client, account, ag_id):
           ad_group.id = %s 
   ''' % (ag_id)
 
-  response = ga_service.search(account, query)
+  request = client.get_type("SearchGoogleAdsStreamRequest")
+  request.customer_id = account
+  request.query = query
+  response = ga_service.search_stream(request=request)
 
-  for row in response:
-    return {
-      'adgroup_id': row.ad_group.id.value,
-      'adgroup_name': row.ad_group.name.value,
-      'campaign_name': row.campaign.name.value
-    }
+  for batch in response:
+    for row in batch.results:
+      return {
+        'adgroup_id': row.ad_group.id,
+        'adgroup_name': row.ad_group.name,
+        'campaign_name': row.campaign.name
+      }

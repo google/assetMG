@@ -18,7 +18,7 @@ import json
 import logging
 import time
 from concurrent import futures
-from google.ads.google_ads.client import GoogleAdsClient
+from google.ads.googleads.client import GoogleAdsClient
 import app.backend.setup as setup
 
 logging.basicConfig(level=logging.DEBUG,
@@ -68,7 +68,8 @@ class StructureBuilder(object):
 
 
     def __init__(self, client, customer_id):
-        self._service = client.get_service('GoogleAdsService', version='v4')
+        self._service = client.get_service('GoogleAdsService', version='v7')
+        self._client = client
         self._customer_id = customer_id
         self._enums = {
             'type': client.get_type('AssetTypeEnum').AssetType,
@@ -81,39 +82,41 @@ class StructureBuilder(object):
 
 
     def _get_rows(self, query):
-        response = self._service.search_stream(str(self._customer_id), query)
+        search_request = self._client.get_type("SearchGoogleAdsStreamRequest")
+        search_request.customer_id = self._customer_id
+        search_request.query = query
+        response = self._service.search_stream(request=search_request)
         return RowsIterator(response)
 
 
     def _build_asset(self, row):
-        asset_type = self._enums['type'].Name(row.asset.type)
-        perf_label = self._enums['performance_label'].Name(
-            row.ad_group_ad_asset_view.performance_label)
+        asset_type = self._enums['type'](row.asset.type_).name
+        perf_label = self._enums['performance_label'](row.ad_group_ad_asset_view.performance_label).name
         asset = {
-            'id': row.asset.id.value,
-            'name': row.asset.name.value,
+            'id': row.asset.id,
+            'name': row.asset.name,
             'type': asset_type,
             'stats': {
-                'clicks': row.metrics.clicks.value,
-                'all_conversions': row.metrics.all_conversions.value,
-                'impressions': row.metrics.impressions.value,
-                'cost': row.metrics.cost_micros.value / 1000000
+                'clicks': row.metrics.clicks,
+                'all_conversions': row.metrics.all_conversions,
+                'impressions': row.metrics.impressions,
+                'cost': row.metrics.cost_micros / 1000000
             },
             'performance': perf_label
         }
         if asset_type == 'IMAGE':
-            asset['image_url'] = row.asset.image_asset.full_size.url.value
-            asset['file_size'] = row.asset.image_asset.file_size.value
+            asset['image_url'] = row.asset.image_asset.full_size.url
+            asset['file_size'] = row.asset.image_asset.file_size
             asset['image_height'] = \
-                row.asset.image_asset.full_size.height_pixels.value
-            asset['image_width'] = row.asset.image_asset.full_size.width_pixels.value
+                row.asset.image_asset.full_size.height_pixels
+            asset['image_width'] = row.asset.image_asset.full_size.width_pixels
         elif asset_type == 'TEXT':
-            text_type = self._enums['field_type'].Name(
-                row.ad_group_ad_asset_view.field_type)
+            text_type = self._enums['field_type'](
+                row.ad_group_ad_asset_view.field_type).name
             asset['text_type'] = text_type.lower() + 's'
-            asset['asset_text'] = row.asset.text_asset.text.value
+            asset['asset_text'] = row.asset.text_asset.text
         elif asset_type == 'YOUTUBE_VIDEO':
-            video_id = row.asset.youtube_video_asset.youtube_video_id.value
+            video_id = row.asset.youtube_video_asset.youtube_video_id
             asset['video_id'] = video_id
             asset['link'] = f'https://www.youtube.com/watch?v={video_id}'
             asset['image_url'] = f'https://img.youtube.com/vi/{video_id}/1.jpg'
@@ -121,8 +124,8 @@ class StructureBuilder(object):
 
     def _build_yt_data(self,row):
         yt_data  = {
-            'yt_id': row.video.id.value,
-            'yt_title': row.video.title.value
+            'yt_id': row.video.id,
+            'yt_title': row.video.title
         }
         return yt_data
 
@@ -245,10 +248,10 @@ class AccountStructureBuilder(StructureBuilder):
           {self._CAMPAIGN_FILTER}
     ''')
         for row in rows:
-            campaign_status = self._enums['campaign_status'].Name(row.campaign.status)
+            campaign_status = self._enums['campaign_status'](row.campaign.status).name
             campaign = {
-                'id': row.campaign.id.value,
-                'campaign_name': row.campaign.name.value,
+                'id': row.campaign.id,
+                'campaign_name': row.campaign.name,
                 'status': campaign_status,
                 'adgroups': [],
             }
@@ -269,14 +272,14 @@ class AccountStructureBuilder(StructureBuilder):
           {self._AD_GROUP_FILTER}
     ''')
         for row in rows:
-            adgroup_status = self._enums['adgroup_status'].Name(row.ad_group.status)
+            adgroup_status = self._enums['adgroup_status'](row.ad_group.status).name
             ad_group = {
-                'id': row.ad_group.id.value,
-                'name': row.ad_group.name.value,
+                'id': row.ad_group.id,
+                'name': row.ad_group.name,
                 'status': adgroup_status,
                 'assets': [],
             }
-            campaigns[row.campaign.id.value]['adgroups'].append(ad_group)
+            campaigns[row.campaign.id]['adgroups'].append(ad_group)
             self._ad_groups[ad_group['id']] = ad_group
 
     def build(self):
@@ -312,7 +315,7 @@ class AccountStructureBuilder(StructureBuilder):
     ''')
         for row in rows:
             asset = self._build_asset(row)
-            self._ad_groups[row.ad_group.id.value]['assets'].append(asset)
+            self._ad_groups[row.ad_group.id]['assets'].append(asset)
         structure['campaigns'] = self._campaigns
         return structure
 
@@ -343,15 +346,15 @@ class AccountAdGroupStructureBuilder(StructureBuilder):
     ''')
 
         for row in rows:
-            adgroup_status = self._enums['adgroup_status'].Name(row.ad_group.status)
-            campaign_status = self._enums['campaign_status'].Name(row.campaign.status)
+            adgroup_status = self._enums['adgroup_status'](row.ad_group.status).name
+            campaign_status = self._enums['campaign_status'](row.campaign.status).name
 
             ad_group = {
-                'id': row.ad_group.id.value,
-                'name': row.ad_group.name.value,
+                'id': row.ad_group.id,
+                'name': row.ad_group.name,
                 'status': adgroup_status,
-                'campaign_id': row.campaign.id.value,
-                'campaign_name': row.campaign.name.value,
+                'campaign_id': row.campaign.id,
+                'campaign_name': row.campaign.name,
                 'campaign_status': campaign_status
             }
             structure['adgroups'].append(ad_group)
@@ -379,8 +382,8 @@ class MCCStructureBuilder(StructureBuilder):
     ''')
         for row in rows:
             accounts.append({
-                'id': row.customer_client.id.value,
-                'name': row.customer_client.descriptive_name.value,
+                'id': row.customer_client.id,
+                'name': row.customer_client.descriptive_name,
             })
         return accounts
 
@@ -389,7 +392,7 @@ class MCCStructureBuilder(StructureBuilder):
         with futures.ThreadPoolExecutor() as executor:
             account_structures = executor.map(
                 lambda account: AccountStructureBuilder(
-                    self._client, account['id'], account['name']).build(),
+                    self._client, str(account['id']), account['name']).build(),
                 accounts)
         return list(account_structures)
 
