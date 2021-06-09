@@ -14,6 +14,7 @@
 
 """ server configuration for the assetMG tool"""
 import json
+from math import floor
 from flask import Flask, request, jsonify, render_template
 from googleads import adwords
 from google.ads.googleads.client import GoogleAdsClient
@@ -56,12 +57,9 @@ UPLOAD_FOLDER = Path(PREFIX + 'uploads')
 UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
 
 
-ALLOWED_EXTENSIONS = {'txt','png', 'jpg', 'jpeg', 'zip','gif'}
-ALLOWED_DIMENSIONS = [(200,200), (240,400), (250,250), (250,360),
-                      (300,250), (336,280), (580,400), (120,600),
-                      (160,600), (300,600), (300,1050), (468,60),
-                      (728,90), (930,180), (970,90), (970,250),
-                      (980,120), (300,50), (320,50), (320,100)]
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'zip'}
+# A list of allowed image ratios and their repectavie minimum sizes
+ALLOWED_RATIOS = [[(1,1),(200,200)], [(4,5),(320,400)], [(1.91,1),(600,314)]]
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -740,7 +738,16 @@ def validate_dimensions():
     height = data['height']
     width = data['width']
 
-    valid = (width, height) in ALLOWED_DIMENSIONS
+    valid = False
+
+    # Rounding down for 2 digits after the decimal point, as G-Ads accepts it.
+    ratio = floor(width / height * 100) / 100
+    for allowed in ALLOWED_RATIOS:
+        if ratio == (allowed[0][0] / allowed[0][1]):
+            # Check minimum dimensions
+            if width >= allowed[1][0] and height >= allowed[1][1]:
+                valid = True
+                break
 
     return _build_response(msg=json.dumps({"valid": valid}))
 
