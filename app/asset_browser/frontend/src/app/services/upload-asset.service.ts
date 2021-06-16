@@ -112,7 +112,7 @@ export class UploadAssetService {
   }
 
   loadYtChannelVideos(){
-    const endpoint = this.API_SERVER + '/get-yt-videos/';
+    var endpoint = this.API_SERVER + '/get-yt-videos/';
     let subscription = this.http.get<YouTubeVid[]>(endpoint)
     .subscribe((vids) =>{
       this._YtVidList$.next(vids);

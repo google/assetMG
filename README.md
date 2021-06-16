@@ -84,14 +84,10 @@ curl https://raw.githubusercontent.com/google/assetMG/master/scripts/deploy_clou
 
 #### Using YouTube Channel Uploads (optional)
 AssetMG has a feature that allows bulk upload of videos from any YouTube channel to your Google Ads account.
-It is an optional feature, and can be setup at any point.
 - In the cloud project where you created your oauth2 credentials, look for YouTube Data API v3 and enable it
-- Under API & Services (where you generated your oauth2 credentials):
-  - Choose "credentials" in the left menu bar
-  - Click "Create Credentials"
-  - Choose "API key"
 - In the assetMG UI, after logining in, click the settings button and click on "YouTube Config" tab
-- Enter your API Key and any [channel ID](https://support.google.com/youtube/answer/3250431?hl=en) and click "Update"
+- Enter your any [channel ID](https://support.google.com/youtube/answer/3250431?hl=en) and click "Update" (You can change the channel at any time)
+- If you are an owner in this channel you will see both unlisted and public videos, else you will only see public videos.
 - Now when uploading a video asset, you can choose "Choose From Channel" and select all the videos you want to upload.
 
 

@@ -54,7 +54,7 @@ export class AuthorizationService {
       await gapi.auth2
         .init({
           client_id: config.client_id,
-          scope: "https://www.googleapis.com/auth/adwords"
+          scope: "https://www.googleapis.com/auth/adwords https://www.googleapis.com/auth/youtube.readonly"
         })
         .then(auth => {
           this.authInstance = auth;
@@ -73,12 +73,11 @@ export class AuthorizationService {
       if (!this.authInstance) {
         await this.initGoogleAuth();
       }
-
       // Get the refresh access token
       var refreshAccessToken = await this.authInstance.grantOfflineAccess({
         access_type: "offline",
         prompt: "consent",
-        scope: "https://www.googleapis.com/auth/adwords"
+        scope: "https://www.googleapis.com/auth/adwords https://www.googleapis.com/auth/youtube.readonly"
       })
       .then((res) => {
         var refreshAccessToken = res.code;

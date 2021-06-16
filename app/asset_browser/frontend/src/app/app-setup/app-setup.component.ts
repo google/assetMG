@@ -127,7 +127,6 @@ export class AppSetupComponent implements OnInit {
 
   forceLogin() {
     this.resetState();
-
     let subscription = from(this._authorizationService.authenticate(true))
       .subscribe(
         (response) => {

@@ -25,7 +25,7 @@ from app.backend.upload_asset import upload
 from app.backend.service import Service_Class
 from app.backend.yt_upload import initialize_upload
 from app.backend.error_handling import error_mapping
-from app.backend.get_yt import get_all_yt_videos, test_yt_credentials
+from app.backend.get_yt import get_all_yt_videos
 from app.backend.helpers import populate_adgroup_details
 from googleapiclient.discovery import build
 from pathlib import Path
@@ -40,7 +40,7 @@ import shutil
 from werkzeug.utils import secure_filename
 import string
 from google.cloud import storage
-from app.backend.setup import CONFIG_PATH, CONFIG_PATH_GS, PREFIX, CLOUD_VERSION, BASE_URL, BUCKET_NAME
+from app.backend.setup import CONFIG_PATH, CONFIG_PATH_GS, PREFIX, CLOUD_VERSION, BASE_URL, BUCKET_NAME, YT_CONFIG
 from app.backend.setup import YT_CONFIG_FILE_PATH, YT_CONFIG_FILE_PATH_GS, CONFIG_FILE_PATH,CONFIG_FILE_PATH_GS
 
 # from flask_cors import CORS
@@ -211,7 +211,8 @@ def init_flow(from_client_config=False, client_id=None, client_secret=None):
                 'openid',
                 'https://www.googleapis.com/auth/adwords',
                 'https://www.googleapis.com/auth/userinfo.profile',
-                'https://www.googleapis.com/auth/userinfo.email'
+                'https://www.googleapis.com/auth/userinfo.email',
+                'https://www.googleapis.com/auth/youtube.readonly'
             ]
         )
 
@@ -298,11 +299,8 @@ def set_yt():
 
     try:
         channel_id = data['channel_id']
-        api_key = data['api_key']
-
-        test_yt_credentials(channel_id,api_key)
         with open(YT_CONFIG_FILE_PATH, 'w') as f:
-            json.dump({'channel_id':channel_id,'api_key':api_key},f)
+            json.dump({'channel_id':channel_id},f)
         setup.upload_file_to_gcs(YT_CONFIG_FILE_PATH, YT_CONFIG_FILE_PATH_GS)
         return _build_response(status=200)
 

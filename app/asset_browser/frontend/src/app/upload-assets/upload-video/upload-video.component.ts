@@ -83,7 +83,7 @@ export class UploadVideoComponent implements OnInit {
       }
     });
     let yt_creds = this._configService.getYtConfigSettings();
-    if (yt_creds.api_key === ''){
+    if (yt_creds.channel_id === ''){
       this.options[1].disable = true;
     }
   }

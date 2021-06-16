@@ -6155,7 +6155,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                                 _context.next = 3;
                                 return gapi.auth2.init({
                                   client_id: config.client_id,
-                                  scope: "https://www.googleapis.com/auth/adwords"
+                                  scope: "https://www.googleapis.com/auth/adwords https://www.googleapis.com/auth/youtube.readonly"
                                 }).then(function (auth) {
                                   _this28.authInstance = auth;
                                 });
@@ -6220,7 +6220,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                     return this.authInstance.grantOfflineAccess({
                       access_type: "offline",
                       prompt: "consent",
-                      scope: "https://www.googleapis.com/auth/adwords"
+                      scope: "https://www.googleapis.com/auth/adwords https://www.googleapis.com/auth/youtube.readonly"
                     }).then(function (res) {
                       var refreshAccessToken = res.code;
                       return refreshAccessToken;
@@ -6567,8 +6567,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         value: function setYouTubeConfig(conf) {
           var endpoint = this.API_SERVER + '/set-yt/';
           return this.http.post(endpoint, {
-            channel_id: conf.channel_id,
-            api_key: conf.api_key
+            channel_id: conf.channel_id
           }, {
             observe: 'response'
           });
@@ -7141,14 +7140,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           var _this35 = this;
 
           var YtConf = {
-            channel_id: this.ytCredentials.YTform.get('channel').value.trim(),
-            api_key: this.ytCredentials.YTform.get('key').value.trim()
+            channel_id: this.ytCredentials.YTform.get('channel').value.trim()
           };
           return this._configService.setYouTubeConfig(YtConf).subscribe(function (response) {
             _this35._configService.updateYtConfigSettings(YtConf);
 
             _this35.errorFound = false;
-            _this35.verificationText = 'Credentials Updated';
+            _this35.verificationText = 'Channel Updated';
           }, function (error) {
             _this35.errorFound = true;
             _this35.verificationText = 'Invalid Credentials';
@@ -7925,74 +7923,28 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     var _angular_material_input__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(
     /*! @angular/material/input */
     "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/input.js");
-    /* harmony import */
-
-
-    var _angular_material_button__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(
-    /*! @angular/material/button */
-    "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/button.js");
-    /* harmony import */
-
-
-    var _angular_common__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(
-    /*! @angular/common */
-    "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
-
-    function YtConifgComponent_ng_container_13_Template(rf, ctx) {
-      if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerStart"](0);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div");
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "p", 7);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerEnd"]();
-      }
-
-      if (rf & 2) {
-        var ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpropertyInterpolate"]("innerHTML", ctx_r0.instructions, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeHtml"]);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r0.instructions);
-      }
-    }
 
     var YtConifgComponent = /*#__PURE__*/function () {
+      // "This is optional. " +
+      //       "If you want to use the bulk upload from a YouTube channel feature, " +
+      //       `please generate an <a href=${this.api_url} target='_blank' rel='noopener noreferrer'>API Key</a> ` +
+      //       `(not Oauth2) and enable the YouTube Data API in the <a href=${this.console_url} target='_blank' rel='noopener noreferrer'>API console</a> `;
       function YtConifgComponent(fb) {
         _classCallCheck(this, YtConifgComponent);
 
         this.fb = fb;
-        this.showText = false;
         this.api_url = 'https://developers.google.com/youtube/registering_an_application';
         this.console_url = 'https://developers.google.com/youtube/v3/getting-started#before-you-start';
-        this.instructions = "This is optional. " + "If you want to use the bulk upload from a YouTube channel feature, " + "please generate an <a href=".concat(this.api_url, " target='_blank' rel='noopener noreferrer'>API Key</a> ") + "(not Oauth2) and enable the YouTube Data API in the <a href=".concat(this.console_url, " target='_blank' rel='noopener noreferrer'>API console</a> ");
+        this.instructions = "To bulk upload videos from YouTube, please enable the YouTube Data API in the <a href=${this.console_url} target='_blank' rel='noopener noreferrer'>API console</a>. " + "After API enabled, paste a YouTube channel ID in the field above and click the update button bellow. If you are an owner in this channel you will see both unlisted and public videos, else you will only see public videos.";
       }
 
       _createClass(YtConifgComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
           var channel_id = this.ytData.channel_id ? this.ytData.channel_id : '';
-          var api_key = this.ytData.api_key ? this.ytData.api_key : '';
           this.YTform = this.fb.group({
-            channel: [channel_id, [_angular_forms__WEBPACK_IMPORTED_MODULE_1__["Validators"].required, _angular_forms__WEBPACK_IMPORTED_MODULE_1__["Validators"].minLength(3)]],
-            key: [api_key, [_angular_forms__WEBPACK_IMPORTED_MODULE_1__["Validators"].required]]
+            channel: [channel_id, [_angular_forms__WEBPACK_IMPORTED_MODULE_1__["Validators"].required, _angular_forms__WEBPACK_IMPORTED_MODULE_1__["Validators"].minLength(3)]]
           });
-        }
-      }, {
-        key: "toggleText",
-        value: function toggleText() {
-          this.showText = !this.showText;
         }
       }]);
 
@@ -8009,9 +7961,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       inputs: {
         ytData: "ytData"
       },
-      decls: 14,
-      vars: 2,
-      consts: [[3, "formGroup"], [1, "settings-field"], ["matInput", "", "formControlName", "channel", "autocomplete", "off"], [1, "settings-field", "long-field"], ["matInput", "", "formControlName", "key", "autocomplete", "off"], ["mat-stroked-button", "", "color", "primary", 3, "click"], [4, "ngIf"], [3, "innerHTML"]],
+      decls: 10,
+      vars: 3,
+      consts: [[3, "formGroup"], [1, "settings-field"], ["matInput", "", "formControlName", "channel", "autocomplete", "off"], [1, "settings-field", "long-field"], [3, "innerHTML"]],
       template: function YtConifgComponent_Template(rf, ctx) {
         if (rf & 1) {
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "form", 0);
@@ -8032,33 +7984,17 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "div", 3);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](6, "div", 3);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "mat-form-field");
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "div");
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "mat-label");
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "p", 4);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9, "API Key");
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](10, "input", 4);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "button", 5);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function YtConifgComponent_Template_button_click_11_listener() {
-            return ctx.toggleText();
-          });
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](12, "What is this?");
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](13, YtConifgComponent_ng_container_13_Template, 4, 2, "ng-container", 6);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         }
@@ -8066,12 +8002,16 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         if (rf & 2) {
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("formGroup", ctx.YTform);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](13);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](8);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.showText);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpropertyInterpolate"]("innerHTML", ctx.instructions, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeHtml"]);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx.instructions);
         }
       },
-      directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_1__["ɵangular_packages_forms_forms_y"], _angular_forms__WEBPACK_IMPORTED_MODULE_1__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_1__["FormGroupDirective"], _angular_material_form_field__WEBPACK_IMPORTED_MODULE_2__["MatFormField"], _angular_material_form_field__WEBPACK_IMPORTED_MODULE_2__["MatLabel"], _angular_material_input__WEBPACK_IMPORTED_MODULE_3__["MatInput"], _angular_forms__WEBPACK_IMPORTED_MODULE_1__["DefaultValueAccessor"], _angular_forms__WEBPACK_IMPORTED_MODULE_1__["NgControlStatus"], _angular_forms__WEBPACK_IMPORTED_MODULE_1__["FormControlName"], _angular_material_button__WEBPACK_IMPORTED_MODULE_4__["MatButton"], _angular_common__WEBPACK_IMPORTED_MODULE_5__["NgIf"]],
+      directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_1__["ɵangular_packages_forms_forms_y"], _angular_forms__WEBPACK_IMPORTED_MODULE_1__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_1__["FormGroupDirective"], _angular_material_form_field__WEBPACK_IMPORTED_MODULE_2__["MatFormField"], _angular_material_form_field__WEBPACK_IMPORTED_MODULE_2__["MatLabel"], _angular_material_input__WEBPACK_IMPORTED_MODULE_3__["MatInput"], _angular_forms__WEBPACK_IMPORTED_MODULE_1__["DefaultValueAccessor"], _angular_forms__WEBPACK_IMPORTED_MODULE_1__["NgControlStatus"], _angular_forms__WEBPACK_IMPORTED_MODULE_1__["FormControlName"]],
       styles: [".settings-field[_ngcontent-%COMP%]{\n  padding: 15px 0 0 0;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvc2hhcmVkL2NvbmZpZy95dC1jb25pZmcveXQtY29uaWZnLmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxtQkFBbUI7QUFDckIiLCJmaWxlIjoic3JjL2FwcC9zaGFyZWQvY29uZmlnL3l0LWNvbmlmZy95dC1jb25pZmcuY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5zZXR0aW5ncy1maWVsZHtcbiAgcGFkZGluZzogMTVweCAwIDAgMDtcbn0iXX0= */"]
     });
     /*@__PURE__*/
@@ -9719,8 +9659,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                 config_valid: config.config_valid
               },
               yt: {
-                channel_id: ytConfig.channel_id,
-                api_key: ytConfig.api_key
+                channel_id: ytConfig.channel_id
               }
             }
           });
@@ -10239,7 +10178,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           var yt_creds = this._configService.getYtConfigSettings();
 
-          if (yt_creds.api_key !== '') {
+          if (yt_creds.channel_id !== '') {
             this._uploadAssetService.loadYtChannelVideos();
           }
         }
@@ -11619,7 +11558,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           var yt_creds = this._configService.getYtConfigSettings();
 
-          if (yt_creds.api_key === '') {
+          if (yt_creds.channel_id === '') {
             this.options[1].disable = true;
           }
         }
@@ -12207,7 +12146,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
   /***/
   function _(module, exports, __webpack_require__) {
     module.exports = __webpack_require__(
-    /*! /Users/eylong/assetMG/app/asset_browser/frontend/src/main.ts */
+    /*! /Users/eylong/assetmg1/assetMG/app/asset_browser/frontend/src/main.ts */
     "./src/main.ts");
     /***/
   }

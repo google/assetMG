@@ -26,5 +26,4 @@ export interface ConfigSettings {
 
 export interface YouTubeSettings {
   channel_id: string;
-  api_key: string;
 }

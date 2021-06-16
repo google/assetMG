@@ -113,8 +113,7 @@ export class ConfigService {
     const endpoint = this.API_SERVER + '/set-yt/';
     return this.http.post(
       endpoint,
-      { channel_id: conf.channel_id,
-        api_key: conf.api_key },
+      { channel_id: conf.channel_id},
       { observe: 'response' }
     );
   }

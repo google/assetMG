@@ -3048,7 +3048,7 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/eylong/assetMG/app/asset_browser/frontend/src/polyfills.ts */"./src/polyfills.ts");
+module.exports = __webpack_require__(/*! /Users/eylong/assetmg1/assetMG/app/asset_browser/frontend/src/polyfills.ts */"./src/polyfills.ts");
 
 
 /***/ })

@@ -29,7 +29,7 @@ import { UploadVideoComponent } from './upload-video/upload-video.component';
 import { UploadHtmlComponent } from './upload-html/upload-html.component';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { UploadAssetService } from '../services/upload-asset.service';
- 
+
 import { ErrorStateMatcher } from '@angular/material/core';
 import { AssetType } from '../model/asset';
 import { STATUS, UploadResponse } from '../model/response';
@@ -37,7 +37,7 @@ import { AssetService } from '../services/asset.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AccountStructComponent } from '../account-struct/account-struct.component';
 import { ConfigService } from '../services/config.service';
- 
+
 /** Error when the parent is invalid */
 export class ErrorMatcher implements ErrorStateMatcher {
   isErrorState(
@@ -47,7 +47,7 @@ export class ErrorMatcher implements ErrorStateMatcher {
     return control.dirty && form.invalid;
   }
 }
- 
+
 @Component({
   selector: 'app-upload-assets',
   templateUrl: './upload-assets.component.html',
@@ -73,18 +73,18 @@ export class UploadAssetsComponent implements OnInit {
   canAddAsset: boolean;
   isTextAsset: boolean = true;
   isChildFormValid: boolean = true;
- 
+
   /** Update button params */
   uploadInProgress: boolean = false;
   uploadMessage: string = '';
   isErrorMessage: boolean = false;
- 
+
   @ViewChild('uploadText') uploadText: UploadTextComponent;
   @ViewChild('uploadImg') uploadImg: UploadImgComponent;
   @ViewChild('uploadVideo') uploadVideo: UploadVideoComponent;
   @ViewChild('uploadHtml') uploadHtml: UploadHtmlComponent;
   @ViewChild('accountAdGroups') adGroups: AccountStructComponent;
- 
+
   constructor(
     private _uploadService: UploadAssetService,
     private _configService: ConfigService,
@@ -94,7 +94,7 @@ export class UploadAssetsComponent implements OnInit {
     public uploadDialogRef: MatDialogRef<UploadAssetsComponent>,
     @Inject(MAT_DIALOG_DATA) public account: Account
   ) {}
- 
+
   ngOnInit(): void {
     this.types = new Map();
     this.types.set(this.assetTypes.TEXT_HEADLINE, 'Text - Headline');
@@ -102,27 +102,27 @@ export class UploadAssetsComponent implements OnInit {
     this.types.set(this.assetTypes.IMG, 'Image');
     this.types.set(this.assetTypes.VIDEO, 'YouTube Video');
     this.types.set(this.assetTypes.HTML, 'HTML');
- 
+
     // First selected asset type is image when the dialog loads
     this.canAddAsset = true;
     this.uploadAssetType = this.assetTypes.IMG;
- 
+
     this.uploadDialogRef.updateSize('800px', '520px');
- 
+
     this.uploadDialogRef.beforeClosed().subscribe((result) => {
       this._uploadService.clearUploads();
     });
- 
+
     let yt_creds = this._configService.getYtConfigSettings();
-    if (yt_creds.api_key !== '') {
+    if (yt_creds.channel_id !== '') {
       this._uploadAssetService.loadYtChannelVideos();
     }
   }
- 
+
   onClose() {
     this.uploadDialogRef.close();
   }
- 
+
   onAssetTypeChange(type) {
     // Update whether an asset can be added without getting linked to an ad group
     if (
@@ -157,7 +157,7 @@ export class UploadAssetsComponent implements OnInit {
       }
     })
   }
- 
+
   onNext(stepper: MatStepper) {
     if (stepper.selectedIndex == 1) {
       switch (this.uploadAssetType) {
@@ -185,7 +185,7 @@ export class UploadAssetsComponent implements OnInit {
     this.isChildFormValid = this.isCurrentStepValid(stepper);
     this.isBulkUpload = false;
   }
- 
+
   isCurrentStepValid(stepper: MatStepper): boolean {
     if (stepper.selectedIndex == 0 || stepper.selectedIndex == 2) {
       return true;
@@ -202,11 +202,11 @@ export class UploadAssetsComponent implements OnInit {
       }
     }
   }
- 
+
   updateStepValid(isValid: boolean) {
     this.isChildFormValid = isValid;
   }
- 
+
   updateCanAddAsset(canAdd: boolean) {
     if (
       this.uploadAssetType == this.assetTypes.TEXT_DESC ||
@@ -218,12 +218,12 @@ export class UploadAssetsComponent implements OnInit {
   onAddAsset() {
     // Start the spinner
     this.uploadInProgress = true;
- 
+
     let assetName = '';
     let assetText = '';
     let url = '';
     let adGroups = this.adGroups.getSelectedAdGroupIDs();
- 
+
     switch (this.uploadAssetType) {
       case this.assetTypes.IMG:
         assetName = this.uploadImg.upload.fileNames[0];
@@ -240,7 +240,7 @@ export class UploadAssetsComponent implements OnInit {
         assetText = this.uploadText.form.get('textCtrl').value;
         break;
     }
- 
+
     if (
       this.uploadAssetType == this.assetTypes.TEXT_DESC ||
       this.uploadAssetType == this.assetTypes.TEXT_HEADLINE
@@ -290,7 +290,7 @@ export class UploadAssetsComponent implements OnInit {
         );
     }
   }
- 
+
   processUploadResponse(status, response?: UploadResponse) {
     // Stop the progress bar
     this.uploadInProgress = false;
@@ -325,7 +325,7 @@ export class UploadAssetsComponent implements OnInit {
       this.uploadDialogRef.close({ successful: status == STATUS.SUCCESS });
     }
   }
- 
+
   buildErrorResponse(error) {
     let response = {};
     if (error.error) {

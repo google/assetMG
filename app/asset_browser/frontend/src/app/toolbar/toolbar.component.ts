@@ -99,8 +99,7 @@ export class ToolbarComponent implements OnInit {
         config_valid: config.config_valid
         },
         yt:{
-        channel_id: ytConfig.channel_id,
-        api_key: ytConfig.api_key
+        channel_id: ytConfig.channel_id
         }
       }
     });

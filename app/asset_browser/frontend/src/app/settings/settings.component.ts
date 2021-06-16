@@ -60,14 +60,13 @@ export class SettingsComponent {
 
   onYtSubmit() {
     let YtConf: YouTubeSettings = {
-      channel_id: this.ytCredentials.YTform.get('channel').value.trim(),
-      api_key: this.ytCredentials.YTform.get('key').value.trim()
+      channel_id: this.ytCredentials.YTform.get('channel').value.trim()
     } 
     return this._configService.setYouTubeConfig(YtConf).subscribe(
       (response) => {
           this._configService.updateYtConfigSettings(YtConf)
           this.errorFound = false
-          this.verificationText = 'Credentials Updated'
+          this.verificationText = 'Channel Updated'
       },
       (error) =>{
         this.errorFound = true
