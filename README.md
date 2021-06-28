@@ -23,8 +23,8 @@ Easily add, change or remove creative assets across different ad groups and camp
 
 ## Requirements
 
-- Access to AdWords API (refer to
-  [Apply for access to the AdWords API](https://developers.google.com/adwords/api/docs/guides/signup)).
+- Get a Google Ads Developer Token(refer to
+  [Apply for access to the Google Ads API](https://developers.google.com/google-ads/api/docs/first-call/dev-token)).
 - OAuth 2 credentials for **web application**(refer to
   [Generate OAuth2 credentials](https://developers.google.com/adwords/api/docs/guides/authentication#generate_oauth2_credentials)).
   - In initial setup, under "oauth consent screen", make sure to select "Internal"
