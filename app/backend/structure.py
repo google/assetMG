@@ -225,101 +225,6 @@ class AccountAssetsBuilder(StructureBuilder):
         return list(account_assets.values())
 
 
-class AccountStructureBuilder(StructureBuilder):
-    """Account structure builder class."""
-
-    def __init__(self, client, customer_id, name):
-        super().__init__(client, customer_id)
-        self._name = name
-
-    def _populate_campaigns_and_ad_groups(self):
-        self._campaigns = []
-        self._ad_groups = {}
-        campaigns = {}
-
-        rows = self._get_rows(f'''
-        SELECT
-          campaign.id,
-          campaign.name,
-          campaign.status
-        FROM
-          campaign
-        WHERE
-          {self._CAMPAIGN_FILTER}
-    ''')
-        for row in rows:
-            campaign_status = self._enums['campaign_status'](row.campaign.status).name
-            campaign = {
-                'id': row.campaign.id,
-                'campaign_name': row.campaign.name,
-                'status': campaign_status,
-                'adgroups': [],
-            }
-            self._campaigns.append(campaign)
-            campaigns[campaign['id']] = campaign
-
-        rows = self._get_rows(f'''
-        SELECT
-          campaign.id,
-          ad_group.id,
-          ad_group.name,
-          ad_group.status
-        FROM
-          ad_group
-        WHERE
-          {self._CAMPAIGN_FILTER}
-        AND
-          {self._AD_GROUP_FILTER}
-    ''')
-        for row in rows:
-            adgroup_status = self._enums['adgroup_status'](row.ad_group.status).name
-            ad_group = {
-                'id': row.ad_group.id,
-                'name': row.ad_group.name,
-                'status': adgroup_status,
-                'assets': [],
-            }
-            campaigns[row.campaign.id]['adgroups'].append(ad_group)
-            self._ad_groups[ad_group['id']] = ad_group
-
-    def build(self):
-        structure = {
-            'id': self._customer_id,
-            'name': self._name,
-        }
-        self._populate_campaigns_and_ad_groups()
-        rows = self._get_rows(f'''
-        SELECT
-          ad_group.id,
-          asset.id,
-          asset.name,
-          asset.type,
-          asset.image_asset.full_size.url,
-          asset.image_asset.file_size,
-          asset.image_asset.full_size.height_pixels,
-          asset.image_asset.full_size.width_pixels,
-          ad_group_ad_asset_view.field_type,
-          ad_group_ad_asset_view.performance_label,
-          asset.text_asset.text,
-          asset.youtube_video_asset.youtube_video_id,
-          metrics.all_conversions,
-          metrics.impressions,
-          metrics.clicks,
-          metrics.cost_micros
-        FROM
-          ad_group_ad_asset_view
-        WHERE
-          {self._CAMPAIGN_FILTER}
-        AND
-          {self._AD_GROUP_FILTER}
-    ''')
-        for row in rows:
-            asset = self._build_asset(row)
-            self._ad_groups[row.ad_group.id]['assets'].append(asset)
-        structure['campaigns'] = self._campaigns
-        return structure
-
-
 class AccountAdGroupStructureBuilder(StructureBuilder):
     """ Create strucutre of form account:adgroups."""
 
@@ -362,7 +267,7 @@ class AccountAdGroupStructureBuilder(StructureBuilder):
         return structure
 
 
-class MCCStructureBuilder(StructureBuilder):
+class AccountStructureBuilder(StructureBuilder):
     """MCC structure builder class."""
 
     def __init__(self, client):
@@ -387,72 +292,114 @@ class MCCStructureBuilder(StructureBuilder):
             })
         return accounts
 
+
+class AssetAdgroupsBuilder(StructureBuilder):
+    """Creates a specific asset to adgroups mapping.
+    If text asset, might return 2 dicts in the list:
+    one for description and one for headline"""
+
+    def __init__(self, client, customer_id, asset_id, asset_type):
+        super().__init__(client, customer_id)
+        self._asset_id = asset_id
+        self._asset_type = asset_type
+
     def build(self):
-        accounts = self.get_accounts()
-        with futures.ThreadPoolExecutor() as executor:
-            account_structures = executor.map(
-                lambda account: AccountStructureBuilder(
-                    self._client, str(account['id']), account['name']).build(),
-                accounts)
-        return list(account_structures)
+        asset_info = {
+            'id': self._asset_id,
+            'type': self._asset_type,
+            'adgroups': []
+        }
+
+        rows = self._get_rows(f'''
+        SELECT
+          ad_group.id,
+          asset.id,          
+          asset.type,
+          ad_group_ad_asset_view.field_type,
+          ad_group_ad_asset_view.performance_label,
+          asset.text_asset.text
+        FROM
+          ad_group_ad_asset_view
+        WHERE
+          ad_group_ad_asset_view.enabled = 'TRUE'
+        AND
+          {self._CAMPAIGN_FILTER}
+        AND
+          {self._AD_GROUP_FILTER}
+        AND
+          asset.id = {self._asset_id}
+        ''')
+               
+        # If TEXT, we need 2 entries. Use seperate function.
+        if self._asset_type == 'TEXT':
+            return self._digest_text_asset(rows)
+
+        for row in rows:
+            perf_type = 'nontext'
+            asset_info['adgroups'].append(
+                {
+                    'id': row.ad_group.id,
+                    'performance': self._enums['performance_label'](
+                        row.ad_group_ad_asset_view.performance_label).name,
+                    'performance_type': perf_type
+                }
+            )
+        
+        return [asset_info]
 
 
-def create_mcc_struct(client, mcc_struct_file, assets_file):
-    builder = MCCStructureBuilder(client)
-    for _ in range(_MAX_RETRIES):
-        try:
-            structure = builder.build()
-        except Exception as e:
-            logging.exception(e)
-            err_msg = e.args[0]
-            time.sleep(10)
-            continue
-        else:
-            break
+    def _digest_text_asset(self, rows):
+        """Handels the asset to adgroups mapping of text assets."""
+        asset_head = {
+            'id' : self._asset_id,
+            'type': 'TEXT',
+            'text_type': 'headlines',
+            'adgroups': []
+        }
+        asset_desc = {
+            'id': self._asset_id,
+            'type': 'TEXT',
+            'text_type': 'descriptions',
+            'adgroups': []
+        }
 
-    else:
-        logging.error('Could not create structure')
-        raise ConnectionError(err_msg)
+        for row in rows:
+            text_type = self._enums['field_type'](
+                row.ad_group_ad_asset_view.field_type).name
+            
+            if text_type == 'HEADLINE':
+                asset_head['adgroups'].append(
+                    {
+                        'id': row.ad_group.id,
+                        'performance': self._enums['performance_label'](
+                            row.ad_group_ad_asset_view.performance_label).name,
+                        'performance_type': 'headlines'
+                    }
+                )
+            else:
+                asset_desc['adgroups'].append(
+                    {
+                        'id': row.ad_group.id,
+                        'performance': self._enums['performance_label'](
+                            row.ad_group_ad_asset_view.performance_label).name,
+                        'performance_type': 'descriptions'
+                    }
+                )               
 
-    with open(mcc_struct_file, 'w') as f:
-        json.dump(structure, f, indent=2)
-    setup.upload_file_to_gcs(mcc_struct_file, 'account_struct.json')
-    assets = {}
-    for account in structure:
-        for campaign in account['campaigns']:
-            for ad_group in campaign['adgroups']:
-                for asset in ad_group['assets']:
-                    try:
-                        performance_type = 'nontext'
-                        if asset['type'] == 'TEXT':
-                            performance_type = asset['text_type']
-                        key = str(asset['id']) + performance_type
+        return [asset_head, asset_desc]
 
-                        assets[key]['adgroups'].append(
-                            {
-                                'id': ad_group['id'],
-                                'performance': asset['performance'],
-                                'performance_type': performance_type
-                            }
-                        )
-                    except KeyError:
-                        assets[key] = asset
-                        assets[key]['adgroups'] = [
-                            {
-                                'id': ad_group['id'],
-                                'performance': asset['performance'],
-                                'performance_type': performance_type
-                            }
-                        ]
-    with open(assets_file, 'w') as f:
-        json.dump(list(assets.values()), f, indent=2)
-    setup.upload_file_to_gcs(assets_file, 'asset_to_ag.json')
+
+def get_assets_adgroups(client,customer_id, asset_id, asset_type):
+    builder = AssetAdgroupsBuilder(client,customer_id, asset_id, asset_type)
+    return builder.build()
+
 
 def get_accounts(client):
-    builder = MCCStructureBuilder(client)
+    builder = AccountStructureBuilder(client)
     return sorted(builder.get_accounts(), key=lambda item: item['name'])
 
 
+# Tied to upload-asset. Can be removed after refactoring upload
 def get_assets_from_adgroup(client, customer_id, ad_group_id):
     builder = AdGroupAssetsStructureBuilder(client, customer_id)
     return builder.build(ad_group_id)

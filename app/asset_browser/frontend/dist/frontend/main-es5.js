@@ -3364,7 +3364,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
               configDialogRef.afterClosed().subscribe(function (success) {
                 if (success) {
-                  _this11.loadMccStruct();
+                  console.log('Credentials Valid');
                 }
               });
             }
@@ -3383,10 +3383,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
             _this11.account = account;
             (_a = _this11.sideNav) === null || _a === void 0 ? void 0 : _a.close();
-          }));
-
-          this._subscriptions.push(this._reloadAppService.reloadMcc.subscribe(function () {
-            _this11.loadMccStruct(true);
           }));
         }
       }, {
@@ -3409,31 +3405,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         /** Binder functions to enable calling from child */
 
       }, {
-        key: "loadMccStruct",
-        value: function loadMccStruct() {
-          var _this12 = this;
-
-          var loadAccounts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-          this.openSnackBar();
-
-          var subscription = this._dataService.loadMccStruct().subscribe(function () {
-            _this12._configService.configValid = true;
-            if (loadAccounts) _this12._reloadAppService.reloadAccountIds.next(true);
-
-            _this12.dismissSnackBar();
-
-            subscription.unsubscribe();
-          }, function (error) {
-            _this12.dismissSnackBar();
-
-            if (error.status != 403) _this12.openSnackBarStructFail();
-            subscription.unsubscribe();
-          });
-        }
-        /** Functions that may need to be called from a child component */
-
-      }, {
         key: "openAssetDetails",
+
+        /** Functions that may need to be called from a child component */
         value: function openAssetDetails() {
           this.openSideNav = true;
 
@@ -3798,17 +3772,17 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(AssetGridComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
-          var _this13 = this;
+          var _this12 = this;
 
           this.assetsPerPage$ = this.dataSource.connect();
 
           this._subscriptions.push(this._dataService.allAssets$.subscribe(function (assets) {
-            _this13.assets = assets;
-            _this13.filteredAssets = assets;
+            _this12.assets = assets;
+            _this12.filteredAssets = assets;
 
-            if (_this13.filteredAssets && _this13.assets) {
-              _this13.dataSource.data = _this13.filteredAssets;
-              _this13.dataSource.paginator = _this13.paginator;
+            if (_this12.filteredAssets && _this12.assets) {
+              _this12.dataSource.data = _this12.filteredAssets;
+              _this12.dataSource.paginator = _this12.paginator;
             }
           }));
         }
@@ -3836,7 +3810,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "uploadAsset",
         value: function uploadAsset() {
-          var _this14 = this;
+          var _this13 = this;
 
           // Make sure to unselect any assets to avoid loading the campaign selection
           // of any previously selected assets
@@ -3849,7 +3823,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           uploadDialogRef.afterClosed().subscribe(function (response) {
             if (response === null || response === void 0 ? void 0 : response.successful) {
-              _this14.paginator.lastPage();
+              _this13.paginator.lastPage();
             }
           });
         }
@@ -3892,7 +3866,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "applyFilter",
         value: function applyFilter() {
-          var _this15 = this;
+          var _this14 = this;
 
           // Nothing to filter - return full set of assets
           if (!this.filterStr.length && this.filterType == _model_asset__WEBPACK_IMPORTED_MODULE_1__["AssetType"].ALL) {
@@ -3904,7 +3878,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           return this.assets.filter(function (asset) {
             return (// Filter assets by string
               (!searchStr.length || asset.name.toLocaleLowerCase().indexOf(searchStr) != -1 || asset.type === _model_asset__WEBPACK_IMPORTED_MODULE_1__["AssetType"].TEXT && asset.asset_text.toLocaleLowerCase().indexOf(searchStr) != -1) && ( // filter assets by type
-              _this15.filterType === _model_asset__WEBPACK_IMPORTED_MODULE_1__["AssetType"].ALL || asset.type === _this15.filterType)
+              _this14.filterType === _model_asset__WEBPACK_IMPORTED_MODULE_1__["AssetType"].ALL || asset.type === _this14.filterType)
             );
           });
         }
@@ -4707,7 +4681,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(HttpErrorInterceptor, [{
         key: "intercept",
         value: function intercept(request, next) {
-          var _this16 = this;
+          var _this15 = this;
 
           return next.handle(request).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["catchError"])(function (error) {
             if (error.error instanceof ErrorEvent) {
@@ -4717,7 +4691,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             }
 
             if (error.status === 403) {
-              _this16.openErrorDialog(error.error);
+              _this15.openErrorDialog(error.error);
             } // server-side error
 
 
@@ -4727,7 +4701,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "openErrorDialog",
         value: function openErrorDialog(errorMessage) {
-          var _this17 = this;
+          var _this16 = this;
 
           var dialogRef = this.dialog.open(_error_dialog_error_dialog_component__WEBPACK_IMPORTED_MODULE_3__["ErrorDialogComponent"], {
             width: '700px',
@@ -4739,7 +4713,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           });
           dialogRef.afterClosed().subscribe(function (result) {
             if (result.success) {
-              _this17.reloadAppService.reloadMcc.next(true);
+              _this16.reloadAppService.reloadMcc.next(true);
             }
           });
         }
@@ -4838,15 +4812,15 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(LoaderInterceptor, [{
         key: "intercept",
         value: function intercept(req, next) {
-          var _this18 = this;
+          var _this17 = this;
 
           this.totalRequests++;
           this.loaderService.show();
           return next.handle(req).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["finalize"])(function () {
-            _this18.totalRequests--;
+            _this17.totalRequests--;
 
-            if (_this18.totalRequests === 0) {
-              _this18.loaderService.hide();
+            if (_this17.totalRequests === 0) {
+              _this17.loaderService.hide();
             }
           }));
         }
@@ -4945,10 +4919,10 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(LoginComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
-          var _this19 = this;
+          var _this18 = this;
 
           this._subscriptions.push(this._authService.loggedIn$.subscribe(function (loggedIn) {
-            _this19.setLabel(loggedIn);
+            _this18.setLabel(loggedIn);
           }));
         }
       }, {
@@ -5731,7 +5705,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(AssetService, [{
         key: "getAllAssets",
         value: function getAllAssets(accountId) {
-          var _this20 = this;
+          var _this19 = this;
 
           // Reset the asset observable till the http request is made
           this._allAssets$.next(null); // Call the API and update the asset observable
@@ -5744,24 +5718,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               cid: accountId === null || accountId === void 0 ? void 0 : accountId.toString()
             }
           }).subscribe(function (assets) {
-            _this20._allAssets$.next(assets);
-
-            subscription.unsubscribe();
-          });
-        }
-      }, {
-        key: "getAccountHierarchy",
-        value: function getAccountHierarchy(accountId) {
-          var _this21 = this;
-
-          var endpoint = this.API_SERVER + '/structure/';
-
-          var subscription = this._http.get(endpoint, {
-            params: {
-              cid: accountId === null || accountId === void 0 ? void 0 : accountId.toString()
-            }
-          }).subscribe(function (account) {
-            _this21._activeAccount$.next(account);
+            _this19._allAssets$.next(assets);
 
             subscription.unsubscribe();
           });
@@ -5769,7 +5726,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "getAccountAdGroups",
         value: function getAccountAdGroups(accountId) {
-          var _this22 = this;
+          var _this20 = this;
 
           var endpoint = this.API_SERVER + '/account-ag-struct';
 
@@ -5778,22 +5735,35 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               cid: accountId === null || accountId === void 0 ? void 0 : accountId.toString()
             }
           }).subscribe(function (accountAGs) {
-            _this22._accountAGs$.next(accountAGs);
+            _this20._accountAGs$.next(accountAGs);
 
             subscription.unsubscribe();
           });
         }
-        /** Loads all the asset to adgroups mapping */
+        /** Loads a specific asset to adgroups mapping */
 
       }, {
         key: "getAssetsToAdGroups",
-        value: function getAssetsToAdGroups() {
-          var _this23 = this;
+        value: function getAssetsToAdGroups(asset_id, asset_type) {
+          var _this21 = this;
 
+          var accountId;
+          this.activeAccountId$.subscribe(function (id) {
+            accountId = id;
+          });
           var endpoint = this.API_SERVER + '/assets-to-ag/';
 
-          var subscription = this._http.get(endpoint).subscribe(function (assets) {
-            _this23._assetsToAdGroups = assets;
+          var subscription = this._http.get(endpoint, {
+            params: {
+              asset_id: asset_id,
+              asset_type: asset_type,
+              customer_id: JSON.stringify(accountId)
+            }
+          }).subscribe(function (assets) {
+            _this21._assetsToAdGroups = assets;
+
+            _this21._activeAssetAdGroups$.next(_this21.getActiveAssetAdGroups(asset_id));
+
             subscription.unsubscribe();
           });
         }
@@ -5804,17 +5774,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           return this._http.get(endpoint);
         }
       }, {
-        key: "loadMccStruct",
-        value: function loadMccStruct() {
-          var endpoint = this.API_SERVER + '/create-struct/';
-          return this._http.get(endpoint);
-        }
-      }, {
         key: "changeAsset",
         value: function changeAsset(asset) {
           this._activeAsset$.next(asset);
 
           if (asset) {
+            this.getAssetsToAdGroups(asset.id, asset.type);
+
             this._activeAssetAdGroups$.next(this.getActiveAssetAdGroups(asset.id));
           } else {
             this._activeAssetAdGroups$.next(null);
@@ -5832,7 +5798,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           this.getAllAssets(accountId);
           this.getAccountAdGroups(accountId);
-          this.getAssetsToAdGroups();
           this.changeAsset(null);
         }
       }, {
@@ -5857,7 +5822,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "updateAsset",
         value: function updateAsset(changedAsset, updateArray) {
-          var _this24 = this;
+          var _this22 = this;
 
           var endpoint = this.API_SERVER + '/mutate-ad/';
 
@@ -5886,7 +5851,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
                 if (update.index) {
                   // This is a non-text asset
-                  _this24._assetsToAdGroups[update.index] = update.asset;
+                  _this22._assetsToAdGroups[update.index] = update.asset;
                 } else if ((_a = update.asset) === null || _a === void 0 ? void 0 : _a.length) {
                   // Text asset, so index can be {found in the assets array (headlines and descriptions)
                   var _iterator8 = _createForOfIteratorHelper(update.asset),
@@ -5897,9 +5862,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                       var txt_asset = _step8.value;
 
                       if (txt_asset.index) {
-                        _this24._assetsToAdGroups[txt_asset.index] = txt_asset.asset;
+                        _this22._assetsToAdGroups[txt_asset.index] = txt_asset.asset;
                       } else {
-                        _this24._assetsToAdGroups.push(txt_asset.asset);
+                        _this22._assetsToAdGroups.push(txt_asset.asset);
                       }
                     }
                   } catch (err) {
@@ -5908,7 +5873,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                     _iterator8.f();
                   }
                 } else {
-                  _this24._assetsToAdGroups.push(update.asset);
+                  _this22._assetsToAdGroups.push(update.asset);
                 }
               } // Update the new selection
 
@@ -5918,7 +5883,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               _iterator6.f();
             }
 
-            _this24._activeAssetAdGroups$.next(_this24.getActiveAssetAdGroups(changedAsset.id)); // Updated the caller that the API is done
+            _this22._activeAssetAdGroups$.next(_this22.getActiveAssetAdGroups(changedAsset.id)); // Updated the caller that the API is done
 
 
             var msg = '';
@@ -5945,7 +5910,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               }
             }
 
-            _this24._updateFinished$.next({
+            _this22._updateFinished$.next({
               status_code: response.status,
               msg: msg,
               assets: updatedAssets
@@ -5977,7 +5942,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               errorMessage = "Error Code: ".concat(error.status, "<br/>Message: ").concat(error.message);
             }
 
-            _this24._updateFinished$.next({
+            _this22._updateFinished$.next({
               status_code: _model_response__WEBPACK_IMPORTED_MODULE_5__["STATUS"].FAIL,
               msg: errorMessage,
               assets: []
@@ -5989,7 +5954,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "addNewAsset",
         value: function addNewAsset(asset) {
-          var _this25 = this;
+          var _this23 = this;
 
           // Update all assets with the newly uploaded asset
           if (asset) {
@@ -6005,7 +5970,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
             setTimeout(function () {
-              _this25._allAssets$.next(_this25._allAssets$.getValue().concat(asset));
+              _this23._allAssets$.next(_this23._allAssets$.getValue().concat(asset));
             }, waitTime);
           }
         }
@@ -6105,7 +6070,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
     var AuthorizationService = /*#__PURE__*/function () {
       function AuthorizationService(_configService) {
-        var _this26 = this;
+        var _this24 = this;
 
         _classCallCheck(this, AuthorizationService);
 
@@ -6114,13 +6079,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         this.refreshToken = null;
         this.retrieveStoredRefreshToken().then(function (token) {
           if (token) {
-            _this26.refreshToken = token;
-            _this26.loggedInSubject = new rxjs__WEBPACK_IMPORTED_MODULE_2__["BehaviorSubject"](true);
+            _this24.refreshToken = token;
+            _this24.loggedInSubject = new rxjs__WEBPACK_IMPORTED_MODULE_2__["BehaviorSubject"](true);
           } else {
-            _this26.loggedInSubject = new rxjs__WEBPACK_IMPORTED_MODULE_2__["BehaviorSubject"](false);
+            _this24.loggedInSubject = new rxjs__WEBPACK_IMPORTED_MODULE_2__["BehaviorSubject"](false);
           }
 
-          _this26.loggedIn$ = _this26.loggedInSubject.asObservable();
+          _this24.loggedIn$ = _this24.loggedInSubject.asObservable();
         });
       }
 
@@ -6128,7 +6093,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         key: "initGoogleAuth",
         value: function initGoogleAuth() {
           return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-            var _this27 = this;
+            var _this25 = this;
 
             var pload;
             return regeneratorRuntime.wrap(function _callee2$(_context2) {
@@ -6143,8 +6108,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                     // loaded and that we can call gapi.init
 
                     return _context2.abrupt("return", pload.then(function () {
-                      return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this27, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-                        var _this28 = this;
+                      return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this25, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+                        var _this26 = this;
 
                         var config;
                         return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -6157,7 +6122,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                                   client_id: config.client_id,
                                   scope: "https://www.googleapis.com/auth/adwords https://www.googleapis.com/auth/youtube.readonly"
                                 }).then(function (auth) {
-                                  _this28.authInstance = auth;
+                                  _this26.authInstance = auth;
                                 });
 
                               case 3:
@@ -6182,7 +6147,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         value: function authenticate() {
           var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
           return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-            var _this29 = this;
+            var _this27 = this;
 
             var error, storedToken, refreshAccessToken;
             return regeneratorRuntime.wrap(function _callee3$(_context3) {
@@ -6241,11 +6206,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                   case 17:
                     _context3.next = 19;
                     return this._configService.getConfigRefreshCode(refreshAccessToken).toPromise().then(function (response) {
-                      _this29.refreshToken = response.body;
+                      _this27.refreshToken = response.body;
 
-                      _this29.loggedInSubject.next(true);
+                      _this27.loggedInSubject.next(true);
 
-                      _this29.storeRefreshToken(_this29.refreshToken);
+                      _this27.storeRefreshToken(_this27.refreshToken);
                     })["catch"](function (err) {
                       error = err["error"];
                     });
@@ -6484,14 +6449,14 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(ConfigService, [{
         key: "loadConfigSettings",
         value: function loadConfigSettings() {
-          var _this30 = this;
+          var _this28 = this;
 
           var endpoint = this.API_SERVER + '/config/';
           var subscription = this.http.get(endpoint).subscribe(function (config) {
-            _this30._configSettings = config;
-            _this30.configValid = config.config_valid;
+            _this28._configSettings = config;
+            _this28.configValid = config.config_valid;
 
-            _this30._configLoaded$.next(_this30.configValid);
+            _this28._configLoaded$.next(_this28.configValid);
 
             subscription.unsubscribe();
           });
@@ -6509,11 +6474,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "loadYtConfigSettings",
         value: function loadYtConfigSettings() {
-          var _this31 = this;
+          var _this29 = this;
 
           var endpoint = this.API_SERVER + '/yt-config/';
           var subscritpion = this.http.get(endpoint).subscribe(function (config) {
-            _this31._YtConfigSettings = config;
+            _this29._YtConfigSettings = config;
             subscritpion.unsubscribe();
           });
         }
@@ -6575,12 +6540,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "revertConfigSettings",
         value: function revertConfigSettings(config) {
-          var _this32 = this;
+          var _this30 = this;
 
           if (config.config_valid) {
             var endpoint = this.API_SERVER + '/set-configs/';
             var subscription = this.http.post(endpoint, config).subscribe(function (_) {
-              _this32.updateConfigCache(config);
+              _this30.updateConfigCache(config);
 
               subscription.unsubscribe();
             });
@@ -6941,11 +6906,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "loadYtChannelVideos",
         value: function loadYtChannelVideos() {
-          var _this33 = this;
+          var _this31 = this;
 
           var endpoint = this.API_SERVER + '/get-yt-videos/';
           var subscription = this.http.get(endpoint).subscribe(function (vids) {
-            _this33._YtVidList$.next(vids);
+            _this31._YtVidList$.next(vids);
 
             subscription.unsubscribe();
           });
@@ -7119,7 +7084,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "onEdit",
         value: function onEdit() {
-          var _this34 = this;
+          var _this32 = this;
 
           this.dialogRef.close();
 
@@ -7129,7 +7094,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           var subscription = configDialogRef.backdropClick().subscribe(function (_) {
             // Revert back to old config
-            _this34._configService.revertConfigSettings(_this34.data);
+            _this32._configService.revertConfigSettings(_this32.data);
 
             subscription.unsubscribe();
           });
@@ -7137,19 +7102,19 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "onYtSubmit",
         value: function onYtSubmit() {
-          var _this35 = this;
+          var _this33 = this;
 
           var YtConf = {
             channel_id: this.ytCredentials.YTform.get('channel').value.trim()
           };
           return this._configService.setYouTubeConfig(YtConf).subscribe(function (response) {
-            _this35._configService.updateYtConfigSettings(YtConf);
+            _this33._configService.updateYtConfigSettings(YtConf);
 
-            _this35.errorFound = false;
-            _this35.verificationText = 'Channel Updated';
+            _this33.errorFound = false;
+            _this33.verificationText = 'Channel Updated';
           }, function (error) {
-            _this35.errorFound = true;
-            _this35.verificationText = 'Invalid Credentials';
+            _this33.errorFound = true;
+            _this33.verificationText = 'Invalid Credentials';
           });
         }
       }]);
@@ -8217,12 +8182,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(LoaderComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
-          var _this36 = this;
+          var _this34 = this;
 
           this.loaderService.isLoading.subscribe(function (loading) {
-            _this36.isLoading = loading;
+            _this34.isLoading = loading;
 
-            _this36.cdf.detectChanges();
+            _this34.cdf.detectChanges();
           });
         }
       }]);
@@ -9583,7 +9548,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
     var ToolbarComponent = /*#__PURE__*/function () {
       function ToolbarComponent(_dataService, _configService, _authorizationService, _reloadAppService, _settingsDialog) {
-        var _this37 = this;
+        var _this35 = this;
 
         _classCallCheck(this, ToolbarComponent);
 
@@ -9597,31 +9562,31 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         this.loadAccounts = false;
 
         this._reloadAppService.reloadAccountIds.subscribe(function () {
-          _this37.loadAccountIds();
+          _this35.loadAccountIds();
         });
       }
 
       _createClass(ToolbarComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
-          var _this38 = this;
+          var _this36 = this;
 
           this.loadAccountIds();
 
           this._subscriptions.push(this._authorizationService.loggedIn$.subscribe(function (loggedIn) {
-            _this38.loggedIn = loggedIn;
+            _this36.loggedIn = loggedIn;
           }));
         }
       }, {
         key: "loadAccountIds",
         value: function loadAccountIds() {
-          var _this39 = this;
+          var _this37 = this;
 
           this.accounts$ = this._dataService.getAccountIds().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])(function (accounts) {
             if (accounts.length) {
-              _this39.defaultAccount = accounts[0].id;
+              _this37.defaultAccount = accounts[0].id;
 
-              _this39._dataService.changeAccount(accounts[0].id);
+              _this37._dataService.changeAccount(accounts[0].id);
             }
           }));
         }
@@ -10160,7 +10125,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(UploadAssetsComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
-          var _this40 = this;
+          var _this38 = this;
 
           this.types = new Map();
           this.types.set(this.assetTypes.TEXT_HEADLINE, 'Text - Headline');
@@ -10173,7 +10138,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           this.uploadAssetType = this.assetTypes.IMG;
           this.uploadDialogRef.updateSize('800px', '520px');
           this.uploadDialogRef.beforeClosed().subscribe(function (result) {
-            _this40._uploadService.clearUploads();
+            _this38._uploadService.clearUploads();
           });
 
           var yt_creds = this._configService.getYtConfigSettings();
@@ -10213,7 +10178,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "bulkUploadVideos",
         value: function bulkUploadVideos() {
-          var _this41 = this;
+          var _this39 = this;
 
           var subscription = this.uploadVideo.uploadBulkVids();
           subscription.subscribe(function (response) {
@@ -10225,7 +10190,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                 for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
                   var asset = _step11.value;
 
-                  _this41._assetService.addNewAsset(asset);
+                  _this39._assetService.addNewAsset(asset);
                 }
               } catch (err) {
                 _iterator11.e(err);
@@ -10233,7 +10198,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                 _iterator11.f();
               }
 
-              _this41.uploadDialogRef.close();
+              _this39.uploadDialogRef.close();
             }
           });
         }
@@ -10309,7 +10274,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "onAddAsset",
         value: function onAddAsset() {
-          var _this42 = this;
+          var _this40 = this;
 
           // Start the spinner
           this.uploadInProgress = true;
@@ -10340,19 +10305,19 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           if (this.uploadAssetType == this.assetTypes.TEXT_DESC || this.uploadAssetType == this.assetTypes.TEXT_HEADLINE) {
             var subscription = this._uploadService.addTextAsset(this.account.id, assetText, this.uploadAssetType, adGroups).subscribe(function (response) {
-              _this42.processUploadResponse(response.status, response.body);
+              _this40.processUploadResponse(response.status, response.body);
 
               subscription.unsubscribe();
             }, function (error) {
-              _this42.processUploadResponse(_model_response__WEBPACK_IMPORTED_MODULE_4__["STATUS"].FAIL, _this42.buildErrorResponse(error));
+              _this40.processUploadResponse(_model_response__WEBPACK_IMPORTED_MODULE_4__["STATUS"].FAIL, _this40.buildErrorResponse(error));
             });
           } else {
             var _subscription = this._uploadService.uploadAsset(this.account.id, assetName, this.uploadAssetType, adGroups, url).subscribe(function (response) {
-              _this42.processUploadResponse(response.status, response.body);
+              _this40.processUploadResponse(response.status, response.body);
 
               _subscription.unsubscribe();
             }, function (error) {
-              _this42.processUploadResponse(_model_response__WEBPACK_IMPORTED_MODULE_4__["STATUS"].FAIL, _this42.buildErrorResponse(error));
+              _this40.processUploadResponse(_model_response__WEBPACK_IMPORTED_MODULE_4__["STATUS"].FAIL, _this40.buildErrorResponse(error));
             });
           }
         }
@@ -11124,15 +11089,15 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(UploadTextComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
-          var _this43 = this;
+          var _this41 = this;
 
           this.form = this._formBuilder.group({
             textCtrl: ['', [_angular_forms__WEBPACK_IMPORTED_MODULE_1__["Validators"].required, _angular_forms__WEBPACK_IMPORTED_MODULE_1__["Validators"].maxLength(this.maxLength)]]
           }); // Update parent form when the value changes to detect valid and invalid states
 
           this.form.valueChanges.subscribe(function (value) {
-            if (_this43.form.get('textCtrl').value.length) {
-              _this43.isChildFormValid.emit(!_this43.form.invalid);
+            if (_this41.form.get('textCtrl').value.length) {
+              _this41.isChildFormValid.emit(!_this41.form.invalid);
             }
           });
         }
@@ -11543,7 +11508,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(UploadVideoComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
-          var _this44 = this;
+          var _this42 = this;
 
           this.form = this._formBuilder.group({
             videoNameCtrl: ['', [_angular_forms__WEBPACK_IMPORTED_MODULE_1__["Validators"].required]],
@@ -11551,8 +11516,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           }); // Update parent form when the value changes to detect valid and invalid states
 
           this.form.valueChanges.subscribe(function (value) {
-            if (_this44.form.get('videoUrlCtrl').value.length) {
-              _this44.isChildFormValid.emit(!_this44.form.invalid);
+            if (_this42.form.get('videoUrlCtrl').value.length) {
+              _this42.isChildFormValid.emit(!_this42.form.invalid);
             }
           });
 
@@ -11565,7 +11530,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "openVidSelect",
         value: function openVidSelect() {
-          var _this45 = this;
+          var _this43 = this;
 
           this._vidSelect = this.dialog.open(_video_select_video_select_component__WEBPACK_IMPORTED_MODULE_2__["VideoSelectComponent"], {
             data: this.chosenVids
@@ -11574,17 +11539,17 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           this._vidSelect.afterClosed().subscribe(function (vids) {
             // TODO: concat, not append
             if (vids != null) {
-              _this45.chosenVids = vids;
+              _this43.chosenVids = vids;
             }
 
-            if (_this45.chosenVids.length > 0) {
-              _this45.isBulkVidFilesSelected.emit(true);
+            if (_this43.chosenVids.length > 0) {
+              _this43.isBulkVidFilesSelected.emit(true);
             } else {
-              _this45.isBulkVidFilesSelected.emit(false);
+              _this43.isBulkVidFilesSelected.emit(false);
             } // fix for if user goes back and then returns
 
 
-            _this45.isBulkUpload.emit(true);
+            _this43.isBulkUpload.emit(true);
           });
         }
       }, {
@@ -11873,7 +11838,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(VideoSelectComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
-          var _this46 = this;
+          var _this44 = this;
 
           this.mySelect = this.data;
           this.form = this.formBuilder.group({
@@ -11882,7 +11847,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           this.dialogRef.updateSize('900px', '450px');
 
           this._uploadAssetService.ytVidList$.subscribe(function (vids) {
-            _this46.videos = vids;
+            _this44.videos = vids;
           });
         }
       }, {
@@ -12146,7 +12111,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
   /***/
   function _(module, exports, __webpack_require__) {
     module.exports = __webpack_require__(
-    /*! /Users/eylong/assetmg1/assetMG/app/asset_browser/frontend/src/main.ts */
+    /*! /Users/eylong/Projects/dev/assetMG/app/asset_browser/frontend/src/main.ts */
     "./src/main.ts");
     /***/
   }

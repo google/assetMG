@@ -1814,7 +1814,7 @@ class AssetGalleryComponent {
                 });
                 configDialogRef.afterClosed().subscribe((success) => {
                     if (success) {
-                        this.loadMccStruct();
+                        console.log('Credentials Valid');
                     }
                 });
             }
@@ -1832,9 +1832,6 @@ class AssetGalleryComponent {
             this.account = account;
             (_a = this.sideNav) === null || _a === void 0 ? void 0 : _a.close();
         }));
-        this._subscriptions.push(this._reloadAppService.reloadMcc.subscribe(() => {
-            this.loadMccStruct(true);
-        }));
     }
     ngOnDestroy() {
         for (let sub of this._subscriptions) {
@@ -1847,21 +1844,6 @@ class AssetGalleryComponent {
     }
     get closeAssetDetailsFunc() {
         return this.closeAssetDetails.bind(this);
-    }
-    loadMccStruct(loadAccounts = false) {
-        this.openSnackBar();
-        let subscription = this._dataService.loadMccStruct().subscribe(() => {
-            this._configService.configValid = true;
-            if (loadAccounts)
-                this._reloadAppService.reloadAccountIds.next(true);
-            this.dismissSnackBar();
-            subscription.unsubscribe();
-        }, (error) => {
-            this.dismissSnackBar();
-            if (error.status != 403)
-                this.openSnackBarStructFail();
-            subscription.unsubscribe();
-        });
     }
     /** Functions that may need to be called from a child component */
     openAssetDetails() {
@@ -3023,15 +3005,6 @@ class AssetService {
             subscription.unsubscribe();
         });
     }
-    getAccountHierarchy(accountId) {
-        const endpoint = this.API_SERVER + '/structure/';
-        let subscription = this._http
-            .get(endpoint, { params: { cid: accountId === null || accountId === void 0 ? void 0 : accountId.toString() } })
-            .subscribe((account) => {
-            this._activeAccount$.next(account);
-            subscription.unsubscribe();
-        });
-    }
     getAccountAdGroups(accountId) {
         const endpoint = this.API_SERVER + '/account-ag-struct';
         let subscription = this._http
@@ -3041,11 +3014,22 @@ class AssetService {
             subscription.unsubscribe();
         });
     }
-    /** Loads all the asset to adgroups mapping */
-    getAssetsToAdGroups() {
+    /** Loads a specific asset to adgroups mapping */
+    getAssetsToAdGroups(asset_id, asset_type) {
+        let accountId;
+        this.activeAccountId$.subscribe((id) => {
+            accountId = id;
+        });
         const endpoint = this.API_SERVER + '/assets-to-ag/';
-        let subscription = this._http.get(endpoint).subscribe((assets) => {
+        let subscription = this._http.get(endpoint, { params: {
+                asset_id: asset_id,
+                asset_type: asset_type,
+                customer_id: JSON.stringify(accountId)
+            }
+        })
+            .subscribe((assets) => {
             this._assetsToAdGroups = assets;
+            this._activeAssetAdGroups$.next(this.getActiveAssetAdGroups(asset_id));
             subscription.unsubscribe();
         });
     }
@@ -3053,13 +3037,10 @@ class AssetService {
         const endpoint = this.API_SERVER + '/accounts/';
         return this._http.get(endpoint);
     }
-    loadMccStruct() {
-        const endpoint = this.API_SERVER + '/create-struct/';
-        return this._http.get(endpoint);
-    }
     changeAsset(asset) {
         this._activeAsset$.next(asset);
         if (asset) {
+            this.getAssetsToAdGroups(asset.id, asset.type);
             this._activeAssetAdGroups$.next(this.getActiveAssetAdGroups(asset.id));
         }
         else {
@@ -3073,7 +3054,6 @@ class AssetService {
         this._activeAccountId$.next(accountId);
         this.getAllAssets(accountId);
         this.getAccountAdGroups(accountId);
-        this.getAssetsToAdGroups();
         this.changeAsset(null);
     }
     getActiveAssetAdGroups(assetId) {
@@ -6543,7 +6523,7 @@ _angular_platform_browser__WEBPACK_IMPORTED_MODULE_3__["platformBrowser"]().boot
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/eylong/assetmg1/assetMG/app/asset_browser/frontend/src/main.ts */"./src/main.ts");
+module.exports = __webpack_require__(/*! /Users/eylong/Projects/dev/assetMG/app/asset_browser/frontend/src/main.ts */"./src/main.ts");
 
 
 /***/ })

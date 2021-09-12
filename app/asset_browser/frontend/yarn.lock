@@ -239,19 +239,18 @@
     "ora" "5.0.0"
     "rxjs" "6.6.2"
 
-"@angular/animations@^10.0.3":
+"@angular/animations@^10.0.0 || ^11.0.0-0", "@angular/animations@^10.0.3", "@angular/animations@10.0.3":
   "integrity" "sha512-s7hob0TmSRqsgEWdB0EYsKY8eF8iD6Sj44XntecAhEc/IxVQGIIZiNwGvW43Lb8iEdbvdF+GJfgxu5I8ZWMX3Q=="
   "resolved" "https://registry.npmjs.org/@angular/animations/-/animations-10.0.3.tgz"
   "version" "10.0.3"
   dependencies:
     "tslib" "^2.0.0"
 
-"@angular/cdk@^10.0.1":
+"@angular/cdk@^10.0.0-rc.0", "@angular/cdk@^10.0.1", "@angular/cdk@10.0.1":
   "integrity" "sha512-tEgaTDQplptbOf4cHHdVScH0h5QNvkWDhabAWpWaT4/dVXEsp+p2E9Pzkemesi/gNmUIetVjGaicX5VqsijZSQ=="
   "resolved" "https://registry.npmjs.org/@angular/cdk/-/cdk-10.0.1.tgz"
   "version" "10.0.1"
   dependencies:
-    "parse5" "^5.0.0"
     "tslib" "^2.0.0"
   optionalDependencies:
     "parse5" "^5.0.0"
@@ -282,14 +281,14 @@
     "universal-analytics" "0.4.23"
     "uuid" "8.3.0"
 
-"@angular/common@~10.0.3":
+"@angular/common@^10.0.0 || ^11.0.0-0", "@angular/common@>=10.0.0-rc.0", "@angular/common@~10.0.3", "@angular/common@10.0.3":
   "integrity" "sha512-R2q/Vt07PHgcmvZBVGcYjf6K2xERCHWUYQYN1HsgjVQUu5ypvE7Kqs+6s0BfIoBKc+ejKmjMHHumnm+89O+gXg=="
   "resolved" "https://registry.npmjs.org/@angular/common/-/common-10.0.3.tgz"
   "version" "10.0.3"
   dependencies:
     "tslib" "^2.0.0"
 
-"@angular/compiler-cli@^10.0.0", "@angular/compiler-cli@~10.0.3":
+"@angular/compiler-cli@^10.0.0", "@angular/compiler-cli@>=9.0.0 < 10", "@angular/compiler-cli@~10.0.3":
   "integrity" "sha512-XK2xQX0RLr7QMkEseDhcdqZ2hMM5n1Q6LFvOJfxQXXBpa7DBC9mB6HLsn0vrLgwaAfz+SEQ7pLDgXQSy2tmJUg=="
   "resolved" "https://registry.npmjs.org/@angular/compiler-cli/-/compiler-cli-10.0.3.tgz"
   "version" "10.0.3"
@@ -308,7 +307,7 @@
     "tslib" "^2.0.0"
     "yargs" "15.3.0"
 
-"@angular/compiler@~10.0.3":
+"@angular/compiler@~10.0.3", "@angular/compiler@10.0.3":
   "integrity" "sha512-SmzMYxBprs8bVS9WctiCDj6KVp3jZFEaxGTbC/FwtdvesMIdOktpHggUeJW+OzUTwTnYVmKrm6d8rdg3QSaXFQ=="
   "resolved" "https://registry.npmjs.org/@angular/compiler/-/compiler-10.0.3.tgz"
   "version" "10.0.3"
@@ -320,7 +319,7 @@
   "resolved" "https://registry.npmjs.org/@angular/compiler/-/compiler-9.0.0.tgz"
   "version" "9.0.0"
 
-"@angular/core@~10.0.3":
+"@angular/core@^10.0.0 || ^11.0.0-0", "@angular/core@>=10.0.0-rc.0", "@angular/core@~10.0.3", "@angular/core@10.0.3":
   "integrity" "sha512-EfWAz5StlPYo2ZtvVzeoNlGrFAXRncwGd/CExbLFOZx4HcDXVkATw5d4vnKHmmKacDqnbuvMD2M0Tl0EJi5q4g=="
   "resolved" "https://registry.npmjs.org/@angular/core/-/core-10.0.3.tgz"
   "version" "10.0.3"
@@ -339,7 +338,7 @@
   dependencies:
     "tslib" "^2.0.0"
 
-"@angular/forms@~10.0.3":
+"@angular/forms@^10.0.0 || ^11.0.0-0", "@angular/forms@~10.0.3":
   "integrity" "sha512-08XlERBGVnzea4sVY7J1JsU6zX/ENGZGB9V4K1jpX6gNjlAk2AbskC76+ngdsgdzv0neNEqPoLdMAZerNECnUg=="
   "resolved" "https://registry.npmjs.org/@angular/forms/-/forms-10.0.3.tgz"
   "version" "10.0.3"
@@ -365,7 +364,7 @@
   dependencies:
     "tslib" "^2.0.0"
 
-"@angular/platform-browser@~10.0.3":
+"@angular/platform-browser@>=10.0.0-rc.0", "@angular/platform-browser@~10.0.3", "@angular/platform-browser@10.0.3":
   "integrity" "sha512-f6JsFMunJNn7fPtwwWbZsXZ/JFA5RlwbyHKKkLAPMLLJwabOcSh/bUpPWKoRMHpUxr53PGEX4XY6QNPJXrUaag=="
   "resolved" "https://registry.npmjs.org/@angular/platform-browser/-/platform-browser-10.0.3.tgz"
   "version" "10.0.3"
@@ -1933,7 +1932,7 @@
   "resolved" "https://registry.npmjs.org/ajv-keywords/-/ajv-keywords-3.5.1.tgz"
   "version" "3.5.1"
 
-"ajv@^6.1.0", "ajv@^6.10.2", "ajv@^6.5.5", "ajv@6.12.0":
+"ajv@^6.1.0", "ajv@^6.10.2", "ajv@^6.5.5", "ajv@^6.9.1", "ajv@>=5.0.0", "ajv@6.12.0":
   "integrity" "sha512-D6gFiFA0RRLyUbvijN74DWAjXSFxWKaWP7mldxkVhyhAV3+SWA9HEJPHQ2c9soIeTFJqcSdFDGFgdqs1iUU2Hw=="
   "resolved" "https://registry.npmjs.org/ajv/-/ajv-6.12.0.tgz"
   "version" "6.12.0"
@@ -2817,7 +2816,6 @@
     "anymatch" "^2.0.0"
     "async-each" "^1.0.1"
     "braces" "^2.3.2"
-    "fsevents" "^1.2.7"
     "glob-parent" "^3.1.0"
     "inherits" "^2.0.3"
     "is-binary-path" "^1.0.0"
@@ -2836,7 +2834,6 @@
   dependencies:
     "anymatch" "~3.1.1"
     "braces" "~3.0.2"
-    "fsevents" "~2.3.1"
     "glob-parent" "~5.1.0"
     "is-binary-path" "~2.1.0"
     "is-glob" "~4.0.1"
@@ -5489,7 +5486,7 @@
     "html-escaper" "^2.0.0"
     "istanbul-lib-report" "^3.0.0"
 
-"jasmine-core@^3.5.0", "jasmine-core@~3.5.0":
+"jasmine-core@^3.5.0", "jasmine-core@>=3.5", "jasmine-core@~3.5.0":
   "integrity" "sha512-nCeAiw37MIMA9w9IXso7bRaLl+c/ef3wnxsoSAlYrzS+Ot0zTG6nU8G/cIfGkqpkjX2wNaIW9RFG0TwIFnG6bA=="
   "resolved" "https://registry.npmjs.org/jasmine-core/-/jasmine-core-3.5.0.tgz"
   "version" "3.5.0"
@@ -5621,7 +5618,7 @@
   "integrity" "sha1-h3Gq4HmbZAdrdmQPygWPnBDjPss="
   "resolved" "https://registry.npmjs.org/jsonfile/-/jsonfile-4.0.0.tgz"
   "version" "4.0.0"
-  dependencies:
+  optionalDependencies:
     "graceful-fs" "^4.1.6"
 
 "jsonparse@^1.2.0":
@@ -5680,7 +5677,7 @@
   "resolved" "https://registry.npmjs.org/karma-jasmine-html-reporter/-/karma-jasmine-html-reporter-1.5.4.tgz"
   "version" "1.5.4"
 
-"karma-jasmine@~3.3.0":
+"karma-jasmine@>=1.1", "karma-jasmine@~3.3.0":
   "integrity" "sha512-Nxh7eX9mOQMyK0VSsMxdod+bcqrR/ikrmEiWj5M6fwuQ7oI+YEF1FckaDsWfs6TIpULm9f0fTKMjF7XcrvWyqQ=="
   "resolved" "https://registry.npmjs.org/karma-jasmine/-/karma-jasmine-3.3.1.tgz"
   "version" "3.3.1"
@@ -5694,7 +5691,7 @@
   dependencies:
     "source-map-support" "^0.5.5"
 
-"karma@~5.0.0":
+"karma@*", "karma@>=0.9", "karma@~5.0.0":
   "integrity" "sha512-dUA5z7Lo7G4FRSe1ZAXqOINEEWxmCjDBbfRBmU/wYlSMwxUQJP/tEEP90yJt3Uqo03s9rCgVnxtlfq+uDhxSPg=="
   "resolved" "https://registry.npmjs.org/karma/-/karma-5.0.9.tgz"
   "version" "5.0.9"
@@ -5791,12 +5788,14 @@
     "loader-utils" "^2.0.0"
     "schema-utils" "^2.7.0"
 
-"less@^3.11.3", "less@3.11.3":
+"less@^2.3.1 || ^3.0.0", "less@^3.11.3", "less@3.11.3":
   "integrity" "sha512-VkZiTDdtNEzXA3LgjQiC3D7/ejleBPFVvq+aRI9mIj+Zhmif5TvFPM244bT4rzkvOCvJ9q4zAztok1M7Nygagw=="
   "resolved" "https://registry.npmjs.org/less/-/less-3.11.3.tgz"
   "version" "3.11.3"
   dependencies:
     "clone" "^2.1.2"
+    "tslib" "^1.10.0"
+  optionalDependencies:
     "errno" "^0.1.1"
     "graceful-fs" "^4.1.2"
     "image-size" "~0.5.0"
@@ -5804,11 +5803,6 @@
     "mime" "^1.4.1"
     "promise" "^7.1.1"
     "request" "^2.83.0"
-    "source-map" "~0.6.0"
-    "tslib" "^1.10.0"
-  optionalDependencies:
-    "image-size" "~0.5.0"
-    "promise" "^7.1.1"
     "source-map" "~0.6.0"
 
 "leven@^3.1.0":
@@ -7715,10 +7709,11 @@
   "version" "2.1.1"
   dependencies:
     "glob" "^7.1.1"
-    "graceful-fs" "^4.1.2"
     "json-parse-better-errors" "^1.0.1"
     "normalize-package-data" "^2.0.0"
     "npm-normalize-package-bin" "^1.0.0"
+  optionalDependencies:
+    "graceful-fs" "^4.1.2"
 
 "read-package-tree@5.3.1":
   "integrity" "sha512-mLUDsD5JVtlZxjSlPPx1RETkNjjvQYuweKwNVt1Sn8kP5Jh44pvYuUHCp6xSVDZWbNxVxG5lyZJ921aJH61sTw=="
@@ -8064,8 +8059,6 @@
   "integrity" "sha512-gfE1455AEazVVTJoeQtcOq/U6GSxwoj4XPSWVsuWmgIxj7sBQNLDOSA82PbdMe+cP8ql8fR1jogPFe8Wg8g4SQ=="
   "resolved" "https://registry.npmjs.org/rollup/-/rollup-2.1.0.tgz"
   "version" "2.1.0"
-  dependencies:
-    "fsevents" "~2.1.2"
   optionalDependencies:
     "fsevents" "~2.1.2"
 
@@ -8073,8 +8066,6 @@
   "integrity" "sha512-rCyFG3ZtQdnn9YwfuAVH0l/Om34BdO5lwCA0W6Hq+bNB21dVEBbCRxhaHOmu1G7OBFDWytbzAC104u7rxHwGjA=="
   "resolved" "https://registry.npmjs.org/rollup/-/rollup-2.26.5.tgz"
   "version" "2.26.5"
-  dependencies:
-    "fsevents" "~2.1.2"
   optionalDependencies:
     "fsevents" "~2.1.2"
 
@@ -8100,7 +8091,7 @@
   "resolved" "https://registry.npmjs.org/rxjs-compat/-/rxjs-compat-6.6.0.tgz"
   "version" "6.6.0"
 
-"rxjs@^6.5.3", "rxjs@^6.6.0", "rxjs@~6.6.0", "rxjs@6.6.2":
+"rxjs@^6.0.0", "rxjs@^6.5.3", "rxjs@^6.6.0", "rxjs@~6.6.0", "rxjs@6.6.2":
   "integrity" "sha512-BHdBMVoWC2sL26w//BCu3YzKT4s2jip/WhwsGEDmeKYBhKDZeYezVUnHatYB7L85v5xs0BAQmg6BEYJEKxBabg=="
   "resolved" "https://registry.npmjs.org/rxjs/-/rxjs-6.6.2.tgz"
   "version" "6.6.2"
@@ -8158,17 +8149,17 @@
     "schema-utils" "^2.6.1"
     "semver" "^6.3.0"
 
-"sass@^1.3.0", "sass@1.26.10":
-  "integrity" "sha512-bzN0uvmzfsTvjz0qwccN1sPm2HxxpNI/Xa+7PlUEMS+nQvbyuEK7Y0qFqxlPHhiNHb1Ze8WQJtU31olMObkAMw=="
-  "resolved" "https://registry.npmjs.org/sass/-/sass-1.26.10.tgz"
-  "version" "1.26.10"
-  dependencies:
-    "chokidar" ">=2.0.0 <4.0.0"
-
-"sass@1.26.3":
+"sass@^1.3.0", "sass@1.26.3":
   "integrity" "sha512-5NMHI1+YFYw4sN3yfKjpLuV9B5l7MqQ6FlkTcC4FT+oHbBRUZoSjHrrt/mE0nFXJyY2kQtU9ou9HxvFVjLFuuw=="
   "resolved" "https://registry.npmjs.org/sass/-/sass-1.26.3.tgz"
   "version" "1.26.3"
+  dependencies:
+    "chokidar" ">=2.0.0 <4.0.0"
+
+"sass@1.26.10":
+  "integrity" "sha512-bzN0uvmzfsTvjz0qwccN1sPm2HxxpNI/Xa+7PlUEMS+nQvbyuEK7Y0qFqxlPHhiNHb1Ze8WQJtU31olMObkAMw=="
+  "resolved" "https://registry.npmjs.org/sass/-/sass-1.26.10.tgz"
+  "version" "1.26.10"
   dependencies:
     "chokidar" ">=2.0.0 <4.0.0"
 
@@ -8942,7 +8933,7 @@
     "lodash.clonedeep" "^4.5.0"
     "when" "~3.6.x"
 
-"stylus@0.54.7":
+"stylus@>=0.52.4", "stylus@0.54.7":
   "integrity" "sha512-Yw3WMTzVwevT6ZTrLCYNHAFmanMxdylelL3hkWNgPMeTCpMwpV3nXjpOHuBXtFv7aiO2xRuQS6OoAdgkNcSNug=="
   "resolved" "https://registry.npmjs.org/stylus/-/stylus-0.54.7.tgz"
   "version" "0.54.7"
@@ -9293,7 +9284,7 @@
   "resolved" "https://registry.npmjs.org/tslib/-/tslib-1.11.1.tgz"
   "version" "1.11.1"
 
-"tslint@~6.1.0":
+"tslint@^5.0.0 || ^6.0.0", "tslint@~6.1.0":
   "integrity" "sha512-UyNrLdK3E0fQG/xWNqAFAC5ugtFyPO4JJR1KyyfQAyzR8W0fTRrC91A8Wej4BntFzcvETdCSDa/4PnNYJQLYiA=="
   "resolved" "https://registry.npmjs.org/tslint/-/tslint-6.1.2.tgz"
   "version" "6.1.2"
@@ -9364,15 +9355,15 @@
   "resolved" "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
   "version" "0.0.6"
 
+"typescript@>=2.1.0 || >=2.1.0-dev || >=2.2.0-dev || >=2.3.0-dev || >=2.4.0-dev || >=2.5.0-dev || >=2.6.0-dev || >=2.7.0-dev || >=2.8.0-dev || >=2.9.0-dev || >= 3.0.0-dev || >= 3.1.0-dev", "typescript@>=2.3.0-dev || >=2.4.0-dev || >=2.5.0-dev || >=2.6.0-dev || >=2.7.0-dev || >=2.8.0-dev || >=2.9.0-dev || >=3.0.0-dev || >= 3.1.0-dev || >= 3.2.0-dev", "typescript@>=2.7", "typescript@>=3.6 < 3.9", "typescript@>=3.9 <4.0", "typescript@~3.9.6":
+  "integrity" "sha512-Pspx3oKAPJtjNwE92YS05HQoY7z2SFyOpHo9MqJor3BXAGNaPUs83CuVp9VISFkSjyRfiTpmKuAYGJB7S7hOxw=="
+  "resolved" "https://registry.npmjs.org/typescript/-/typescript-3.9.6.tgz"
+  "version" "3.9.6"
+
 "typescript@>=3.9 < 4.1", "typescript@4.0.2":
   "integrity" "sha512-e4ERvRV2wb+rRZ/IQeb3jm2VxBsirQLpQhdxplZ2MEzGvDkkMmPglecnNDfSUBivMjP93vRbngYYDQqQ/78bcQ=="
   "resolved" "https://registry.npmjs.org/typescript/-/typescript-4.0.2.tgz"
   "version" "4.0.2"
-
-"typescript@~3.9.6":
-  "integrity" "sha512-Pspx3oKAPJtjNwE92YS05HQoY7z2SFyOpHo9MqJor3BXAGNaPUs83CuVp9VISFkSjyRfiTpmKuAYGJB7S7hOxw=="
-  "resolved" "https://registry.npmjs.org/typescript/-/typescript-3.9.6.tgz"
-  "version" "3.9.6"
 
 "typescript@3.6.5":
   "integrity" "sha512-BEjlc0Z06ORZKbtcxGrIvvwYs5hAnuo6TKdNFL55frVDlB+na3z5bsLhFaIxmT+dPWgBIjMo6aNnTOgHHmHgiQ=="
@@ -9618,10 +9609,8 @@
   "resolved" "https://registry.npmjs.org/watchpack/-/watchpack-1.7.5.tgz"
   "version" "1.7.5"
   dependencies:
-    "chokidar" "^3.4.1"
     "graceful-fs" "^4.1.2"
     "neo-async" "^2.5.0"
-    "watchpack-chokidar2" "^2.0.1"
   optionalDependencies:
     "chokidar" "^3.4.1"
     "watchpack-chokidar2" "^2.0.1"
@@ -9757,36 +9746,7 @@
   dependencies:
     "webpack-sources" "^1.3.0"
 
-"webpack@^4.0.0", "webpack@^4.0.0 || ^5.0.0", "webpack@^4.27.0 || ^5.0.0", "webpack@^4.36.0 || ^5.0.0", "webpack@^4.4.0 || ^5.0.0", "webpack@^4.6.0", "webpack@>= 4", "webpack@4.44.1":
-  "integrity" "sha512-4UOGAohv/VGUNQJstzEywwNxqX417FnjZgZJpJQegddzPmTvph37eBIRbRTfdySXzVtJXLJfbMN3mMYhM6GdmQ=="
-  "resolved" "https://registry.npmjs.org/webpack/-/webpack-4.44.1.tgz"
-  "version" "4.44.1"
-  dependencies:
-    "@webassemblyjs/ast" "1.9.0"
-    "@webassemblyjs/helper-module-context" "1.9.0"
-    "@webassemblyjs/wasm-edit" "1.9.0"
-    "@webassemblyjs/wasm-parser" "1.9.0"
-    "acorn" "^6.4.1"
-    "ajv" "^6.10.2"
-    "ajv-keywords" "^3.4.1"
-    "chrome-trace-event" "^1.0.2"
-    "enhanced-resolve" "^4.3.0"
-    "eslint-scope" "^4.0.3"
-    "json-parse-better-errors" "^1.0.2"
-    "loader-runner" "^2.4.0"
-    "loader-utils" "^1.2.3"
-    "memory-fs" "^0.4.1"
-    "micromatch" "^3.1.10"
-    "mkdirp" "^0.5.3"
-    "neo-async" "^2.6.1"
-    "node-libs-browser" "^2.2.1"
-    "schema-utils" "^1.0.0"
-    "tapable" "^1.1.3"
-    "terser-webpack-plugin" "^1.4.3"
-    "watchpack" "^1.7.4"
-    "webpack-sources" "^1.4.1"
-
-"webpack@4.42.0":
+"webpack@^1 || ^2 || ^3 || ^4", "webpack@^1.12.11 || ~2 || ~3 || ~4", "webpack@^2.0.0 || ^3.0.0 || ^4.0.0", "webpack@^4.0.0", "webpack@^4.0.0 || ^5.0.0", "webpack@^4.36.0 || ^5.0.0", "webpack@^4.37.0 || ^5.0.0", "webpack@^4.4.0", "webpack@^4.6.0", "webpack@>= 4", "webpack@>=2", "webpack@>=4.0.1", "webpack@4.42.0":
   "integrity" "sha512-EzJRHvwQyBiYrYqhyjW9AqM90dE4+s1/XtCfn7uWg6cS72zH+2VPFAlsnW0+W0cDi0XRjNKUMoJtpSi50+Ph6w=="
   "resolved" "https://registry.npmjs.org/webpack/-/webpack-4.42.0.tgz"
   "version" "4.42.0"
@@ -9813,6 +9773,35 @@
     "tapable" "^1.1.3"
     "terser-webpack-plugin" "^1.4.3"
     "watchpack" "^1.6.0"
+    "webpack-sources" "^1.4.1"
+
+"webpack@^4.27.0 || ^5.0.0", "webpack@^4.4.0 || ^5.0.0", "webpack@4.44.1":
+  "integrity" "sha512-4UOGAohv/VGUNQJstzEywwNxqX417FnjZgZJpJQegddzPmTvph37eBIRbRTfdySXzVtJXLJfbMN3mMYhM6GdmQ=="
+  "resolved" "https://registry.npmjs.org/webpack/-/webpack-4.44.1.tgz"
+  "version" "4.44.1"
+  dependencies:
+    "@webassemblyjs/ast" "1.9.0"
+    "@webassemblyjs/helper-module-context" "1.9.0"
+    "@webassemblyjs/wasm-edit" "1.9.0"
+    "@webassemblyjs/wasm-parser" "1.9.0"
+    "acorn" "^6.4.1"
+    "ajv" "^6.10.2"
+    "ajv-keywords" "^3.4.1"
+    "chrome-trace-event" "^1.0.2"
+    "enhanced-resolve" "^4.3.0"
+    "eslint-scope" "^4.0.3"
+    "json-parse-better-errors" "^1.0.2"
+    "loader-runner" "^2.4.0"
+    "loader-utils" "^1.2.3"
+    "memory-fs" "^0.4.1"
+    "micromatch" "^3.1.10"
+    "mkdirp" "^0.5.3"
+    "neo-async" "^2.6.1"
+    "node-libs-browser" "^2.2.1"
+    "schema-utils" "^1.0.0"
+    "tapable" "^1.1.3"
+    "terser-webpack-plugin" "^1.4.3"
+    "watchpack" "^1.7.4"
     "webpack-sources" "^1.4.1"
 
 "websocket-driver@>=0.5.1", "websocket-driver@0.6.5":

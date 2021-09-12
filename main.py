@@ -115,20 +115,6 @@ except FileNotFoundError:
     config_file = {'config_valid': 0}
 
 
-if config_file['config_valid']:
-    try:
-        setup.download_file_from_gcs('account_struct.json', account_struct_json_path)
-        setup.download_file_from_gcs('asset_to_ag.json', asset_to_ag_json_path)
-        if CLOUD_VERSION and Path(account_struct_json_path).exists():
-            get_global_googleads_client() # to initialize googleads.yaml file
-            logging.info('Skipping structure creation on startup, since this is the cloud version')
-        else:
-            structure.create_mcc_struct(get_global_googleads_client(), account_struct_json_path, asset_to_ag_json_path)
-    except Exception as e:
-        logging.exception('Error when trying to create struct')
-        Service_Class.reset_cid(get_global_adwords_client())
-
-
 @app.route('/')
 def upload_frontend():
     return render_template('index.html')
@@ -309,53 +295,6 @@ def set_yt():
         return _build_response(msg=json.dumps(str(e)), status=400)
 
 
-# @app.route('/init-yt/', methods=['GET'])
-# def init_yt():
-#   """opens a browser with the login window. """
-#   setup.set_yt_config()
-#   yt_flow = InstalledAppFlow.from_client_secrets_file(
-#     YT_CONFIG_FILE_PATH , YT_CLIENT_SCOPES)
-#   credentials = yt_flow.run_local_app(host='localhost',
-#     port=8080,
-#     authorization_prompt_message='Please visit this URL: {url}',
-#     success_message='The auth flow is complete; you may close this window.',
-#     open_browser=True)
-#   global yt_client
-#   yt_client = build('youtube', 'v3', credentials = credentials)
-#   return _build_response(status=200)
-
-
-# @app.route('/upload-to-yt/', methods=['POST'])
-# def upload_to_yt():
-#   """Call this route to upload a video to YT.
-#   Send a JSON with the following params:
-
-#   file - str, path to the file to upload
-#   title - str,
-#   description - str, video description
-#   category - str representing a number.
-#   https://developers.google.com/youtube/v3/docs/videoCategories/list',
-#   keywords - list,
-#   privacyStatus - str, private/public/unlisted
-
-#   Returns:
-#   dict - {"vid_id" : id}
-#   """
-#   data = request.get_json(force=True)
-#   if data.get('file') is None:
-#     return _build_response(msg=json.loads('File not specified', status=404))
-#   try:
-#     vid_id = initialize_upload(
-#       yt_client,**{k: v for k, v in data.items() if v is not None})
-#     status=200
-#     msg = {'vid_id' : vid_id}
-#   except Exception as e:
-#     msg = str(e)
-#     logging.error(str(e))
-#     status=500
-
-#   return _build_response(msg = json.dumps(msg), status=status)
-
 
 @app.route('/get-yt-videos/', methods=['GET'])
 def get_yt_videos():
@@ -367,21 +306,6 @@ def get_yt_videos():
         return _build_response(msg=json.dumps(str(e)), status=400)
 
     return _build_response(msg=json.dumps(videos), status=200)
-
-
-@app.route('/create-struct/', methods=['GET'])
-def create_struct():
-    msg = ''
-    try:
-        structure.create_mcc_struct(
-            get_global_googleads_client(), account_struct_json_path, asset_to_ag_json_path)
-        status=200
-    except Exception as e:
-        status=403
-        msg = str(e)
-        logging.exception(e)
-
-    return _build_response(msg=msg,status=status)
 
 
 @app.route('/accounts/', methods=['GET'])
@@ -436,44 +360,20 @@ def get_specific_accounts_assets(cid):
             return _build_response(status=500)
 
 
-@app.route('/structure/', methods=['GET'])
-def get_structure():
-    cid = int(request.args.get('cid'))
-    try:
-        setup.download_file_from_gcs('account_struct.json', account_struct_json_path)
-        with open(account_struct_json_path, 'r') as f:
-            accounts_struct = json.load(f)
-
-        if cid:
-            for account in accounts_struct:
-                if account['id'] == cid:
-                    return _build_response(msg=json.dumps(account, indent=2))
-
-            return _build_response(msg='cid not found', status=500)
-
-        else:
-            return _build_response(msg=json.dumps(accounts_struct, indent=2))
-
-    except:
-        return _build_response(msg='could not get data', status=500)
-
-
 @app.route('/assets-to-ag/', methods=['GET'])
 def get_asset_to_ag():
+    customer_id = request.args.get('customer_id')
+    asset_id = request.args.get('asset_id')
+    asset_type = request.args.get('asset_type')
+    status = 200
     try:
-        setup.download_file_from_gcs('asset_to_ag.json', asset_to_ag_json_path)
-        with open(asset_to_ag_json_path, 'r') as f:
-            asset_struct = json.load(f)
-
-        if asset_struct:
-            return _build_response(json.dumps(asset_struct))
-
-        else:
-            return _build_response(msg='asset structure is not available', status=501)
-
+        data = structure.get_assets_adgroups(get_global_googleads_client(),
+            customer_id, asset_id, asset_type)
     except Exception as e:
-        return _build_response(
-            msg='error while reading asset_to_ag.json: ' + str(e), status=400)
+        logging.exception(e)
+        data = ''
+        status = 404
+    return _build_response(msg=json.dumps(data), status=status)
 
 
 

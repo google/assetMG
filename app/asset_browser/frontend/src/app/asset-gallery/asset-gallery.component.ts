@@ -69,7 +69,7 @@ export class AssetGalleryComponent implements OnInit {
 
         configDialogRef.afterClosed().subscribe((success) => {
           if (success) {
-            this.loadMccStruct();
+            console.log('Credentials Valid')
           }
         });
       }
@@ -91,12 +91,6 @@ export class AssetGalleryComponent implements OnInit {
         this.sideNav?.close();
       })
     );
-
-    this._subscriptions.push(
-      this._reloadAppService.reloadMcc.subscribe(() => {
-        this.loadMccStruct(true);
-      })
-    );
   }
 
   ngOnDestroy() {
@@ -114,22 +108,6 @@ export class AssetGalleryComponent implements OnInit {
     return this.closeAssetDetails.bind(this);
   }
 
-  loadMccStruct(loadAccounts: boolean = false) {
-    this.openSnackBar();
-    let subscription = this._dataService.loadMccStruct().subscribe(
-      () => {
-        this._configService.configValid = true;
-        if (loadAccounts) this._reloadAppService.reloadAccountIds.next(true);
-        this.dismissSnackBar();
-        subscription.unsubscribe();
-      },
-      (error) => {
-        this.dismissSnackBar();
-        if (error.status != 403) this.openSnackBarStructFail();
-        subscription.unsubscribe();
-      }
-    );
-  }
 
   /** Functions that may need to be called from a child component */
   openAssetDetails() {

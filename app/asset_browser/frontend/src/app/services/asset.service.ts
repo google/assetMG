@@ -76,15 +76,6 @@ export class AssetService {
       });
   }
 
-  private getAccountHierarchy(accountId: number) {
-    const endpoint = this.API_SERVER + '/structure/';
-    let subscription = this._http
-      .get<Account>(endpoint, { params: { cid: accountId?.toString() } })
-      .subscribe((account) => {
-        this._activeAccount$.next(account);
-        subscription.unsubscribe();
-      });
-  }
 
   private getAccountAdGroups(accountId: number) {
     const endpoint = this.API_SERVER + '/account-ag-struct';
@@ -96,11 +87,23 @@ export class AssetService {
       });
   }
 
-  /** Loads all the asset to adgroups mapping */
-  private getAssetsToAdGroups() {
+  /** Loads a specific asset to adgroups mapping */
+  private getAssetsToAdGroups(asset_id, asset_type) {
+    let accountId
+    this.activeAccountId$.subscribe((id) =>{
+      accountId = id;
+    })
     const endpoint = this.API_SERVER + '/assets-to-ag/';
-    let subscription = this._http.get<Asset[]>(endpoint).subscribe((assets) => {
+    let subscription = this._http.get<Asset[]>(endpoint,
+       { params: { 
+         asset_id: asset_id,
+         asset_type: asset_type,
+         customer_id: JSON.stringify(accountId)
+         } 
+       })
+    .subscribe((assets) => {
       this._assetsToAdGroups = assets;
+      this._activeAssetAdGroups$.next(this.getActiveAssetAdGroups(asset_id));
       subscription.unsubscribe();
     });
   }
@@ -110,14 +113,10 @@ export class AssetService {
     return this._http.get<Account[]>(endpoint);
   }
 
-  loadMccStruct(): Observable<any> {
-    const endpoint = this.API_SERVER + '/create-struct/';
-    return this._http.get(endpoint);
-  }
-
   changeAsset(asset: Asset) {
     this._activeAsset$.next(asset);
     if (asset) {
+      this.getAssetsToAdGroups(asset.id, asset.type)
       this._activeAssetAdGroups$.next(this.getActiveAssetAdGroups(asset.id));
     } else {
       this._activeAssetAdGroups$.next(null);
@@ -132,7 +131,6 @@ export class AssetService {
     this._activeAccountId$.next(accountId);
     this.getAllAssets(accountId);
     this.getAccountAdGroups(accountId);
-    this.getAssetsToAdGroups();
     this.changeAsset(null);
   }
 
