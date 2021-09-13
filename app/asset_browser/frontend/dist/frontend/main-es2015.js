@@ -563,9 +563,9 @@ class AccountStructComponent {
         if (this.dataSource.paginator) {
             this.dataSource.paginator.firstPage();
         }
-        this.clearSelection(AssetConn.HEADLINE);
-        this.clearSelection(AssetConn.DESC);
-        this.clearSelection(AssetConn.ADGROUP);
+        // this.clearSelection(AssetConn.HEADLINE);
+        // this.clearSelection(AssetConn.DESC);
+        // this.clearSelection(AssetConn.ADGROUP);
     }
     toggleSelection(agRow, assetConn) {
         if (agRow) {

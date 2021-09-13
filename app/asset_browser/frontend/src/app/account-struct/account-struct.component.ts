@@ -157,7 +157,6 @@ export class AccountStructComponent implements OnChanges {
           this.displayedColumns$.next(this.getDisplayedColumns());
           this._changeDetectorRef.detectChanges();
           this.applyFilterPredicate();
-
           // Reset the filter if any
           this.filter = '';
           this.dataSource.filter = '';
@@ -180,7 +179,6 @@ export class AccountStructComponent implements OnChanges {
     this.dataSource.sort = this.sort;
 
     this.applyFilterPredicate();
-
     // Adjust sorting criteria
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
@@ -352,9 +350,9 @@ export class AccountStructComponent implements OnChanges {
       this.dataSource.paginator.firstPage();
     }
     
-    this.clearSelection(AssetConn.HEADLINE);
-    this.clearSelection(AssetConn.DESC);
-    this.clearSelection(AssetConn.ADGROUP);
+    // this.clearSelection(AssetConn.HEADLINE);
+    // this.clearSelection(AssetConn.DESC);
+    // this.clearSelection(AssetConn.ADGROUP);
   }
 
   toggleSelection(agRow: AdGroupRow, assetConn: AssetConn) {
