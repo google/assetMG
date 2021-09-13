@@ -3041,7 +3041,6 @@ class AssetService {
         this._activeAsset$.next(asset);
         if (asset) {
             this.getAssetsToAdGroups(asset.id, asset.type);
-            this._activeAssetAdGroups$.next(this.getActiveAssetAdGroups(asset.id));
         }
         else {
             this._activeAssetAdGroups$.next(null);
@@ -3079,30 +3078,9 @@ class AssetService {
         let subscription = this._http
             .post(endpoint, load, { observe: 'response' })
             .subscribe((response) => {
-            var _a;
             // update the asset to adgroup cache
-            let updatedAssets = [];
-            for (let update of response.body) {
-                updatedAssets.push(update.asset);
-                if (update.index) {
-                    // This is a non-text asset
-                    this._assetsToAdGroups[update.index] = update.asset;
-                }
-                else if ((_a = update.asset) === null || _a === void 0 ? void 0 : _a.length) {
-                    // Text asset, so index can be {found in the assets array (headlines and descriptions)
-                    for (let txt_asset of update.asset) {
-                        if (txt_asset.index) {
-                            this._assetsToAdGroups[txt_asset.index] = txt_asset.asset;
-                        }
-                        else {
-                            this._assetsToAdGroups.push(txt_asset.asset);
-                        }
-                    }
-                }
-                else {
-                    this._assetsToAdGroups.push(update.asset);
-                }
-            }
+            let updatedAssets = response.body[0].asset;
+            this._assetsToAdGroups = updatedAssets;
             // Update the new selection
             this._activeAssetAdGroups$.next(this.getActiveAssetAdGroups(changedAsset.id));
             // Updated the caller that the API is done

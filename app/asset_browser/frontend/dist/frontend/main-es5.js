@@ -5780,8 +5780,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           if (asset) {
             this.getAssetsToAdGroups(asset.id, asset.type);
-
-            this._activeAssetAdGroups$.next(this.getActiveAssetAdGroups(asset.id));
           } else {
             this._activeAssetAdGroups$.next(null);
           }
@@ -5836,52 +5834,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           var subscription = this._http.post(endpoint, load, {
             observe: 'response'
           }).subscribe(function (response) {
-            var _a; // update the asset to adgroup cache
-
-
-            var updatedAssets = [];
-
-            var _iterator6 = _createForOfIteratorHelper(response.body),
-                _step6;
-
-            try {
-              for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
-                var update = _step6.value;
-                updatedAssets.push(update.asset);
-
-                if (update.index) {
-                  // This is a non-text asset
-                  _this22._assetsToAdGroups[update.index] = update.asset;
-                } else if ((_a = update.asset) === null || _a === void 0 ? void 0 : _a.length) {
-                  // Text asset, so index can be {found in the assets array (headlines and descriptions)
-                  var _iterator8 = _createForOfIteratorHelper(update.asset),
-                      _step8;
-
-                  try {
-                    for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-                      var txt_asset = _step8.value;
-
-                      if (txt_asset.index) {
-                        _this22._assetsToAdGroups[txt_asset.index] = txt_asset.asset;
-                      } else {
-                        _this22._assetsToAdGroups.push(txt_asset.asset);
-                      }
-                    }
-                  } catch (err) {
-                    _iterator8.e(err);
-                  } finally {
-                    _iterator8.f();
-                  }
-                } else {
-                  _this22._assetsToAdGroups.push(update.asset);
-                }
-              } // Update the new selection
-
-            } catch (err) {
-              _iterator6.e(err);
-            } finally {
-              _iterator6.f();
-            }
+            // update the asset to adgroup cache
+            var updatedAssets = response.body[0].asset;
+            _this22._assetsToAdGroups = updatedAssets; // Update the new selection
 
             _this22._activeAssetAdGroups$.next(_this22.getActiveAssetAdGroups(changedAsset.id)); // Updated the caller that the API is done
 
@@ -5892,18 +5847,18 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               var failures = response.body[0].failures || response.body.failures;
 
               if (failures) {
-                var _iterator7 = _createForOfIteratorHelper(failures),
-                    _step7;
+                var _iterator6 = _createForOfIteratorHelper(failures),
+                    _step6;
 
                 try {
-                  for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
-                    var failure = _step7.value;
+                  for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+                    var failure = _step6.value;
                     msg += "Update failed for the ad group \"".concat(failure.adgroup.adgroup_name, "\" of campaign \"").concat(failure.adgroup.campaign_name, "\":\n                    ").concat(failure.error_message, "<br/>");
                   }
                 } catch (err) {
-                  _iterator7.e(err);
+                  _iterator6.e(err);
                 } finally {
-                  _iterator7.f();
+                  _iterator6.f();
                 }
               } else {
                 msg = 'Update failed for some ad groups.';
@@ -5925,18 +5880,18 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             var failures = ((_a = error.error[0]) === null || _a === void 0 ? void 0 : _a.failures) || ((_b = error.error) === null || _b === void 0 ? void 0 : _b.failures);
 
             if (failures) {
-              var _iterator9 = _createForOfIteratorHelper(failures),
-                  _step9;
+              var _iterator7 = _createForOfIteratorHelper(failures),
+                  _step7;
 
               try {
-                for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
-                  var failure = _step9.value;
+                for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+                  var failure = _step7.value;
                   errorMessage += "Update failed for the ad group \"".concat(failure.adgroup.adgroup_name, "\" from campaign \"").concat(failure.adgroup.campaign_name, "\": \n              ").concat(failure.error_message, "<br/>");
                 }
               } catch (err) {
-                _iterator9.e(err);
+                _iterator7.e(err);
               } finally {
-                _iterator9.f();
+                _iterator7.f();
               }
             } else {
               errorMessage = "Error Code: ".concat(error.status, "<br/>Message: ").concat(error.message);
@@ -9086,18 +9041,18 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           this.isError = false;
           this.fileNames = [];
 
-          var _iterator10 = _createForOfIteratorHelper(event.target.files),
-              _step10;
+          var _iterator8 = _createForOfIteratorHelper(event.target.files),
+              _step8;
 
           try {
-            for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
-              var _file = _step10.value;
+            for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+              var _file = _step8.value;
               this.fileNames.push(_file.name);
             }
           } catch (err) {
-            _iterator10.e(err);
+            _iterator8.e(err);
           } finally {
-            _iterator10.f();
+            _iterator8.f();
           }
 
           if (this.fileNames.length > 0) {
@@ -10183,19 +10138,19 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           var subscription = this.uploadVideo.uploadBulkVids();
           subscription.subscribe(function (response) {
             if (response.status === _model_response__WEBPACK_IMPORTED_MODULE_4__["STATUS"].SUCCESS || response.status === _model_response__WEBPACK_IMPORTED_MODULE_4__["STATUS"].PARTIAL_SUCCESS) {
-              var _iterator11 = _createForOfIteratorHelper(response.body),
-                  _step11;
+              var _iterator9 = _createForOfIteratorHelper(response.body),
+                  _step9;
 
               try {
-                for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
-                  var asset = _step11.value;
+                for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+                  var asset = _step9.value;
 
                   _this39._assetService.addNewAsset(asset);
                 }
               } catch (err) {
-                _iterator11.e(err);
+                _iterator9.e(err);
               } finally {
-                _iterator11.f();
+                _iterator9.f();
               }
 
               _this39.uploadDialogRef.close();
@@ -10338,18 +10293,18 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               console.log(failures);
 
               if (failures) {
-                var _iterator12 = _createForOfIteratorHelper(failures),
-                    _step12;
+                var _iterator10 = _createForOfIteratorHelper(failures),
+                    _step10;
 
                 try {
-                  for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
-                    var failure = _step12.value;
+                  for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
+                    var failure = _step10.value;
                     msg += "Update failed for the ad group \"".concat(failure.adgroup.adgroup_name, "\" from campaign \"").concat(failure.adgroup.campaign_name, "\":\n                ").concat(failure.error_message, "<br/>");
                   }
                 } catch (err) {
-                  _iterator12.e(err);
+                  _iterator10.e(err);
                 } finally {
-                  _iterator12.f();
+                  _iterator10.f();
                 }
               } else {
                 msg = 'Update failed for some ad groups.';
@@ -10387,18 +10342,18 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             var failures = ((_a = error.error) === null || _a === void 0 ? void 0 : _a.failures) || error.error;
 
             if (failures.length) {
-              var _iterator13 = _createForOfIteratorHelper(failures),
-                  _step13;
+              var _iterator11 = _createForOfIteratorHelper(failures),
+                  _step11;
 
               try {
-                for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
-                  var failure = _step13.value;
+                for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
+                  var failure = _step11.value;
                   msg += "Update failed for the ad group \"".concat(failure.adgroup.adgroup_name, "\" from campaign \"").concat(failure.adgroup.campaign_name, "\":\n          ").concat(failure.error_message, "<br/>");
                 }
               } catch (err) {
-                _iterator13.e(err);
+                _iterator11.e(err);
               } finally {
-                _iterator13.f();
+                _iterator11.f();
               }
             } else {
               msg = "".concat(msg);

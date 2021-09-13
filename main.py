@@ -396,33 +396,11 @@ def mutate():
     logging.info('Recived mutate request: %s', str(data['data']))
     refresh_token = data['refresh_token']
     data_load = data['data']
-
     asset_id = data_load[0]['asset']['id']
     asset_type = data_load[0]['asset']['type']
 
     aw_client = init_user_adwords_client(refresh_token)
     ga_client = init_user_googleads_client(refresh_token)
-
-    setup.download_file_from_gcs('asset_to_ag.json', asset_to_ag_json_path)
-    with open(asset_to_ag_json_path, 'r') as f:
-        asset_struct = json.load(f)
-
-    # special func for text assets, as they have 2 entries in asset_to_ag.json
-    if asset_type == 'TEXT':
-        return _text_asset_mutate(data_load, aw_client, ga_client, asset_id, asset_struct)
-
-    asset_handler = {}
-    index = 0 # to re-write back to location
-    for entry in asset_struct:
-        if entry['id'] == asset_id:
-            asset_handler = entry
-            break
-        index += 1
-
-    if not asset_handler:
-        asset_handler = data_load[0]['asset']
-        asset_handler['adgroups'] = []
-        index = None
 
     failed_assign = []
     successeful_assign = []
@@ -431,13 +409,15 @@ def mutate():
         adgroup = item['adgroup']
         action = item['action']
         asset = item['asset']
+        text_type = asset.get('text_type_to_assign')
 
         try:
-            mutation = mutate_ad(aw_client, account, adgroup, asset, action)
+            mutation = mutate_ad(aw_client, account, adgroup, asset, action, text_type)
         except Exception as e:
+            logging.exception(e)
             failed_assign.append(
                 {
-                    'adgroup': populate_adgroup_details(ga_client, account, adgroup),
+                    'adgroup': populate_adgroup_details(get_global_googleads_client(), account, adgroup),
                     'error_message': error_mapping(str(e)),
                     'err': str(e)
                 }
@@ -445,21 +425,11 @@ def mutate():
             mutation = 'failed'
             logging.error('could not execute mutation on adgroup: %s',str(adgroup))
 
-
         if mutation is None:
             successeful_assign.append(adgroup)
-            asset_handler = _asset_ag_update(asset_handler,adgroup,action)
 
     Service_Class.reset_cid(aw_client)
 
-    if index:
-        asset_struct[index] = asset_handler
-    else:
-        asset_struct.append(asset_handler)
-
-    with open(asset_to_ag_json_path, 'w') as f:
-        json.dump(asset_struct, f,indent=2)
-    setup.upload_file_to_gcs(asset_to_ag_json_path, 'asset_to_ag.json')
     if failed_assign and successeful_assign:
         status = 206
     elif successeful_assign:
@@ -467,140 +437,11 @@ def mutate():
     else:
         status = 500
 
-    logging.info(
-        'mutate response: msg={} , status={}'.format(asset_handler,index))
+    asset_handler = structure.get_assets_adgroups(get_global_googleads_client(), account, str(asset_id), asset_type)
 
     return _build_response(msg=json.dumps(
-        [{'asset':asset_handler,'index':index, 'failures':failed_assign}])
+        [{'asset':asset_handler, 'failures':failed_assign}])
         , status=status)
-
-
-def _text_asset_mutate(data, aw_client, ga_client, asset_id, asset_struct):
-    """Handles text asset mutations"""
-
-    asset_handlers = []
-    index = 0 # to re-write back to location
-    for entry in asset_struct:
-        if entry['id'] == asset_id:
-            asset_handlers.append({'asset':entry, 'index':index})
-        index += 1
-
-
-    # if only one of headlines/descriptions entries
-    # exists in asset_struct, create the second one.
-    # if the asset isn't assigned to any adgroup, create both entries
-    # create headline entry only if text's len <= 30
-    if len(asset_handlers) < 2:
-        new_asset = {
-            'id': data[0]['asset']['id'],
-            'type':'TEXT',
-            'asset_text':data[0]['asset']['asset_text'],
-            'adgroups':[]
-        }
-        append = False
-        if len(data[0]['asset']['asset_text']) <= 30:
-            headline_len = True
-        else:
-            headline_len = False
-
-        if len(asset_handlers) == 1:
-            existing_type = asset_handlers[0]['asset']['text_type']
-            if existing_type == 'headlines':
-                new_asset['text_type'] = 'descriptions'
-                append = True
-            elif headline_len:
-                new_asset['text_type'] = 'headlines'
-                append = True
-            if append:
-                asset_handlers.append({'asset':new_asset, 'index':None})
-
-        elif len(asset_handlers) == 0:
-            new_asset['text_type'] = 'descriptions'
-            asset_handlers.append({'asset':new_asset, 'index':None})
-            if headline_len:
-                new_asset_second = copy.copy(new_asset)
-                new_asset_second['adgroups'] = []
-                new_asset_second['text_type'] = 'headlines'
-                asset_handlers.append({'asset':new_asset_second, 'index':None})
-
-    successeful_assign = []
-    failed_assign = []
-    for item in data:
-        account = item['account']
-        adgroup = item['adgroup']
-        action = item['action']
-        asset = item['asset']
-        text_type_to_assign = item['asset']['text_type_to_assign']
-
-        try:
-            mutation = mutate_ad(aw_client, account, adgroup, asset, action,
-                                 text_type_to_assign)
-
-        except Exception as e:
-            failed_assign.append(
-                {
-                    'adgroup': populate_adgroup_details(ga_client, account, adgroup),
-                    'error_message': error_mapping(str(e)),
-                    'err': str(e)
-                }
-            )
-            mutation = 'failed'
-            logging.error(
-                'could not execute mutation on adgroup: %s, %s' ,str(adgroup), str(e))
-
-        if mutation is None:
-            for obj in asset_handlers:
-                if obj['asset']['text_type'] == text_type_to_assign:
-                    obj['asset'] = _asset_ag_update(obj['asset'],adgroup,action)
-                    successeful_assign.append(adgroup)
-
-    Service_Class.reset_cid(aw_client)
-
-    for obj in asset_handlers:
-        if obj['index']:
-            asset_struct[obj['index']] = obj['asset']
-        else:
-            asset_struct.append(obj['asset'])
-
-    with open(asset_to_ag_json_path, 'w') as f:
-        json.dump(asset_struct, f,indent=2)
-    setup.upload_file_to_gcs(asset_to_ag_json_path, 'asset_to_ag.json')
-    if failed_assign and successeful_assign:
-        status = 206
-    elif successeful_assign:
-        status = 200
-    else:
-        status = 500
-
-    logging.info(
-        'mutate response: msg={} , status={}'.format(str(asset_handlers),index))
-
-    return _build_response(
-        msg=json.dumps(
-            [{
-                'asset': asset_handlers,
-                'failures': failed_assign
-            }]
-        ),
-        status=status)
-
-
-def _asset_ag_update(asset,adgroup,action):
-    """remove or add the adgroup to the asset entry"""
-
-    if action == 'ADD':
-        asset['adgroups'].append({
-            'id': adgroup,
-            'performance': 'NEEDS UPDATE',
-            'performance_type': 'nontext'
-        })
-
-    if action == 'REMOVE':
-        asset['adgroups'] = [
-            item for item in asset['adgroups'] if item['id'] != adgroup]
-
-
-    return asset
 
 
 def allowed_file(filename):
