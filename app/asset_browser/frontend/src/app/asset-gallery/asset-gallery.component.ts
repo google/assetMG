@@ -24,7 +24,6 @@ import { AppSetupComponent } from '../app-setup/app-setup.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginator } from '@angular/material/paginator';
 import { AssetDetailsComponent } from '../asset-details/asset-details.component';
-import { ReloadAppService } from '../services/reload-app.service';
 import { AuthorizationService } from '../services/authorization.service';
 
 @Component({
@@ -47,7 +46,6 @@ export class AssetGalleryComponent implements OnInit {
     private _dataService: AssetService,
     private _configService: ConfigService,
     private _authorizationService: AuthorizationService,
-    private _reloadAppService: ReloadAppService,
     private _setupDialog: MatDialog,
     private _snackBar: MatSnackBar
   ) {}

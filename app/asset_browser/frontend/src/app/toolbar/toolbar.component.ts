@@ -24,7 +24,6 @@ import { tap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { SettingsComponent } from '../settings/settings.component';
 import { ConfigService } from '../services/config.service';
-import { ReloadAppService } from '../services/reload-app.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -43,12 +42,8 @@ export class ToolbarComponent implements OnInit {
     private _dataService: AssetService,
     private _configService: ConfigService,
     private _authorizationService: AuthorizationService,
-    private _reloadAppService: ReloadAppService,
     private _settingsDialog: MatDialog
   ) {
-    this._reloadAppService.reloadAccountIds.subscribe(() => {
-      this.loadAccountIds();
-    });
   }
 
   ngOnInit(): void {
@@ -70,12 +65,6 @@ export class ToolbarComponent implements OnInit {
         }
       })
     );
-  }
-
-  refreshCache() {
-    // Manually force a cache refresh based on user trigger
-    console.log("Refreshing cache manually.");
-    this._reloadAppService.reloadMcc.next(true);
   }
 
   accountChanged(event) {

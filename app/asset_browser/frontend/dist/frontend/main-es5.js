@@ -960,7 +960,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
                   default:
                     {
-                      agRow.performance = adGroup.performance;
+                      agRow.performance = '';
                       break;
                     }
                 }
@@ -3198,61 +3198,55 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     /* harmony import */
 
 
-    var _services_reload_app_service__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(
-    /*! ../services/reload-app.service */
-    "./src/app/services/reload-app.service.ts");
-    /* harmony import */
-
-
-    var _angular_material_dialog__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(
+    var _angular_material_dialog__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(
     /*! @angular/material/dialog */
     "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/dialog.js");
     /* harmony import */
 
 
-    var _angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(
+    var _angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(
     /*! @angular/material/snack-bar */
     "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/snack-bar.js");
     /* harmony import */
 
 
-    var _toolbar_toolbar_component__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(
+    var _toolbar_toolbar_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(
     /*! ../toolbar/toolbar.component */
     "./src/app/toolbar/toolbar.component.ts");
     /* harmony import */
 
 
-    var _shared_loader_loader_component__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(
+    var _shared_loader_loader_component__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(
     /*! ../shared/loader/loader.component */
     "./src/app/shared/loader/loader.component.ts");
     /* harmony import */
 
 
-    var _angular_common__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(
+    var _angular_common__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(
     /*! @angular/common */
     "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
     /* harmony import */
 
 
-    var _angular_material_sidenav__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(
+    var _angular_material_sidenav__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(
     /*! @angular/material/sidenav */
     "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/sidenav.js");
     /* harmony import */
 
 
-    var _asset_details_asset_details_component__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(
+    var _asset_details_asset_details_component__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(
     /*! ../asset-details/asset-details.component */
     "./src/app/asset-details/asset-details.component.ts");
     /* harmony import */
 
 
-    var _asset_grid_asset_grid_component__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(
+    var _asset_grid_asset_grid_component__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(
     /*! ../asset-grid/asset-grid.component */
     "./src/app/asset-grid/asset-grid.component.ts");
     /* harmony import */
 
 
-    var _angular_material_card__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(
+    var _angular_material_card__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(
     /*! @angular/material/card */
     "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/card.js");
 
@@ -3324,13 +3318,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }
 
     var AssetGalleryComponent = /*#__PURE__*/function () {
-      function AssetGalleryComponent(_dataService, _configService, _authorizationService, _reloadAppService, _setupDialog, _snackBar) {
+      function AssetGalleryComponent(_dataService, _configService, _authorizationService, _setupDialog, _snackBar) {
         _classCallCheck(this, AssetGalleryComponent);
 
         this._dataService = _dataService;
         this._configService = _configService;
         this._authorizationService = _authorizationService;
-        this._reloadAppService = _reloadAppService;
         this._setupDialog = _setupDialog;
         this._snackBar = _snackBar;
         this._subscriptions = [];
@@ -3461,7 +3454,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }();
 
     AssetGalleryComponent.ɵfac = function AssetGalleryComponent_Factory(t) {
-      return new (t || AssetGalleryComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_services_asset_service__WEBPACK_IMPORTED_MODULE_3__["AssetService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_services_config_service__WEBPACK_IMPORTED_MODULE_4__["ConfigService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_services_authorization_service__WEBPACK_IMPORTED_MODULE_5__["AuthorizationService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_services_reload_app_service__WEBPACK_IMPORTED_MODULE_6__["ReloadAppService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_material_dialog__WEBPACK_IMPORTED_MODULE_7__["MatDialog"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_8__["MatSnackBar"]));
+      return new (t || AssetGalleryComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_services_asset_service__WEBPACK_IMPORTED_MODULE_3__["AssetService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_services_config_service__WEBPACK_IMPORTED_MODULE_4__["ConfigService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_services_authorization_service__WEBPACK_IMPORTED_MODULE_5__["AuthorizationService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_material_dialog__WEBPACK_IMPORTED_MODULE_6__["MatDialog"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_7__["MatSnackBar"]));
     };
 
     AssetGalleryComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({
@@ -3504,7 +3497,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.getConfigService().configValid);
         }
       },
-      directives: [_toolbar_toolbar_component__WEBPACK_IMPORTED_MODULE_9__["ToolbarComponent"], _shared_loader_loader_component__WEBPACK_IMPORTED_MODULE_10__["LoaderComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_11__["NgIf"], _angular_material_sidenav__WEBPACK_IMPORTED_MODULE_12__["MatSidenavContainer"], _angular_material_sidenav__WEBPACK_IMPORTED_MODULE_12__["MatSidenav"], _asset_details_asset_details_component__WEBPACK_IMPORTED_MODULE_13__["AssetDetailsComponent"], _angular_material_sidenav__WEBPACK_IMPORTED_MODULE_12__["MatSidenavContent"], _asset_grid_asset_grid_component__WEBPACK_IMPORTED_MODULE_14__["AssetGridComponent"], _angular_material_card__WEBPACK_IMPORTED_MODULE_15__["MatCard"]],
+      directives: [_toolbar_toolbar_component__WEBPACK_IMPORTED_MODULE_8__["ToolbarComponent"], _shared_loader_loader_component__WEBPACK_IMPORTED_MODULE_9__["LoaderComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_10__["NgIf"], _angular_material_sidenav__WEBPACK_IMPORTED_MODULE_11__["MatSidenavContainer"], _angular_material_sidenav__WEBPACK_IMPORTED_MODULE_11__["MatSidenav"], _asset_details_asset_details_component__WEBPACK_IMPORTED_MODULE_12__["AssetDetailsComponent"], _angular_material_sidenav__WEBPACK_IMPORTED_MODULE_11__["MatSidenavContent"], _asset_grid_asset_grid_component__WEBPACK_IMPORTED_MODULE_13__["AssetGridComponent"], _angular_material_card__WEBPACK_IMPORTED_MODULE_14__["MatCard"]],
       styles: ["mat-sidenav-container[_ngcontent-%COMP%] {\n  height: 100%;\n\n  flex: 1;\n  position: fixed;\n  width: 100%;\n  min-width: 100%;\n\n  height: calc(100% - 64px);\n  min-height: calc(100% - 64px);\n}\n\nmat-sidenav-content[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  width: 90%;\n  height: 100%;\n  margin: auto;\n  padding-left: 40px;\n  padding-right: 40px;\n}\n\nmat-sidenav[_ngcontent-%COMP%] {\n  padding: 20px;\n  padding-top: 0px;\n}\n\napp-asset-grid[_ngcontent-%COMP%] {\n  display: contents;\n}\n\n.asset-details-container[_ngcontent-%COMP%] {\n  max-width: 1500;\n  width: 90%;\n  height: 100%;\n}\n\n.left-align-content[_ngcontent-%COMP%] {\n  margin: unset;\n}\n\n.pad-div[_ngcontent-%COMP%] {\n  padding: 20px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvYXNzZXQtZ2FsbGVyeS9hc3NldC1nYWxsZXJ5LmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxZQUFZOztFQUVaLE9BQU87RUFDUCxlQUFlO0VBQ2YsV0FBVztFQUNYLGVBQWU7O0VBRWYseUJBQXlCO0VBQ3pCLDZCQUE2QjtBQUMvQjs7QUFFQTtFQUNFLGFBQWE7RUFDYixzQkFBc0I7RUFDdEIsVUFBVTtFQUNWLFlBQVk7RUFDWixZQUFZO0VBQ1osa0JBQWtCO0VBQ2xCLG1CQUFtQjtBQUNyQjs7QUFFQTtFQUNFLGFBQWE7RUFDYixnQkFBZ0I7QUFDbEI7O0FBQ0E7RUFDRSxpQkFBaUI7QUFDbkI7O0FBRUE7RUFDRSxlQUFlO0VBQ2YsVUFBVTtFQUNWLFlBQVk7QUFDZDs7QUFFQTtFQUNFLGFBQWE7QUFDZjs7QUFFQTtFQUNFLGFBQWE7QUFDZiIsImZpbGUiOiJzcmMvYXBwL2Fzc2V0LWdhbGxlcnkvYXNzZXQtZ2FsbGVyeS5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsibWF0LXNpZGVuYXYtY29udGFpbmVyIHtcbiAgaGVpZ2h0OiAxMDAlO1xuXG4gIGZsZXg6IDE7XG4gIHBvc2l0aW9uOiBmaXhlZDtcbiAgd2lkdGg6IDEwMCU7XG4gIG1pbi13aWR0aDogMTAwJTtcblxuICBoZWlnaHQ6IGNhbGMoMTAwJSAtIDY0cHgpO1xuICBtaW4taGVpZ2h0OiBjYWxjKDEwMCUgLSA2NHB4KTtcbn1cblxubWF0LXNpZGVuYXYtY29udGVudCB7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47XG4gIHdpZHRoOiA5MCU7XG4gIGhlaWdodDogMTAwJTtcbiAgbWFyZ2luOiBhdXRvO1xuICBwYWRkaW5nLWxlZnQ6IDQwcHg7XG4gIHBhZGRpbmctcmlnaHQ6IDQwcHg7XG59XG5cbm1hdC1zaWRlbmF2IHtcbiAgcGFkZGluZzogMjBweDtcbiAgcGFkZGluZy10b3A6IDBweDtcbn1cbmFwcC1hc3NldC1ncmlkIHtcbiAgZGlzcGxheTogY29udGVudHM7XG59XG5cbi5hc3NldC1kZXRhaWxzLWNvbnRhaW5lciB7XG4gIG1heC13aWR0aDogMTUwMDtcbiAgd2lkdGg6IDkwJTtcbiAgaGVpZ2h0OiAxMDAlO1xufVxuXG4ubGVmdC1hbGlnbi1jb250ZW50IHtcbiAgbWFyZ2luOiB1bnNldDtcbn1cblxuLnBhZC1kaXYge1xuICBwYWRkaW5nOiAyMHB4O1xufSJdfQ== */"]
     });
     /*@__PURE__*/
@@ -3525,11 +3518,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         }, {
           type: _services_authorization_service__WEBPACK_IMPORTED_MODULE_5__["AuthorizationService"]
         }, {
-          type: _services_reload_app_service__WEBPACK_IMPORTED_MODULE_6__["ReloadAppService"]
+          type: _angular_material_dialog__WEBPACK_IMPORTED_MODULE_6__["MatDialog"]
         }, {
-          type: _angular_material_dialog__WEBPACK_IMPORTED_MODULE_7__["MatDialog"]
-        }, {
-          type: _angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_8__["MatSnackBar"]
+          type: _angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_7__["MatSnackBar"]
         }];
       }, {
         sideNav: [{
@@ -4662,19 +4653,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     var _angular_material_dialog__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(
     /*! @angular/material/dialog */
     "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/dialog.js");
-    /* harmony import */
-
-
-    var _services_reload_app_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(
-    /*! ../services/reload-app.service */
-    "./src/app/services/reload-app.service.ts");
 
     var HttpErrorInterceptor = /*#__PURE__*/function () {
-      function HttpErrorInterceptor(dialog, reloadAppService) {
+      function HttpErrorInterceptor(dialog) {
         _classCallCheck(this, HttpErrorInterceptor);
 
         this.dialog = dialog;
-        this.reloadAppService = reloadAppService;
       }
 
       _createClass(HttpErrorInterceptor, [{
@@ -4700,19 +4684,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "openErrorDialog",
         value: function openErrorDialog(errorMessage) {
-          var _this16 = this;
-
           var dialogRef = this.dialog.open(_error_dialog_error_dialog_component__WEBPACK_IMPORTED_MODULE_3__["ErrorDialogComponent"], {
             width: '700px',
             disableClose: true,
             autoFocus: false,
             data: {
               errorMessage: errorMessage
-            }
-          });
-          dialogRef.afterClosed().subscribe(function (result) {
-            if (result.success) {
-              _this16.reloadAppService.reloadMcc.next(true);
             }
           });
         }
@@ -4722,7 +4699,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }();
 
     HttpErrorInterceptor.ɵfac = function HttpErrorInterceptor_Factory(t) {
-      return new (t || HttpErrorInterceptor)(_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵinject"](_angular_material_dialog__WEBPACK_IMPORTED_MODULE_4__["MatDialog"]), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵinject"](_services_reload_app_service__WEBPACK_IMPORTED_MODULE_5__["ReloadAppService"]));
+      return new (t || HttpErrorInterceptor)(_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵinject"](_angular_material_dialog__WEBPACK_IMPORTED_MODULE_4__["MatDialog"]));
     };
 
     HttpErrorInterceptor.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineInjectable"]({
@@ -4737,8 +4714,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }], function () {
         return [{
           type: _angular_material_dialog__WEBPACK_IMPORTED_MODULE_4__["MatDialog"]
-        }, {
-          type: _services_reload_app_service__WEBPACK_IMPORTED_MODULE_5__["ReloadAppService"]
         }];
       }, null);
     })();
@@ -4811,15 +4786,15 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(LoaderInterceptor, [{
         key: "intercept",
         value: function intercept(req, next) {
-          var _this17 = this;
+          var _this16 = this;
 
           this.totalRequests++;
           this.loaderService.show();
           return next.handle(req).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["finalize"])(function () {
-            _this17.totalRequests--;
+            _this16.totalRequests--;
 
-            if (_this17.totalRequests === 0) {
-              _this17.loaderService.hide();
+            if (_this16.totalRequests === 0) {
+              _this16.loaderService.hide();
             }
           }));
         }
@@ -4918,10 +4893,10 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(LoginComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
-          var _this18 = this;
+          var _this17 = this;
 
           this._subscriptions.push(this._authService.loggedIn$.subscribe(function (loggedIn) {
-            _this18.setLabel(loggedIn);
+            _this17.setLabel(loggedIn);
           }));
         }
       }, {
@@ -5704,7 +5679,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(AssetService, [{
         key: "getAllAssets",
         value: function getAllAssets(accountId) {
-          var _this19 = this;
+          var _this18 = this;
 
           // Reset the asset observable till the http request is made
           this._allAssets$.next(null); // Call the API and update the asset observable
@@ -5717,7 +5692,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               cid: accountId === null || accountId === void 0 ? void 0 : accountId.toString()
             }
           }).subscribe(function (assets) {
-            _this19._allAssets$.next(assets);
+            _this18._allAssets$.next(assets);
 
             subscription.unsubscribe();
           });
@@ -5725,7 +5700,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "getAccountAdGroups",
         value: function getAccountAdGroups(accountId) {
-          var _this20 = this;
+          var _this19 = this;
 
           var endpoint = this.API_SERVER + '/account-ag-struct';
 
@@ -5734,7 +5709,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               cid: accountId === null || accountId === void 0 ? void 0 : accountId.toString()
             }
           }).subscribe(function (accountAGs) {
-            _this20._accountAGs$.next(accountAGs);
+            _this19._accountAGs$.next(accountAGs);
 
             subscription.unsubscribe();
           });
@@ -5744,7 +5719,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "getAssetsToAdGroups",
         value: function getAssetsToAdGroups(asset_id, asset_type) {
-          var _this21 = this;
+          var _this20 = this;
 
           var accountId;
           this.activeAccountId$.subscribe(function (id) {
@@ -5759,9 +5734,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               customer_id: JSON.stringify(accountId)
             }
           }).subscribe(function (assets) {
-            _this21._assetsToAdGroups = assets;
+            _this20._assetsToAdGroups = assets;
 
-            _this21._activeAssetAdGroups$.next(_this21.getActiveAssetAdGroups(asset_id));
+            _this20._activeAssetAdGroups$.next(_this20.getActiveAssetAdGroups(asset_id));
 
             subscription.unsubscribe();
           });
@@ -5819,7 +5794,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "updateAsset",
         value: function updateAsset(changedAsset, updateArray) {
-          var _this22 = this;
+          var _this21 = this;
 
           var endpoint = this.API_SERVER + '/mutate-ad/';
 
@@ -5835,9 +5810,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           }).subscribe(function (response) {
             // update the asset to adgroup cache
             var updatedAssets = response.body[0].asset;
-            _this22._assetsToAdGroups = updatedAssets; // Update the new selection
+            _this21._assetsToAdGroups = updatedAssets; // Update the new selection
 
-            _this22._activeAssetAdGroups$.next(_this22.getActiveAssetAdGroups(changedAsset.id)); // Updated the caller that the API is done
+            _this21._activeAssetAdGroups$.next(_this21.getActiveAssetAdGroups(changedAsset.id)); // Updated the caller that the API is done
 
 
             var msg = '';
@@ -5864,7 +5839,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               }
             }
 
-            _this22._updateFinished$.next({
+            _this21._updateFinished$.next({
               status_code: response.status,
               msg: msg,
               assets: updatedAssets
@@ -5896,7 +5871,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               errorMessage = "Error Code: ".concat(error.status, "<br/>Message: ").concat(error.message);
             }
 
-            _this22._updateFinished$.next({
+            _this21._updateFinished$.next({
               status_code: _model_response__WEBPACK_IMPORTED_MODULE_5__["STATUS"].FAIL,
               msg: errorMessage,
               assets: []
@@ -5908,7 +5883,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "addNewAsset",
         value: function addNewAsset(asset) {
-          var _this23 = this;
+          var _this22 = this;
 
           // Update all assets with the newly uploaded asset
           if (asset) {
@@ -5924,7 +5899,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
             setTimeout(function () {
-              _this23._allAssets$.next(_this23._allAssets$.getValue().concat(asset));
+              _this22._allAssets$.next(_this22._allAssets$.getValue().concat(asset));
             }, waitTime);
           }
         }
@@ -6024,7 +5999,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
     var AuthorizationService = /*#__PURE__*/function () {
       function AuthorizationService(_configService) {
-        var _this24 = this;
+        var _this23 = this;
 
         _classCallCheck(this, AuthorizationService);
 
@@ -6033,13 +6008,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         this.refreshToken = null;
         this.retrieveStoredRefreshToken().then(function (token) {
           if (token) {
-            _this24.refreshToken = token;
-            _this24.loggedInSubject = new rxjs__WEBPACK_IMPORTED_MODULE_2__["BehaviorSubject"](true);
+            _this23.refreshToken = token;
+            _this23.loggedInSubject = new rxjs__WEBPACK_IMPORTED_MODULE_2__["BehaviorSubject"](true);
           } else {
-            _this24.loggedInSubject = new rxjs__WEBPACK_IMPORTED_MODULE_2__["BehaviorSubject"](false);
+            _this23.loggedInSubject = new rxjs__WEBPACK_IMPORTED_MODULE_2__["BehaviorSubject"](false);
           }
 
-          _this24.loggedIn$ = _this24.loggedInSubject.asObservable();
+          _this23.loggedIn$ = _this23.loggedInSubject.asObservable();
         });
       }
 
@@ -6047,7 +6022,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         key: "initGoogleAuth",
         value: function initGoogleAuth() {
           return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-            var _this25 = this;
+            var _this24 = this;
 
             var pload;
             return regeneratorRuntime.wrap(function _callee2$(_context2) {
@@ -6062,8 +6037,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                     // loaded and that we can call gapi.init
 
                     return _context2.abrupt("return", pload.then(function () {
-                      return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this25, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-                        var _this26 = this;
+                      return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this24, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+                        var _this25 = this;
 
                         var config;
                         return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -6076,7 +6051,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                                   client_id: config.client_id,
                                   scope: "https://www.googleapis.com/auth/adwords https://www.googleapis.com/auth/youtube.readonly"
                                 }).then(function (auth) {
-                                  _this26.authInstance = auth;
+                                  _this25.authInstance = auth;
                                 });
 
                               case 3:
@@ -6101,7 +6076,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         value: function authenticate() {
           var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
           return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-            var _this27 = this;
+            var _this26 = this;
 
             var error, storedToken, refreshAccessToken;
             return regeneratorRuntime.wrap(function _callee3$(_context3) {
@@ -6160,11 +6135,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                   case 17:
                     _context3.next = 19;
                     return this._configService.getConfigRefreshCode(refreshAccessToken).toPromise().then(function (response) {
-                      _this27.refreshToken = response.body;
+                      _this26.refreshToken = response.body;
 
-                      _this27.loggedInSubject.next(true);
+                      _this26.loggedInSubject.next(true);
 
-                      _this27.storeRefreshToken(_this27.refreshToken);
+                      _this26.storeRefreshToken(_this26.refreshToken);
                     })["catch"](function (err) {
                       error = err["error"];
                     });
@@ -6403,14 +6378,14 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(ConfigService, [{
         key: "loadConfigSettings",
         value: function loadConfigSettings() {
-          var _this28 = this;
+          var _this27 = this;
 
           var endpoint = this.API_SERVER + '/config/';
           var subscription = this.http.get(endpoint).subscribe(function (config) {
-            _this28._configSettings = config;
-            _this28.configValid = config.config_valid;
+            _this27._configSettings = config;
+            _this27.configValid = config.config_valid;
 
-            _this28._configLoaded$.next(_this28.configValid);
+            _this27._configLoaded$.next(_this27.configValid);
 
             subscription.unsubscribe();
           });
@@ -6428,11 +6403,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "loadYtConfigSettings",
         value: function loadYtConfigSettings() {
-          var _this29 = this;
+          var _this28 = this;
 
           var endpoint = this.API_SERVER + '/yt-config/';
           var subscritpion = this.http.get(endpoint).subscribe(function (config) {
-            _this29._YtConfigSettings = config;
+            _this28._YtConfigSettings = config;
             subscritpion.unsubscribe();
           });
         }
@@ -6494,12 +6469,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "revertConfigSettings",
         value: function revertConfigSettings(config) {
-          var _this30 = this;
+          var _this29 = this;
 
           if (config.config_valid) {
             var endpoint = this.API_SERVER + '/set-configs/';
             var subscription = this.http.post(endpoint, config).subscribe(function (_) {
-              _this30.updateConfigCache(config);
+              _this29.updateConfigCache(config);
 
               subscription.unsubscribe();
             });
@@ -6621,86 +6596,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](LoaderService, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"]
       }], null, null);
-    })();
-    /***/
-
-  },
-
-  /***/
-  "./src/app/services/reload-app.service.ts":
-  /*!************************************************!*\
-    !*** ./src/app/services/reload-app.service.ts ***!
-    \************************************************/
-
-  /*! exports provided: ReloadAppService */
-
-  /***/
-  function srcAppServicesReloadAppServiceTs(module, __webpack_exports__, __webpack_require__) {
-    "use strict";
-
-    __webpack_require__.r(__webpack_exports__);
-    /* harmony export (binding) */
-
-
-    __webpack_require__.d(__webpack_exports__, "ReloadAppService", function () {
-      return ReloadAppService;
-    });
-    /* harmony import */
-
-
-    var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(
-    /*! @angular/core */
-    "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
-    /* harmony import */
-
-
-    var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(
-    /*! rxjs */
-    "./node_modules/rxjs/_esm2015/index.js");
-    /**
-     * Copyright 2020 Google LLC
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
-
-
-    var ReloadAppService = function ReloadAppService() {
-      _classCallCheck(this, ReloadAppService);
-
-      this.reloadMcc = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
-      this.reloadAccountIds = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
-    };
-
-    ReloadAppService.ɵfac = function ReloadAppService_Factory(t) {
-      return new (t || ReloadAppService)();
-    };
-
-    ReloadAppService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({
-      token: ReloadAppService,
-      factory: ReloadAppService.ɵfac,
-      providedIn: 'root'
-    });
-    /*@__PURE__*/
-
-    (function () {
-      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](ReloadAppService, [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
-        args: [{
-          providedIn: 'root'
-        }]
-      }], function () {
-        return [];
-      }, null);
     })();
     /***/
 
@@ -6860,11 +6755,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "loadYtChannelVideos",
         value: function loadYtChannelVideos() {
-          var _this31 = this;
+          var _this30 = this;
 
           var endpoint = this.API_SERVER + '/get-yt-videos/';
           var subscription = this.http.get(endpoint).subscribe(function (vids) {
-            _this31._YtVidList$.next(vids);
+            _this30._YtVidList$.next(vids);
 
             subscription.unsubscribe();
           });
@@ -7038,7 +6933,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "onEdit",
         value: function onEdit() {
-          var _this32 = this;
+          var _this31 = this;
 
           this.dialogRef.close();
 
@@ -7048,7 +6943,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           var subscription = configDialogRef.backdropClick().subscribe(function (_) {
             // Revert back to old config
-            _this32._configService.revertConfigSettings(_this32.data);
+            _this31._configService.revertConfigSettings(_this31.data);
 
             subscription.unsubscribe();
           });
@@ -7056,19 +6951,19 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "onYtSubmit",
         value: function onYtSubmit() {
-          var _this33 = this;
+          var _this32 = this;
 
           var YtConf = {
             channel_id: this.ytCredentials.YTform.get('channel').value.trim()
           };
           return this._configService.setYouTubeConfig(YtConf).subscribe(function (response) {
-            _this33._configService.updateYtConfigSettings(YtConf);
+            _this32._configService.updateYtConfigSettings(YtConf);
 
-            _this33.errorFound = false;
-            _this33.verificationText = 'Channel Updated';
+            _this32.errorFound = false;
+            _this32.verificationText = 'Channel Updated';
           }, function (error) {
-            _this33.errorFound = true;
-            _this33.verificationText = 'Invalid Credentials';
+            _this32.errorFound = true;
+            _this32.verificationText = 'Invalid Credentials';
           });
         }
       }]);
@@ -8136,12 +8031,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(LoaderComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
-          var _this34 = this;
+          var _this33 = this;
 
           this.loaderService.isLoading.subscribe(function (loading) {
-            _this34.isLoading = loading;
+            _this33.isLoading = loading;
 
-            _this34.cdf.detectChanges();
+            _this33.cdf.detectChanges();
           });
         }
       }]);
@@ -9284,61 +9179,55 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     /* harmony import */
 
 
-    var _services_reload_app_service__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(
-    /*! ../services/reload-app.service */
-    "./src/app/services/reload-app.service.ts");
-    /* harmony import */
-
-
-    var _angular_material_dialog__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(
+    var _angular_material_dialog__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(
     /*! @angular/material/dialog */
     "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/dialog.js");
     /* harmony import */
 
 
-    var _angular_material_toolbar__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(
+    var _angular_material_toolbar__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(
     /*! @angular/material/toolbar */
     "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/toolbar.js");
     /* harmony import */
 
 
-    var _angular_common__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(
+    var _angular_common__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(
     /*! @angular/common */
     "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
     /* harmony import */
 
 
-    var _login_login_component__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(
+    var _login_login_component__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(
     /*! ../login/login.component */
     "./src/app/login/login.component.ts");
     /* harmony import */
 
 
-    var _angular_material_button__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(
+    var _angular_material_button__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(
     /*! @angular/material/button */
     "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/button.js");
     /* harmony import */
 
 
-    var _angular_material_icon__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(
+    var _angular_material_icon__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(
     /*! @angular/material/icon */
     "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/icon.js");
     /* harmony import */
 
 
-    var _angular_material_form_field__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(
+    var _angular_material_form_field__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(
     /*! @angular/material/form-field */
     "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/form-field.js");
     /* harmony import */
 
 
-    var _angular_material_select__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(
+    var _angular_material_select__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(
     /*! @angular/material/select */
     "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/select.js");
     /* harmony import */
 
 
-    var _angular_material_core__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(
+    var _angular_material_core__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(
     /*! @angular/material/core */
     "./node_modules/@angular/material/__ivy_ngcc__/fesm2015/core.js");
     /**
@@ -9360,16 +9249,16 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
     function ToolbarComponent_div_6_mat_select_4_mat_option_1_Template(rf, ctx) {
       if (rf & 1) {
-        var _r7 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+        var _r6 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "mat-option", 13);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "mat-option", 12);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("onSelectionChange", function ToolbarComponent_div_6_mat_select_4_mat_option_1_Template_mat_option_onSelectionChange_0_listener($event) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r7);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r6);
 
-          var ctx_r6 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3);
+          var ctx_r5 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3);
 
-          return ctx_r6.accountChanged($event);
+          return ctx_r5.accountChanged($event);
         });
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
@@ -9378,31 +9267,31 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }
 
       if (rf & 2) {
-        var account_r5 = ctx.$implicit;
+        var account_r4 = ctx.$implicit;
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", account_r5.id);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", account_r4.id);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", !!account_r5.name ? account_r5.name : account_r5.id, " ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", !!account_r4.name ? account_r4.name : account_r4.id, " ");
       }
     }
 
     function ToolbarComponent_div_6_mat_select_4_Template(rf, ctx) {
       if (rf & 1) {
-        var _r9 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+        var _r8 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "mat-select", 11);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "mat-select", 10);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("valueChange", function ToolbarComponent_div_6_mat_select_4_Template_mat_select_valueChange_0_listener($event) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r9);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r8);
 
-          var ctx_r8 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+          var ctx_r7 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
 
-          return ctx_r8.defaultAccount = $event;
+          return ctx_r7.defaultAccount = $event;
         });
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, ToolbarComponent_div_6_mat_select_4_mat_option_1_Template, 2, 2, "mat-option", 12);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, ToolbarComponent_div_6_mat_select_4_mat_option_1_Template, 2, 2, "mat-option", 11);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](2, "async");
 
@@ -9410,21 +9299,21 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }
 
       if (rf & 2) {
-        var ctx_r3 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+        var ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r3.defaultAccount);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx_r2.defaultAccount);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind1"](2, 2, ctx_r3.accounts$));
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind1"](2, 2, ctx_r2.accounts$));
       }
     }
 
     function ToolbarComponent_div_6_Template(rf, ctx) {
       if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 8);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 7);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "mat-form-field", 9);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "mat-form-field", 8);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "mat-label");
 
@@ -9432,7 +9321,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](4, ToolbarComponent_div_6_mat_select_4_Template, 3, 4, "mat-select", 10);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](4, ToolbarComponent_div_6_mat_select_4_Template, 3, 4, "mat-select", 9);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
@@ -9448,46 +9337,18 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }
     }
 
-    function ToolbarComponent_ng_container_9_Template(rf, ctx) {
+    function ToolbarComponent_button_9_Template(rf, ctx) {
       if (rf & 1) {
-        var _r11 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+        var _r10 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerStart"](0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "button", 6);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "button", 7);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function ToolbarComponent_button_9_Template_button_click_0_listener() {
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r10);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function ToolbarComponent_ng_container_9_Template_button_click_1_listener() {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r11);
+          var ctx_r9 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
 
-          var ctx_r10 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-
-          return ctx_r10.refreshCache();
-        });
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "mat-icon");
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, "update");
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerEnd"]();
-      }
-    }
-
-    function ToolbarComponent_button_10_Template(rf, ctx) {
-      if (rf & 1) {
-        var _r13 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "button", 7);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function ToolbarComponent_button_10_Template_button_click_0_listener() {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r13);
-
-          var ctx_r12 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-
-          return ctx_r12.openSettings();
+          return ctx_r9.openSettings();
         });
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "mat-icon");
@@ -9501,56 +9362,41 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }
 
     var ToolbarComponent = /*#__PURE__*/function () {
-      function ToolbarComponent(_dataService, _configService, _authorizationService, _reloadAppService, _settingsDialog) {
-        var _this35 = this;
-
+      function ToolbarComponent(_dataService, _configService, _authorizationService, _settingsDialog) {
         _classCallCheck(this, ToolbarComponent);
 
         this._dataService = _dataService;
         this._configService = _configService;
         this._authorizationService = _authorizationService;
-        this._reloadAppService = _reloadAppService;
         this._settingsDialog = _settingsDialog;
         this._subscriptions = [];
         this.loggedIn = false;
         this.loadAccounts = false;
-
-        this._reloadAppService.reloadAccountIds.subscribe(function () {
-          _this35.loadAccountIds();
-        });
       }
 
       _createClass(ToolbarComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
-          var _this36 = this;
+          var _this34 = this;
 
           this.loadAccountIds();
 
           this._subscriptions.push(this._authorizationService.loggedIn$.subscribe(function (loggedIn) {
-            _this36.loggedIn = loggedIn;
+            _this34.loggedIn = loggedIn;
           }));
         }
       }, {
         key: "loadAccountIds",
         value: function loadAccountIds() {
-          var _this37 = this;
+          var _this35 = this;
 
           this.accounts$ = this._dataService.getAccountIds().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])(function (accounts) {
             if (accounts.length) {
-              _this37.defaultAccount = accounts[0].id;
+              _this35.defaultAccount = accounts[0].id;
 
-              _this37._dataService.changeAccount(accounts[0].id);
+              _this35._dataService.changeAccount(accounts[0].id);
             }
           }));
-        }
-      }, {
-        key: "refreshCache",
-        value: function refreshCache() {
-          // Manually force a cache refresh based on user trigger
-          console.log("Refreshing cache manually.");
-
-          this._reloadAppService.reloadMcc.next(true);
         }
       }, {
         key: "accountChanged",
@@ -9595,7 +9441,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }();
 
     ToolbarComponent.ɵfac = function ToolbarComponent_Factory(t) {
-      return new (t || ToolbarComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_services_asset_service__WEBPACK_IMPORTED_MODULE_3__["AssetService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_services_config_service__WEBPACK_IMPORTED_MODULE_4__["ConfigService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_services_authorization_service__WEBPACK_IMPORTED_MODULE_5__["AuthorizationService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_services_reload_app_service__WEBPACK_IMPORTED_MODULE_6__["ReloadAppService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_material_dialog__WEBPACK_IMPORTED_MODULE_7__["MatDialog"]));
+      return new (t || ToolbarComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_services_asset_service__WEBPACK_IMPORTED_MODULE_3__["AssetService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_services_config_service__WEBPACK_IMPORTED_MODULE_4__["ConfigService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_services_authorization_service__WEBPACK_IMPORTED_MODULE_5__["AuthorizationService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_material_dialog__WEBPACK_IMPORTED_MODULE_6__["MatDialog"]));
     };
 
     ToolbarComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({
@@ -9604,9 +9450,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       inputs: {
         loadAccounts: "loadAccounts"
       },
-      decls: 14,
-      vars: 3,
-      consts: [[1, "toolbar_class"], [1, "toolbar_logo"], ["src", "assets/gtech_logo.png", 2, "width", "40px"], ["class", "toolbar_select", 4, "ngIf"], [1, "right-align"], [4, "ngIf"], ["mat-icon-button", "", 3, "click", 4, "ngIf"], ["mat-icon-button", "", 3, "click"], [1, "toolbar_select"], [1, "account_select"], [3, "value", "valueChange", 4, "ngIf"], [3, "value", "valueChange"], [3, "value", "onSelectionChange", 4, "ngFor", "ngForOf"], [3, "value", "onSelectionChange"]],
+      decls: 13,
+      vars: 2,
+      consts: [[1, "toolbar_class"], [1, "toolbar_logo"], ["src", "assets/gtech_logo.png", 2, "width", "40px"], ["class", "toolbar_select", 4, "ngIf"], [1, "right-align"], ["mat-icon-button", "", 3, "click", 4, "ngIf"], ["mat-icon-button", "", 3, "click"], [1, "toolbar_select"], [1, "account_select"], [3, "value", "valueChange", 4, "ngIf"], [3, "value", "valueChange"], [3, "value", "onSelectionChange", 4, "ngFor", "ngForOf"], [3, "value", "onSelectionChange"]],
       template: function ToolbarComponent_Template(rf, ctx) {
         if (rf & 1) {
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "mat-toolbar", 0);
@@ -9631,19 +9477,17 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](8, "app-login");
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](9, ToolbarComponent_ng_container_9_Template, 4, 0, "ng-container", 5);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](9, ToolbarComponent_button_9_Template, 3, 0, "button", 5);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](10, ToolbarComponent_button_10_Template, 3, 0, "button", 6);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "button", 6);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "button", 7);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function ToolbarComponent_Template_button_click_11_listener() {
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function ToolbarComponent_Template_button_click_10_listener() {
             return ctx.feedbackClicked();
           });
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "mat-icon");
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "mat-icon");
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](13, "feedback");
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](12, "feedback");
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
@@ -9664,14 +9508,10 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.loggedIn);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.loggedIn);
         }
       },
-      directives: [_angular_material_toolbar__WEBPACK_IMPORTED_MODULE_8__["MatToolbar"], _angular_material_toolbar__WEBPACK_IMPORTED_MODULE_8__["MatToolbarRow"], _angular_common__WEBPACK_IMPORTED_MODULE_9__["NgIf"], _login_login_component__WEBPACK_IMPORTED_MODULE_10__["LoginComponent"], _angular_material_button__WEBPACK_IMPORTED_MODULE_11__["MatButton"], _angular_material_icon__WEBPACK_IMPORTED_MODULE_12__["MatIcon"], _angular_material_form_field__WEBPACK_IMPORTED_MODULE_13__["MatFormField"], _angular_material_form_field__WEBPACK_IMPORTED_MODULE_13__["MatLabel"], _angular_material_select__WEBPACK_IMPORTED_MODULE_14__["MatSelect"], _angular_common__WEBPACK_IMPORTED_MODULE_9__["NgForOf"], _angular_material_core__WEBPACK_IMPORTED_MODULE_15__["MatOption"]],
-      pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_9__["AsyncPipe"]],
+      directives: [_angular_material_toolbar__WEBPACK_IMPORTED_MODULE_7__["MatToolbar"], _angular_material_toolbar__WEBPACK_IMPORTED_MODULE_7__["MatToolbarRow"], _angular_common__WEBPACK_IMPORTED_MODULE_8__["NgIf"], _login_login_component__WEBPACK_IMPORTED_MODULE_9__["LoginComponent"], _angular_material_button__WEBPACK_IMPORTED_MODULE_10__["MatButton"], _angular_material_icon__WEBPACK_IMPORTED_MODULE_11__["MatIcon"], _angular_material_form_field__WEBPACK_IMPORTED_MODULE_12__["MatFormField"], _angular_material_form_field__WEBPACK_IMPORTED_MODULE_12__["MatLabel"], _angular_material_select__WEBPACK_IMPORTED_MODULE_13__["MatSelect"], _angular_common__WEBPACK_IMPORTED_MODULE_8__["NgForOf"], _angular_material_core__WEBPACK_IMPORTED_MODULE_14__["MatOption"]],
+      pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_8__["AsyncPipe"]],
       styles: [".toolbar_class[_ngcontent-%COMP%]{\n  display: table;\n  color: grey;\n  font-size: 14px;\n}\n\n.toolbar_class[_ngcontent-%COMP%]   img[_ngcontent-%COMP%]{\n  margin-right: 15px;\n  vertical-align: middle;\n}\n\n.toolbar_class[_ngcontent-%COMP%]   span[_ngcontent-%COMP%]{\n  color: grey;\n\tfont-size: 18px;\n}\n\n.toolbar_select[_ngcontent-%COMP%]{\n  margin-left: 2%;\n}\n\n.right-align[_ngcontent-%COMP%] {\n  margin-left: auto;\n  color: grey;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvdG9vbGJhci90b29sYmFyLmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxjQUFjO0VBQ2QsV0FBVztFQUNYLGVBQWU7QUFDakI7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsc0JBQXNCO0FBQ3hCOztBQUVBO0VBQ0UsV0FBVztDQUNaLGVBQWU7QUFDaEI7O0FBRUE7RUFDRSxlQUFlO0FBQ2pCOztBQUVBO0VBQ0UsaUJBQWlCO0VBQ2pCLFdBQVc7QUFDYiIsImZpbGUiOiJzcmMvYXBwL3Rvb2xiYXIvdG9vbGJhci5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLnRvb2xiYXJfY2xhc3N7XG4gIGRpc3BsYXk6IHRhYmxlO1xuICBjb2xvcjogZ3JleTtcbiAgZm9udC1zaXplOiAxNHB4O1xufVxuXG4udG9vbGJhcl9jbGFzcyBpbWd7XG4gIG1hcmdpbi1yaWdodDogMTVweDtcbiAgdmVydGljYWwtYWxpZ246IG1pZGRsZTtcbn1cblxuLnRvb2xiYXJfY2xhc3Mgc3BhbntcbiAgY29sb3I6IGdyZXk7XG5cdGZvbnQtc2l6ZTogMThweDtcbn1cblxuLnRvb2xiYXJfc2VsZWN0e1xuICBtYXJnaW4tbGVmdDogMiU7XG59XG5cbi5yaWdodC1hbGlnbiB7XG4gIG1hcmdpbi1sZWZ0OiBhdXRvO1xuICBjb2xvcjogZ3JleTtcbn1cbiJdfQ== */"]
     });
     /*@__PURE__*/
@@ -9692,9 +9532,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         }, {
           type: _services_authorization_service__WEBPACK_IMPORTED_MODULE_5__["AuthorizationService"]
         }, {
-          type: _services_reload_app_service__WEBPACK_IMPORTED_MODULE_6__["ReloadAppService"]
-        }, {
-          type: _angular_material_dialog__WEBPACK_IMPORTED_MODULE_7__["MatDialog"]
+          type: _angular_material_dialog__WEBPACK_IMPORTED_MODULE_6__["MatDialog"]
         }];
       }, {
         loadAccounts: [{
@@ -10079,7 +9917,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(UploadAssetsComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
-          var _this38 = this;
+          var _this36 = this;
 
           this.types = new Map();
           this.types.set(this.assetTypes.TEXT_HEADLINE, 'Text - Headline');
@@ -10092,7 +9930,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           this.uploadAssetType = this.assetTypes.IMG;
           this.uploadDialogRef.updateSize('800px', '520px');
           this.uploadDialogRef.beforeClosed().subscribe(function (result) {
-            _this38._uploadService.clearUploads();
+            _this36._uploadService.clearUploads();
           });
 
           var yt_creds = this._configService.getYtConfigSettings();
@@ -10132,7 +9970,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "bulkUploadVideos",
         value: function bulkUploadVideos() {
-          var _this39 = this;
+          var _this37 = this;
 
           var subscription = this.uploadVideo.uploadBulkVids();
           subscription.subscribe(function (response) {
@@ -10144,7 +9982,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                 for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
                   var asset = _step9.value;
 
-                  _this39._assetService.addNewAsset(asset);
+                  _this37._assetService.addNewAsset(asset);
                 }
               } catch (err) {
                 _iterator9.e(err);
@@ -10152,7 +9990,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                 _iterator9.f();
               }
 
-              _this39.uploadDialogRef.close();
+              _this37.uploadDialogRef.close();
             }
           });
         }
@@ -10228,7 +10066,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "onAddAsset",
         value: function onAddAsset() {
-          var _this40 = this;
+          var _this38 = this;
 
           // Start the spinner
           this.uploadInProgress = true;
@@ -10259,19 +10097,19 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           if (this.uploadAssetType == this.assetTypes.TEXT_DESC || this.uploadAssetType == this.assetTypes.TEXT_HEADLINE) {
             var subscription = this._uploadService.addTextAsset(this.account.id, assetText, this.uploadAssetType, adGroups).subscribe(function (response) {
-              _this40.processUploadResponse(response.status, response.body);
+              _this38.processUploadResponse(response.status, response.body);
 
               subscription.unsubscribe();
             }, function (error) {
-              _this40.processUploadResponse(_model_response__WEBPACK_IMPORTED_MODULE_4__["STATUS"].FAIL, _this40.buildErrorResponse(error));
+              _this38.processUploadResponse(_model_response__WEBPACK_IMPORTED_MODULE_4__["STATUS"].FAIL, _this38.buildErrorResponse(error));
             });
           } else {
             var _subscription = this._uploadService.uploadAsset(this.account.id, assetName, this.uploadAssetType, adGroups, url).subscribe(function (response) {
-              _this40.processUploadResponse(response.status, response.body);
+              _this38.processUploadResponse(response.status, response.body);
 
               _subscription.unsubscribe();
             }, function (error) {
-              _this40.processUploadResponse(_model_response__WEBPACK_IMPORTED_MODULE_4__["STATUS"].FAIL, _this40.buildErrorResponse(error));
+              _this38.processUploadResponse(_model_response__WEBPACK_IMPORTED_MODULE_4__["STATUS"].FAIL, _this38.buildErrorResponse(error));
             });
           }
         }
@@ -11043,15 +10881,15 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(UploadTextComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
-          var _this41 = this;
+          var _this39 = this;
 
           this.form = this._formBuilder.group({
             textCtrl: ['', [_angular_forms__WEBPACK_IMPORTED_MODULE_1__["Validators"].required, _angular_forms__WEBPACK_IMPORTED_MODULE_1__["Validators"].maxLength(this.maxLength)]]
           }); // Update parent form when the value changes to detect valid and invalid states
 
           this.form.valueChanges.subscribe(function (value) {
-            if (_this41.form.get('textCtrl').value.length) {
-              _this41.isChildFormValid.emit(!_this41.form.invalid);
+            if (_this39.form.get('textCtrl').value.length) {
+              _this39.isChildFormValid.emit(!_this39.form.invalid);
             }
           });
         }
@@ -11462,7 +11300,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(UploadVideoComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
-          var _this42 = this;
+          var _this40 = this;
 
           this.form = this._formBuilder.group({
             videoNameCtrl: ['', [_angular_forms__WEBPACK_IMPORTED_MODULE_1__["Validators"].required]],
@@ -11470,8 +11308,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           }); // Update parent form when the value changes to detect valid and invalid states
 
           this.form.valueChanges.subscribe(function (value) {
-            if (_this42.form.get('videoUrlCtrl').value.length) {
-              _this42.isChildFormValid.emit(!_this42.form.invalid);
+            if (_this40.form.get('videoUrlCtrl').value.length) {
+              _this40.isChildFormValid.emit(!_this40.form.invalid);
             }
           });
 
@@ -11484,7 +11322,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "openVidSelect",
         value: function openVidSelect() {
-          var _this43 = this;
+          var _this41 = this;
 
           this._vidSelect = this.dialog.open(_video_select_video_select_component__WEBPACK_IMPORTED_MODULE_2__["VideoSelectComponent"], {
             data: this.chosenVids
@@ -11493,17 +11331,17 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           this._vidSelect.afterClosed().subscribe(function (vids) {
             // TODO: concat, not append
             if (vids != null) {
-              _this43.chosenVids = vids;
+              _this41.chosenVids = vids;
             }
 
-            if (_this43.chosenVids.length > 0) {
-              _this43.isBulkVidFilesSelected.emit(true);
+            if (_this41.chosenVids.length > 0) {
+              _this41.isBulkVidFilesSelected.emit(true);
             } else {
-              _this43.isBulkVidFilesSelected.emit(false);
+              _this41.isBulkVidFilesSelected.emit(false);
             } // fix for if user goes back and then returns
 
 
-            _this43.isBulkUpload.emit(true);
+            _this41.isBulkUpload.emit(true);
           });
         }
       }, {
@@ -11792,7 +11630,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _createClass(VideoSelectComponent, [{
         key: "ngOnInit",
         value: function ngOnInit() {
-          var _this44 = this;
+          var _this42 = this;
 
           this.mySelect = this.data;
           this.form = this.formBuilder.group({
@@ -11801,7 +11639,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           this.dialogRef.updateSize('900px', '450px');
 
           this._uploadAssetService.ytVidList$.subscribe(function (vids) {
-            _this44.videos = vids;
+            _this42.videos = vids;
           });
         }
       }, {

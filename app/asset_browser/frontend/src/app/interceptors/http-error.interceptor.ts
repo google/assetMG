@@ -25,13 +25,11 @@ import { catchError } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { ReloadAppService } from '../services/reload-app.service';
 
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor {
   constructor(
     public dialog: MatDialog,
-    private reloadAppService: ReloadAppService
   ) {}
   intercept(
     request: HttpRequest<any>,
@@ -59,12 +57,6 @@ export class HttpErrorInterceptor implements HttpInterceptor {
       disableClose: true,
       autoFocus: false,
       data: { errorMessage: errorMessage },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result.success) {
-        this.reloadAppService.reloadMcc.next(true);
-      }
     });
   }
 }
