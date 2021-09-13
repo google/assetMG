@@ -67,7 +67,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 LOGS_PATH = Path('app/logs/server.log')
 
 YT_CLIENT_SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
-
+#TODO: Remove these two lines
 asset_to_ag_json_path = Path(PREFIX + 'cache/asset_to_ag.json')
 account_struct_json_path = Path(PREFIX + 'cache/account_struct.json')
 Path(PREFIX + 'cache').mkdir(parents=True, exist_ok=True)
@@ -625,7 +625,7 @@ def upload_asset():
         return _build_response(msg=json.dumps(
             {'msg':'Asset Uploaded','asset':result['asset']}), status=200)
 
-    # successfully uploaded and assigend to all ad groups
+    # successfully uploaded and assigned to all ad groups
     if result['status'] == 0:
         return _build_response(msg=json.dumps(result),status=200)
 

@@ -192,7 +192,6 @@ def _assign_new_asset_to_adgroups(client, googleads_client, account, asset,
             global_ga_client, account, asset, successeful_assign[0])
 
     asset['adgroups'] = successeful_assign
-    _update_asset_struct(asset)
 
     return {
         'asset': asset,
@@ -200,20 +199,6 @@ def _assign_new_asset_to_adgroups(client, googleads_client, account, asset,
         'successfull': successeful_assign,
         'unsuccessfull': unsuccesseful_assign
     }
-
-
-def _update_asset_struct(asset):
-    """Update the asset_to_ag file with the new assets and their adgroups"""
-    try:
-        setup.download_file_from_gcs('asset_to_ag.json', asset_to_ag_json_path)
-    except Exception as e:
-        print(e)
-    with open(asset_to_ag_json_path, 'r') as f:
-        struct = json.load(f)
-    struct.append(asset)
-    with open(asset_to_ag_json_path, 'w') as f:
-        json.dump(struct, f, indent=2)
-    setup.upload_file_to_gcs(asset_to_ag_json_path, 'asset_to_ag.json')
 
 def _extract_text_asset_info(googleads_client, account, thin_asset, adgroup):
     """Retrive text-assets info from an adgroup it was assigned to"""
