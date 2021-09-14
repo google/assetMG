@@ -960,7 +960,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
                   default:
                     {
-                      agRow.performance = '';
+                      agRow.performance = adGroup.performance;
                       break;
                     }
                 }
@@ -3356,6 +3356,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
               configDialogRef.afterClosed().subscribe(function (success) {
                 if (success) {
+                  _this11._configService.configValid = true;
                   console.log('Credentials Valid');
                 }
               });

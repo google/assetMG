@@ -529,7 +529,7 @@ class AccountStructComponent {
                             break;
                         }
                         default: {
-                            agRow.performance = '';
+                            agRow.performance = adGroup.performance;
                             break;
                         }
                     }
@@ -1811,6 +1811,7 @@ class AssetGalleryComponent {
                 });
                 configDialogRef.afterClosed().subscribe((success) => {
                     if (success) {
+                        this._configService.configValid = true;
                         console.log('Credentials Valid');
                     }
                 });

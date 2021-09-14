@@ -67,6 +67,7 @@ export class AssetGalleryComponent implements OnInit {
 
         configDialogRef.afterClosed().subscribe((success) => {
           if (success) {
+            this._configService.configValid = true;
             console.log('Credentials Valid')
           }
         });
