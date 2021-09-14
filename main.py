@@ -67,9 +67,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 LOGS_PATH = Path('app/logs/server.log')
 
 YT_CLIENT_SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
-#TODO: Remove these two lines
-asset_to_ag_json_path = Path(PREFIX + 'cache/asset_to_ag.json')
-account_struct_json_path = Path(PREFIX + 'cache/account_struct.json')
+
 Path(PREFIX + 'cache').mkdir(parents=True, exist_ok=True)
 
 if CLOUD_VERSION:

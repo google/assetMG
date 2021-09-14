@@ -29,9 +29,6 @@ import json
 import app.backend.setup as setup
 from app.backend.setup import PREFIX
 
-asset_to_ag_json_path = Path(PREFIX + 'cache/asset_to_ag.json')
-Path(PREFIX + 'cache').mkdir(parents=True, exist_ok=True)
-
 yt_thumbnail_url = 'https://img.youtube.com/vi/%s/1.jpg'
 
 def upload_html5_asset(
