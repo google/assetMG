@@ -120,6 +120,7 @@ class StructureBuilder(object):
             asset['video_id'] = video_id
             asset['link'] = f'https://www.youtube.com/watch?v={video_id}'
             asset['image_url'] = f'https://img.youtube.com/vi/{video_id}/1.jpg'
+            asset['name'] = row.asset.youtube_video_asset.youtube_video_title
         return asset
 
     def _build_yt_data(self,row):
@@ -146,7 +147,8 @@ class AdGroupAssetsStructureBuilder(StructureBuilder):
           asset.image_asset.full_size.url,
           ad_group_ad_asset_view.field_type,
           asset.text_asset.text,
-          asset.youtube_video_asset.youtube_video_id
+          asset.youtube_video_asset.youtube_video_id,
+          asset.youtube_video_asset.youtube_video_title
         FROM
           ad_group_ad_asset_view
         WHERE
@@ -169,6 +171,7 @@ class AccountAssetsBuilder(StructureBuilder):
           asset.image_asset.full_size.height_pixels,
           asset.image_asset.full_size.width_pixels,
           asset.youtube_video_asset.youtube_video_id,
+          asset.youtube_video_asset.youtube_video_title,
           asset.type
         FROM
           asset
@@ -191,11 +194,6 @@ class AccountAssetsBuilder(StructureBuilder):
         account_assets = {}
         for row in rows:
             asset = self._build_asset(row)
-            if asset['type'] == 'YOUTUBE_VIDEO':
-                yt_id = yt_titles.get(asset['video_id'])
-                if yt_id:
-                    asset['name'] = yt_id['yt_title']
-
             account_assets[asset['id']] = asset
 
         source_assets = []
