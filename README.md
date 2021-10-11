@@ -11,6 +11,8 @@ Copyright 2021 Google LLC. This solution, including any related sample code or d
 
 Contact: eylong@google.com
 
+![Alt Text](https://github.com/google/assetMG/blob/master/AssetMG.gif)
+
 ## Why?
 
 Creative assets are only accessible in the Ad-group level, 
