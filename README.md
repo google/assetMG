@@ -15,13 +15,18 @@ Contact: eylong@google.com
 
 ## Why?
 
-Creative assets are only accessible in the Ad-group level, 
-Which makes managing UAC assets a manual job and creates significant overhead.
+Managing creative assets across accounts in Google Ads App campaigns is done manually as the 
+assets are only accessible at the Ad group level. 
+There is no way to make broad, bulk, cross campaign changes and there is also no asset-centric
+view of the account currently in Google Ads.
+All the above makes managing create assets in app campaigns very tedious and a waste substantial amounts time
+
 
 ## What?
 
-Easily add, change or remove creative assets across different ad groups and campaigns.
-
+A centralised GUI platform for cross account assets management to enable adding, assigning and removing assets to any ad group and campaign in an easy, quick and bulk fashion.
+AssetMG can be deployed as a local app on each of the user’s machines or as a web app deployed on a single cloud project.
+It is easy to deploy, easy to use, friendly and straightforward - saving marketing teams hours each week and helping them manage their creative assets, making the most out of their app campaigns. 
 
 ## Requirements
 
