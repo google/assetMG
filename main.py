@@ -23,7 +23,6 @@ from app.backend.mutate import mutate_ad
 from app.backend import structure
 from app.backend.upload_asset import upload
 from app.backend.service import Service_Class
-from app.backend.yt_upload import initialize_upload
 from app.backend.error_handling import error_mapping
 from app.backend.get_yt import get_all_yt_videos
 from app.backend.helpers import populate_adgroup_details
