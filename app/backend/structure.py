@@ -19,7 +19,9 @@ import logging
 import time
 from concurrent import futures
 from google.ads.googleads.client import GoogleAdsClient
+from app.backend.service import GoogleAds_Service
 import app.backend.setup as setup
+
 
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(asctime)s - %(levelname)s] %(message).5000s')
@@ -68,7 +70,8 @@ class StructureBuilder(object):
 
 
     def __init__(self, client, customer_id):
-        self._service = client.get_service('GoogleAdsService', version='v7')
+        self._service = GoogleAds_Service.get_service(
+            client, 'GoogleAdsService')
         self._client = client
         self._customer_id = customer_id
         self._enums = {
@@ -82,7 +85,8 @@ class StructureBuilder(object):
 
 
     def _get_rows(self, query):
-        search_request = self._client.get_type("SearchGoogleAdsStreamRequest")
+        search_request = GoogleAds_Service.get_type(
+            self._client, 'SearchGoogleAdsStreamRequest')
         search_request.customer_id = self._customer_id
         search_request.query = query
         response = self._service.search_stream(request=search_request)
@@ -423,9 +427,10 @@ def get_account_adgroup_structure(client, customer_id):
     builder = AccountAdGroupStructureBuilder(client, customer_id)
     return builder.build()
 
-    # if __name__ == '__main__':
-    #    googleads_client = GoogleAdsClient.load_from_storage(
-    #        'app/config/google-ads.yaml')
+if __name__ == '__main__':
+    googleads_client = GoogleAdsClient.load_from_storage(
+        'app/config/google-ads.yaml')
+    get_accounts(googleads_client)
     # create_mcc_struct(googleads_client,
     #                   'app/cache/account_struct.json',
     #                   'app/cache/asset_to_ag.json')

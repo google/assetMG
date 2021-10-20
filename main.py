@@ -16,13 +16,11 @@
 import json
 from math import floor
 from flask import Flask, request, jsonify, render_template
-from googleads import adwords
 from google.ads.googleads.client import GoogleAdsClient
 import app.backend.setup as setup
 from app.backend.mutate import mutate_ad
 from app.backend import structure
 from app.backend.upload_asset import upload
-from app.backend.service import Service_Class
 from app.backend.error_handling import error_mapping
 from app.backend.get_yt import get_all_yt_videos
 from app.backend.helpers import populate_adgroup_details
@@ -81,16 +79,6 @@ else:
 flow = None
 ADWORDS_CLIENT = ''
 GOOGLEADS_CLIENT = ''
-
-def get_global_adwords_client():
-    global ADWORDS_CLIENT
-    if ADWORDS_CLIENT:
-        return ADWORDS_CLIENT
-    else:
-        setup.set_api_configs()
-        ADWORDS_CLIENT = adwords.AdWordsClient.LoadFromStorage(
-            CONFIG_PATH / 'googleads.yaml')
-        return ADWORDS_CLIENT
 
 def get_global_googleads_client():
     global GOOGLEADS_CLIENT
@@ -396,9 +384,7 @@ def mutate():
     asset_id = data_load[0]['asset']['id']
     asset_type = data_load[0]['asset']['type']
 
-    aw_client = init_user_adwords_client(refresh_token)
     ga_client = init_user_googleads_client(refresh_token)
-
     failed_assign = []
     successeful_assign = []
     for item in data_load:
@@ -407,14 +393,13 @@ def mutate():
         action = item['action']
         asset = item['asset']
         text_type = asset.get('text_type_to_assign')
-
         try:
-            mutation = mutate_ad(aw_client, account, adgroup, asset, action, text_type)
+            mutation = mutate_ad(ga_client, account, adgroup, asset, action, text_type)
         except Exception as e:
             logging.exception(e)
             failed_assign.append(
                 {
-                    'adgroup': populate_adgroup_details(get_global_googleads_client(), account, adgroup),
+                    'adgroup': populate_adgroup_details(get_global_googleads_client(), account, str(adgroup)),
                     'error_message': error_mapping(str(e)),
                     'err': str(e)
                 }
@@ -425,7 +410,6 @@ def mutate():
         if mutation is None:
             successeful_assign.append(adgroup)
 
-    Service_Class.reset_cid(aw_client)
 
     if failed_assign and successeful_assign:
         status = 206
@@ -533,14 +517,12 @@ def upload_bulk():
     refresh_token = data['refresh_token']
 
     ga_client = init_user_googleads_client(refresh_token)
-    aw_client = init_user_adwords_client(refresh_token)
     failed = []
     success = []
 
     for asset in asset_list:
         try:
             res = upload(
-                aw_client,
                 ga_client,
                 get_global_googleads_client(),
                 asset['account'],
@@ -585,7 +567,6 @@ def upload_asset():
     logging.info(f"Using provided refresh token: {refresh_token}")
 
     ga_client = init_user_googleads_client(refresh_token)
-    aw_client = init_user_adwords_client(refresh_token)
 
     # uniform file names
     asset_name = data.get('asset_name')
@@ -597,7 +578,6 @@ def upload_asset():
 
     try:
         result = upload(
-            aw_client,
             ga_client,
             get_global_googleads_client(),
             data.get('account'),
@@ -609,7 +589,6 @@ def upload_asset():
             adgroups=data.get('adgroups'))
     except Exception as e:
         logging.exception(e)
-        Service_Class.reset_cid(aw_client)
         # Asset not uploaded
         return _build_response(msg=json.dumps(
             {'msg': 'Could not upload asset',
@@ -657,7 +636,6 @@ def init_clients():
     status = 0
 
     try:
-        get_global_adwords_client()
         get_global_googleads_client()
         with open(CONFIG_FILE_PATH, 'r') as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
@@ -685,7 +663,7 @@ def _get_config_file_contents():
 
 
 def _make_api_config_dict(refresh_token: string) -> dict:
-    """Creates a standard config structure for the GoogleAds and Adwords
+    """Creates a standard config structure for the GoogleAds
     API's client instantiation by using the generic configuration file
     and adding the user's refresh token."""
     c = _get_config_file_contents()
@@ -704,17 +682,6 @@ def init_user_googleads_client(refresh_token: string) -> GoogleAdsClient:
     api_config = _make_api_config_dict(refresh_token)
     ga_client = GoogleAdsClient.load_from_dict(api_config)
     return ga_client
-
-
-def init_user_adwords_client(refresh_token: string) -> adwords.AdWordsClient:
-    """Initiates a new user-based GoogleAds API client."""
-    api_config = _make_api_config_dict(refresh_token)
-    config_dict = {
-        'adwords': api_config
-    }
-    yaml_string = yaml.dump(config_dict)
-    aw_client = adwords.AdWordsClient.LoadFromString(yaml_doc=yaml_string)
-    return aw_client
 
 
 def shutdown_server():

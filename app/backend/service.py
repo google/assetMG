@@ -16,40 +16,16 @@ import yaml
 import app.backend.setup as setup
 from app.backend.setup import CONFIG_PATH
 
-VERSION = 'v201809'
+GA_API_VERSION = 'v7'
 
-class Service_Class:
-
+class GoogleAds_Service:
+ 
+  # SERVICES
   @staticmethod
-  def get_ad_service(client):
-    return client.GetService('AdService', version=VERSION)
+  def get_service(client, service):
+    return client.get_service(service, version=GA_API_VERSION)
 
+  # TYPES
   @staticmethod
-  def get_campaign_service(client):
-    return client.GetService('CampaignService', version=VERSION)
-
-  @staticmethod
-  def get_managed_customer_service(client):
-    return client.GetService('ManagedCustomerService', version=VERSION)
-
-  @staticmethod
-  def get_ad_group_service(client):
-    return client.GetService('AdGroupService', version=VERSION)
-
-  @staticmethod
-  def get_ad_group_ad_service(client):
-    return client.GetService('AdGroupAdService', version=VERSION)
-
-  @staticmethod
-  def get_asset_service(client):
-    return client.GetService('AssetService', version=VERSION)
-
-  @staticmethod
-  def reset_cid(client):
-    setup.download_file_from_gcs('googleads.yaml', str(CONFIG_PATH) + 'googleads.yaml')
-    with open(CONFIG_PATH / 'googleads.yaml', 'r') as f:
-      config = yaml.load(f, Loader=yaml.FullLoader)
-    
-    cid = config['adwords']['client_customer_id']
-    client.SetClientCustomerId(cid)
-
+  def get_type(client, type):
+    return client.get_type(type, version=GA_API_VERSION)

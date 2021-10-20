@@ -14,7 +14,7 @@
 
 """setup module for the assetMG tool.
 
-setting up both api config yaml files(googleads.yaml & google-ads.yaml)
+setting up api config yaml file (google-ads.yaml)
 with the paramaters given by the user in the config.yaml file
 """
 
@@ -23,7 +23,6 @@ import json
 import os
 from pathlib import Path
 import logging
-from googleads import adwords
 from google.cloud import storage
 
 
@@ -67,10 +66,7 @@ def set_api_configs():
   download_file_from_gcs(CONFIG_FILE_PATH_GS, CONFIG_FILE_PATH)
   with open(CONFIG_FILE_PATH, 'r') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
-  aw_config = {'adwords': config}
-  with open(CONFIG_PATH / 'googleads.yaml', 'w') as f:
-    yaml.dump(aw_config, f)
-  upload_file_to_gcs(str(CONFIG_PATH) + '/googleads.yaml', 'googleads.yaml')
+
   config['login_customer_id'] = config['client_customer_id']
   with open(CONFIG_PATH / 'google-ads.yaml', 'w') as f:
     yaml.dump(config, f)

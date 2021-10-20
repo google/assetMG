@@ -15,14 +15,27 @@
 """Helper functions to be used by the backend."""
 
 from google.ads.googleads.client import GoogleAdsClient
+from app.backend.service import GoogleAds_Service
 
+class Helper(object):
 
-def populate_adgroup_details(client, account, ag_id):
+  def __init__(self, client, customer_id):
+    self._service = GoogleAds_Service.get_service(client, 'GoogleAdsService')
+    self._client = client
+    self._customer_id = customer_id
+
+  def get_rows(self, query):
+    search_request = GoogleAds_Service.get_type(self._client, 'SearchGoogleAdsStreamRequest')
+    search_request.customer_id = self._customer_id
+    search_request.query = query
+    response = self._service.search_stream(request=search_request)
+    return response
+
+def populate_adgroup_details(client, customer_id, ag_id):
   """Gets an adgroup ID and returns an adgroup object including
   adgroup id, adgroup name and campaign name."""
 
-  ga_service = client.get_service('GoogleAdsService', version='v7')
-
+  helper = Helper(client, customer_id)
   query = '''
         SELECT
           campaign.name,
@@ -34,10 +47,7 @@ def populate_adgroup_details(client, account, ag_id):
           ad_group.id = %s 
   ''' % (ag_id)
 
-  request = client.get_type("SearchGoogleAdsStreamRequest")
-  request.customer_id = account
-  request.query = query
-  response = ga_service.search_stream(request=request)
+  response = helper.get_rows(query)
 
   for batch in response:
     for row in batch.results:
@@ -46,3 +56,21 @@ def populate_adgroup_details(client, account, ag_id):
         'adgroup_name': row.ad_group.name,
         'campaign_name': row.campaign.name
       }
+
+
+def get_image_url(client,customer_id, asset_id):
+  
+  helper = Helper(client, customer_id)
+  query = f'''
+        SELECT
+          asset.image_asset.full_size.url
+        FROM
+          asset
+        WHERE
+          asset.id = {asset_id}
+  '''
+  response = helper.get_rows(query)
+
+  for batch in response:
+    for row in batch.results:
+      return row.asset.image_asset.full_size.url
