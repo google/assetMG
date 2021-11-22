@@ -16,7 +16,7 @@ import yaml
 import app.backend.setup as setup
 from app.backend.setup import CONFIG_PATH
 
-GA_API_VERSION = 'v7'
+GA_API_VERSION = 'v9'
 
 class GoogleAds_Service:
  

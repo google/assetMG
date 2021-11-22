@@ -74,14 +74,6 @@ class StructureBuilder(object):
             client, 'GoogleAdsService')
         self._client = client
         self._customer_id = customer_id
-        self._enums = {
-            'type': client.get_type('AssetTypeEnum').AssetType,
-            'field_type': client.get_type('AssetFieldTypeEnum').AssetFieldType,
-            'adgroup_status': client.get_type('AdGroupStatusEnum').AdGroupStatus,
-            'campaign_status': client.get_type('CampaignStatusEnum').CampaignStatus,
-            'performance_label': client.get_type(
-                'AssetPerformanceLabelEnum').AssetPerformanceLabel
-        }
 
 
     def _get_rows(self, query):
@@ -94,8 +86,8 @@ class StructureBuilder(object):
 
 
     def _build_asset(self, row):
-        asset_type = self._enums['type'](row.asset.type_).name
-        perf_label = self._enums['performance_label'](row.ad_group_ad_asset_view.performance_label).name
+        asset_type = row.asset.type_.name
+        perf_label = row.ad_group_ad_asset_view.performance_label.name
         asset = {
             'id': row.asset.id,
             'name': row.asset.name,
@@ -115,8 +107,7 @@ class StructureBuilder(object):
                 row.asset.image_asset.full_size.height_pixels
             asset['image_width'] = row.asset.image_asset.full_size.width_pixels
         elif asset_type == 'TEXT':
-            text_type = self._enums['field_type'](
-                row.ad_group_ad_asset_view.field_type).name
+            text_type = row.ad_group_ad_asset_view.field_type.name
             asset['text_type'] = text_type.lower() + 's'
             asset['asset_text'] = row.asset.text_asset.text
         elif asset_type == 'YOUTUBE_VIDEO':
@@ -127,12 +118,6 @@ class StructureBuilder(object):
             asset['name'] = row.asset.youtube_video_asset.youtube_video_title
         return asset
 
-    def _build_yt_data(self,row):
-        yt_data  = {
-            'yt_id': row.video.id,
-            'yt_title': row.video.title
-        }
-        return yt_data
 
     def build(self):
         return None
@@ -166,34 +151,20 @@ class AccountAssetsBuilder(StructureBuilder):
 
     def build(self):
         rows = self._get_rows('''
-        SELECT
-          asset.name,
-          asset.id,
-          asset.image_asset.file_size,
-          asset.image_asset.full_size.url,
-          asset.text_asset.text,
-          asset.image_asset.full_size.height_pixels,
-          asset.image_asset.full_size.width_pixels,
-          asset.youtube_video_asset.youtube_video_id,
-          asset.youtube_video_asset.youtube_video_title,
-          asset.type
-        FROM
-          asset
-    ''')
-
-        # for yt assets get the actual video title instead of asset name
-        yt_titles_rows = self._get_rows('''
-        SELECT
-          video.title,
-          video.id
-        FROM 
-          video
-    ''')
-
-        yt_titles = {}
-        for row in yt_titles_rows:
-            yt_data = self._build_yt_data(row)
-            yt_titles[yt_data['yt_id']] = yt_data
+            SELECT
+            asset.name,
+            asset.id,
+            asset.image_asset.file_size,
+            asset.image_asset.full_size.url,
+            asset.text_asset.text,
+            asset.image_asset.full_size.height_pixels,
+            asset.image_asset.full_size.width_pixels,
+            asset.youtube_video_asset.youtube_video_id,
+            asset.youtube_video_asset.youtube_video_title,
+            asset.type
+            FROM
+            asset
+        ''')
 
         account_assets = {}
         for row in rows:
@@ -253,8 +224,8 @@ class AccountAdGroupStructureBuilder(StructureBuilder):
     ''')
 
         for row in rows:
-            adgroup_status = self._enums['adgroup_status'](row.ad_group.status).name
-            campaign_status = self._enums['campaign_status'](row.campaign.status).name
+            adgroup_status = row.ad_group.status.name
+            campaign_status = row.campaign.status.name
 
             ad_group = {
                 'id': row.ad_group.id,
@@ -341,8 +312,7 @@ class AssetAdgroupsBuilder(StructureBuilder):
             asset_info['adgroups'].append(
                 {
                     'id': row.ad_group.id,
-                    'performance': self._enums['performance_label'](
-                        row.ad_group_ad_asset_view.performance_label).name,
+                    'performance': row.ad_group_ad_asset_view.performance_label.name,
                     'performance_type': perf_type
                 }
             )
@@ -366,15 +336,13 @@ class AssetAdgroupsBuilder(StructureBuilder):
         }
 
         for row in rows:
-            text_type = self._enums['field_type'](
-                row.ad_group_ad_asset_view.field_type).name
+            text_type = row.ad_group_ad_asset_view.field_type.name
             
             if text_type == 'HEADLINE':
                 asset_head['adgroups'].append(
                     {
                         'id': row.ad_group.id,
-                        'performance': self._enums['performance_label'](
-                            row.ad_group_ad_asset_view.performance_label).name,
+                        'performance': row.ad_group_ad_asset_view.performance_label.name,
                         'performance_type': 'headlines'
                     }
                 )
@@ -382,8 +350,7 @@ class AssetAdgroupsBuilder(StructureBuilder):
                 asset_desc['adgroups'].append(
                     {
                         'id': row.ad_group.id,
-                        'performance': self._enums['performance_label'](
-                            row.ad_group_ad_asset_view.performance_label).name,
+                        'performance': row.ad_group_ad_asset_view.performance_label.name,
                         'performance_type': 'descriptions'
                     }
                 )               
@@ -427,20 +394,4 @@ def get_account_adgroup_structure(client, customer_id):
     builder = AccountAdGroupStructureBuilder(client, customer_id)
     return builder.build()
 
-if __name__ == '__main__':
-    googleads_client = GoogleAdsClient.load_from_storage(
-        'app/config/google-ads.yaml')
-    get_accounts(googleads_client)
-    # create_mcc_struct(googleads_client,
-    #                   'app/cache/account_struct.json',
-    #                   'app/cache/asset_to_ag.json')
-    # print(json.dumps(get_accounts(googleads_client), indent=2))
-    # print(json.dumps(
-    #     get_assets_from_adgroup(googleads_client, 8791307154, 79845268520),
-    #     indent=2))
 
-    # print(json.dumps(get_accounts_assets(googleads_client, '9489090398'),
-    #                indent=2))
-    # print(json.dumps(get_all_accounts_assets(googleads_client), indent=2))
-
-    # print(get_accounts(googleads_client))

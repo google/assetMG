@@ -16,7 +16,6 @@ import json
 from google.api_core import protobuf_helpers
 from google.ads.googleads.client import GoogleAdsClient
 from app.backend.service import GoogleAds_Service
-import proto
 
 ASSET_TYPE_MAP = {
     'IMAGE': 'AdImageAsset',
@@ -58,7 +57,7 @@ def mutate_ad(client, customer_id, adgroup, asset, action, text_type_to_assign='
         for row in batch.results:
             ad_original = row.ad_group_ad.ad
 
-    proto.Message.copy_from(ad_updated, ad_original)
+    ad_updated.CopyFrom(ad_original)
 
     # Get asset list of relevant type
     asset_list_handler = ''
@@ -82,14 +81,9 @@ def mutate_ad(client, customer_id, adgroup, asset, action, text_type_to_assign='
         asset_list_handler.remove(asset_object)
            
     # Set Field mask
-    field_mask = protobuf_helpers.field_mask(ad_original._pb, ad_updated._pb)
+    field_mask = protobuf_helpers.field_mask(ad_original, ad_updated)
     client.copy_from(ad_operation.update_mask, field_mask)
 
     # Execute mutation
     ad_service.mutate_ads(customer_id=customer_id, operations=[ad_operation])
 
-
-if __name__ == "__main__":
-    googleads_client = GoogleAdsClient.load_from_storage(
-        'app/config/google-ads.yaml', version="v7")
-    mutate_ad(googleads_client, '6047259645', '130099530873', {'id': '17915971723', 'type': 'IMAGE'}, 'ADD')

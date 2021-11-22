@@ -68,6 +68,7 @@ def set_api_configs():
     config = yaml.load(f, Loader=yaml.FullLoader)
 
   config['login_customer_id'] = config['client_customer_id']
+  config['use_proto_plus'] = True
   with open(CONFIG_PATH / 'google-ads.yaml', 'w') as f:
     yaml.dump(config, f)
   upload_file_to_gcs(str(CONFIG_PATH) + '/google-ads.yaml', 'google-ads.yaml')
