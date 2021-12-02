@@ -25,13 +25,11 @@ h1 {
 
 .asset-info p {
   display: grid;
-  width: 100%x;
+  width: 210px;
   padding: 5px;
-
   overflow: hidden;
   text-overflow: ellipsis;
-
-}
+} 
 
 .asset-info p span {
   text-align: left;

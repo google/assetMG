@@ -70,6 +70,7 @@ export interface AdGroupRow extends AdGroup {
   styleUrls: ['./account-struct.component.css'],
 })
 export class AccountStructComponent implements OnChanges {
+  filterValues = {};
   private _subscriptions: Subscription[] = [];
 
   /** Memebers that represent the data that will be displayed */
@@ -80,7 +81,7 @@ export class AccountStructComponent implements OnChanges {
   assetConn = AssetConn; /** connection types to be used in the html file */
   isTextAsset: boolean; /** When this is set, Headline and Description columns appear and main selection column disappears */
   filter: string;
-
+  filterSelectObj = [];
   displayedColumns$ = new BehaviorSubject<string[]>(null);
   /** Members that represent the table UI
    * There are three selectable columns; one for non-text assets
@@ -120,7 +121,27 @@ export class AccountStructComponent implements OnChanges {
   constructor(
     private dataService: AssetService,
     private _changeDetectorRef: ChangeDetectorRef
-  ) {}
+  ) {
+    this.filterSelectObj = [
+      {
+        name: 'Campaign Status',
+        columnProp: 'campaign_status',
+        options: ['ENABLED', 'PAUSED']
+      },
+      {
+        name: 'AdGroup Status',
+        columnProp: 'status',
+        options: ['ENABLED', 'PAUSED']
+      },
+      {
+        name: 'Performance',
+        columnProp: 'performance',
+        options: ['UNSPECIFIED', 'UNKNOWN', 'PENDING', 'LEARNING', 'LOW', 'GOOD', 'BEST']
+      }
+
+    ]
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     // Get new adgroups if active account has changed
     if (
@@ -139,10 +160,12 @@ export class AccountStructComponent implements OnChanges {
     // Refresh asset to ad group
     this._subscriptions.push(
       this.dataService.activeAssetAdGroups$.subscribe((adGroups) => {
+        this.resetSelects();
         this._assetToAdgroups = adGroups;
         if (this.dataSource?.paginator) {
           this.dataSource.paginator.firstPage();
         }
+        this.filterValues = {};
         this.updateRowSelections();
       })
     );
@@ -163,6 +186,14 @@ export class AccountStructComponent implements OnChanges {
         }
       })
     );
+  }
+
+  // Called on Filter change
+  filterChange(filter, event) {
+    this.filterValues[
+      filter.columnProp
+    ] = event.target.value.trim().toUpperCase();
+    this.dataSource.filter = JSON.stringify(this.filterValues);
   }
 
   ngOnDestroy() {
@@ -202,45 +233,44 @@ export class AccountStructComponent implements OnChanges {
      * A different predicate is made depending on whether the asset is a text asset
      * or not. This is due to text assets displaying a different set of columns.
      */
+    this.dataSource.filterPredicate = function(data, filter: string): boolean {
+      var searchTerms = JSON.parse(filter);
+      var searchFilter = true;
 
-    if (this.isTextAsset) {
-      this.dataSource.filterPredicate = function(data, filter: string): boolean {
-        var filterKeywords = filter.split(' ');
-        var searchFilter = true;
+      let ag_status = searchTerms['status'];
+      let camp_status = searchTerms['campaign_status'];
+      let keyword = searchTerms['keyword'];
+      let performance = searchTerms['performance']
+
+      if (!ag_status){
+        ag_status = ''
+      }
+      if (!camp_status){
+        camp_status = ''
+      }
+      if (!keyword){
+        keyword = ''
+      }
+      if (!performance){
+        performance = ''
+      }
+
+      searchFilter = searchFilter &&
+        (
+          String(data.name).toLowerCase().includes(keyword.toLowerCase()) ||
+          String(data.campaign_name).toLowerCase().includes(keyword.toLowerCase())
+        ) &&
+        (String(data.status).toLowerCase().includes(ag_status.toLowerCase())) &&
+        (String(data.campaign_status).toLowerCase().includes(camp_status.toLowerCase())) &&
+        (
+          String(data.performance).toLowerCase().includes(performance.toLowerCase()) ||
+          String(data.headlinePerformance).toLowerCase().includes(performance.toLowerCase()) ||
+          String(data.descriptionPerformance).toLowerCase().includes(performance.toLowerCase())
+        )
+        ;
   
-        for (var i=0; i < filterKeywords.length; i++) {
-          var keyword = filterKeywords[i];
-          searchFilter = searchFilter &&
-            (
-              String(data.name).toLowerCase().includes(keyword) ||
-              String(data.campaign_name).toLowerCase().includes(keyword) ||
-              String(data.headlinePerformance).toLowerCase().includes(keyword) ||
-              String(data.descriptionPerformance).toLowerCase().includes(keyword) ||
-              String(data.status).toLowerCase().includes(keyword) ||
-              String(data.campaign_status).toLowerCase().includes(keyword)
-            );
-        }
-        return searchFilter;
-      };
-    } else {
-      this.dataSource.filterPredicate = function(data, filter: string): boolean {
-        var filterKeywords = filter.split(' ');
-        var searchFilter = true;
-  
-        for (var i=0; i < filterKeywords.length; i++) {
-          var keyword = filterKeywords[i];
-          searchFilter = searchFilter &&
-            (
-              String(data.name).toLowerCase().includes(keyword) ||
-              String(data.campaign_name).toLowerCase().includes(keyword) ||
-              String(data.performance).toLowerCase().includes(keyword) ||
-              String(data.status).toLowerCase().includes(keyword) ||
-              String(data.campaign_status).toLowerCase().includes(keyword)
-            );
-        }
-        return searchFilter;
-      };
-    }
+    return searchFilter;
+    };  
   }
 
   getDisplayedColumns(): string[] {
@@ -342,14 +372,16 @@ export class AccountStructComponent implements OnChanges {
     this.dataSource.sort.sortChange.emit();
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+  applyFilter(input: string) {
+    let filterValue = input;
+    this.filterValues['keyword'] = filterValue;
+    console.log(this.filterValues)
+    this.dataSource.filter = JSON.stringify(this.filterValues)
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
-    
+
     // this.clearSelection(AssetConn.HEADLINE);
     // this.clearSelection(AssetConn.DESC);
     // this.clearSelection(AssetConn.ADGROUP);
@@ -463,5 +495,11 @@ export class AccountStructComponent implements OnChanges {
     rows.forEach((row) => agIds.push(row.id));
 
     return agIds;
+  }
+
+  resetSelects(){
+    this.filterSelectObj.forEach((value) =>{
+      value.modelValue = null;
+    })
   }
 }

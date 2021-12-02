@@ -1,10 +1,20 @@
 <mat-form-field id="accountFilter">
-    <mat-label>Filter</mat-label>
+    <mat-label>AdGroup/Campaign Name</mat-label>
     <input matInput
       [(ngModel)]="filter"
-      (keyup)="applyFilter($event)"
+      (keyup)="applyFilter($event.target.value)"
       placeholder="Use spaces to separate search terms"
       #tableFilterInput>
+</mat-form-field>
+
+<mat-form-field *ngFor="let filter of filterSelectObj" style="margin-left: 15px;">
+  <mat-label> Filter {{filter.name}} </mat-label>
+  <select matNativeControl name="{{filter.columnProp}}"
+      [(ngModel)]="filter.modelValue"
+      (change)="filterChange(filter,$event)">
+      <option value=""> All </option>
+      <option [value]="item" *ngFor="let item of filter.options">{{item}}</option>
+      </select>
 </mat-form-field>
 
 <div>
@@ -89,12 +99,12 @@
 
       <!-- AdGroup Column -->
       <ng-container matColumnDef="adgroup">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Ad group </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Ad Group </th>
         <td mat-cell *matCellDef="let row"> {{row.name}} </td>
       </ng-container>
       <!-- AdGroup Enabled Column -->
       <ng-container matColumnDef="adgroup-enabled">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Active </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Ad Group Status </th>
         <td mat-cell *matCellDef="let row"> {{row.status}} </td>
       </ng-container>
 
@@ -111,7 +121,7 @@
       </ng-container>
       <!-- Campaign Enabled Column -->
       <ng-container matColumnDef="campaign-enabled">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Active </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Campaign Status </th>
         <td mat-cell *matCellDef="let row"> {{row.campaign_status}} </td>
       </ng-container>
 

@@ -1,3 +1,4 @@
+import { Pipe } from '@angular/core';
 /**
  * Copyright 2020 Google LLC
  *
