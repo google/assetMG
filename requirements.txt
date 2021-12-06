@@ -1,5 +1,4 @@
-googleads==20.0.0
-google-ads==11.0.0
+google-ads==14.1.0
 flask
 google-api-python-client
 pylint
