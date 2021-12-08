@@ -46,6 +46,7 @@ td.mat-cell:first-of-type {
 
 #accountFilter {
   float: left;
+  max-width: 300px;
 }
 
 td.mat-cell i {
