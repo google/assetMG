@@ -672,6 +672,7 @@ def _make_api_config_dict(refresh_token: string) -> dict:
         'client_secret': c['client_secret'],
         'client_customer_id': c['client_customer_id'],
         'developer_token': c['developer_token'],
+        'login_customer_id': c['client_customer_id'],
         'refresh_token': refresh_token,
         'use_proto_plus': True
     }
