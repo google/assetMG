@@ -1,5 +1,5 @@
 <h2 mat-dialog-title>Error</h2>
-<p class="error-message"[innerHtml] = "data.errorMessage | styleErrorMsg"></p>
+<p class="error-message" [innerText]="data.errorMessage | styleErrorMsg"></p>
 <app-progress-btn
   btnLabel='Retry'
   [btnUpdateMsg]="updateMessage"
